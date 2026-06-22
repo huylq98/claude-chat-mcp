@@ -18,7 +18,7 @@ const STRINGS = {
     h2_connectors: "Connectors", h2_install: "Or install one at a time",
     h2_app: "Get the app",
     app_h: "One app to manage every connector",
-    app_p: "Install the control panel, then turn connectors on or off, enter your link and password, pick a permission, and test the connection. No files to drag.",
+    app_p: "Install the app, then turn connectors on or off, enter your link and password, pick a permission, and test the connection. No files to drag.",
     app_note: "Free. Works on Windows, macOS, and Linux.",
     app_dl: "Download the app",
     app_dl_for: "Download for",
@@ -42,7 +42,7 @@ const STRINGS = {
     h2_connectors: "Trình kết nối", h2_install: "Hoặc cài từng cái một",
     h2_app: "Tải ứng dụng",
     app_h: "Một ứng dụng quản lý mọi trình kết nối",
-    app_p: "Cài bảng điều khiển, rồi bật tắt trình kết nối, nhập địa chỉ và mật khẩu, chọn quyền, và kiểm tra kết nối. Không cần kéo thả tệp.",
+    app_p: "Cài ứng dụng, rồi bật tắt trình kết nối, nhập địa chỉ và mật khẩu, chọn quyền, và kiểm tra kết nối. Không cần kéo thả tệp.",
     app_note: "Miễn phí. Chạy trên Windows, macOS và Linux.",
     app_dl: "Tải ứng dụng",
     app_dl_for: "Tải cho",
@@ -79,6 +79,7 @@ const EN_DESC = {
   elasticsearch: "Search your company's Elasticsearch or OpenSearch indices and logs.",
   mattermost: "Read your company's Mattermost channels and messages, and post updates.",
   mongodb: "Query your company's MongoDB databases and collections.",
+  sentry: "Browse your company's Sentry projects and error reports.",
 };
 const VI_DESC = {
   confluence: "Tìm và đọc các trang Confluence của công ty bạn, và thêm trang hoặc bình luận.",
@@ -98,6 +99,7 @@ const VI_DESC = {
   elasticsearch: "Tìm kiếm trong các chỉ mục và log Elasticsearch hoặc OpenSearch của công ty bạn.",
   mattermost: "Đọc các kênh và tin nhắn Mattermost của công ty bạn, và đăng cập nhật.",
   mongodb: "Truy vấn cơ sở dữ liệu và collection MongoDB của công ty bạn.",
+  sentry: "Xem các dự án và báo cáo lỗi Sentry của công ty bạn.",
 };
 const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Dev: "Lập trình", Other: "Khác" };
 
@@ -143,7 +145,7 @@ function renderApp() {
   primary.querySelector("span").textContent = `${t("app_dl_for")} ${t("os_" + primaryOs)}`;
   all.innerHTML =
     order.filter((o) => o !== primaryOs)
-      .map((o) => `<a class="app-dl-link" href="${CP_BASE}/${CP_INSTALLERS[o]}" rel="noopener">${esc(t("os_" + o))}</a>`)
+      .map((o) => `<a class="app-dl-link" href="${CP_BASE}/${CP_INSTALLERS[o]}" aria-label="${esc(t("app_dl_for") + " " + t("os_" + o))}" rel="noopener">${esc(t("os_" + o))}</a>`)
       .join("") +
     `<a class="app-dl-link app-dl-more" href="${CP_RELEASES}" target="_blank" rel="noopener">${esc(t("app_other"))}</a>`;
 }

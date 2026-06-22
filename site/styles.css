@@ -190,8 +190,8 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .app-actions { display: flex; flex-direction: column; gap: 12px; align-items: stretch; }
 .app-dl-primary { width: 100%; justify-content: center; font-size: 1.02rem; padding: 14px 20px; }
 .app-dl-all { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: center; }
-.app-dl-link { font-size: 0.85rem; color: var(--text-dim); border-bottom: 1px solid transparent; }
-.app-dl-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.app-dl-link { display: inline-flex; align-items: center; min-height: 44px; padding: 4px 2px; font-size: 0.85rem; color: var(--text-dim); border-bottom: 1px solid transparent; }
+.app-dl-link:hover, .app-dl-link:focus-visible { color: var(--accent); border-bottom-color: var(--accent); }
 @media (max-width: 720px) { .app-card { grid-template-columns: 1fr; gap: 20px; padding: 22px; } }
 
 /* ---- Section heads ---- */

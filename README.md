@@ -10,7 +10,7 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 
 ## Connectors
 
-17 connectors, grouped by what they connect to. Each one is its own standalone server.
+18 connectors, grouped by what they connect to. Each one is its own standalone server.
 
 ### Atlassian
 
@@ -28,6 +28,7 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 | GitLab | Search and read self-hosted GitLab projects, issues, and merge requests. Can create issues and comments in Writer mode. |
 | Jenkins | Browse self-hosted Jenkins jobs and builds. Can trigger builds in Writer mode. |
 | Grafana | Browse self-hosted Grafana dashboards, data sources, and alerts. Can add annotations in Writer mode. |
+| Sentry | Browse self-hosted Sentry projects and issues. Can resolve or ignore issues in Writer mode. |
 
 ### Productivity
 
@@ -49,7 +50,7 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 | Elasticsearch | Search self-hosted Elasticsearch or OpenSearch indices and read mappings. Can index documents in Writer mode. |
 | MongoDB | Query self-hosted MongoDB databases and collections. Can insert documents in Writer mode. |
 
-> **Oracle note:** Oracle has no pure-Rust driver, so it is built behind an `oracle` cargo feature and needs Oracle Instant Client installed at runtime. The other sixteen connectors are fully self-contained with nothing extra to install.
+> **Oracle note:** Oracle has no pure-Rust driver, so it is built behind an `oracle` cargo feature and needs Oracle Instant Client installed at runtime. The other seventeen connectors are fully self-contained with nothing extra to install.
 
 ## Install
 
