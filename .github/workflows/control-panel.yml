@@ -1,0 +1,71 @@
+name: Build control-panel installers
+
+# Build the desktop control-panel installer on all three OSes. Each OS build
+# compiles that OS's connector binaries, stages them into the app's resources/
+# (the app embeds them via include_bytes!), then runs `tauri build` to produce
+# the native installer (Windows MSI/NSIS, macOS dmg, Linux deb/AppImage).
+on:
+  push:
+    tags: ["cp-v*"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            plat: win
+          - os: macos-latest
+            plat: mac
+          - os: ubuntu-latest
+            plat: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Linux Tauri system deps
+        if: matrix.plat == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Build connector binaries
+        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle
+      - name: Stage app resources (this OS's binaries + registry)
+        shell: bash
+        run: |
+          mkdir -p crates/control-panel/resources
+          cp site/registry.json crates/control-panel/resources/registry.json
+          for id in confluence jira bitbucket airtable mysql mariadb clickhouse oracle; do
+            if [ "${{ matrix.plat }}" = "win" ]; then cp "target/release/$id.exe" "crates/control-panel/resources/$id.exe"; else cp "target/release/$id" "crates/control-panel/resources/$id"; fi
+          done
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2.0" --locked
+      - name: Build app + installer
+        working-directory: crates/control-panel
+        run: cargo tauri build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: control-panel-${{ matrix.plat }}
+          if-no-files-found: warn
+          path: |
+            crates/control-panel/target/release/bundle/**/*.msi
+            crates/control-panel/target/release/bundle/**/*-setup.exe
+            crates/control-panel/target/release/bundle/**/*.dmg
+            crates/control-panel/target/release/bundle/**/*.deb
+            crates/control-panel/target/release/bundle/**/*.AppImage
+      - name: Publish to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            crates/control-panel/target/release/bundle/**/*.msi
+            crates/control-panel/target/release/bundle/**/*-setup.exe
+            crates/control-panel/target/release/bundle/**/*.dmg
+            crates/control-panel/target/release/bundle/**/*.deb
+            crates/control-panel/target/release/bundle/**/*.AppImage
