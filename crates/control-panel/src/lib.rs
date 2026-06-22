@@ -11,6 +11,7 @@ pub fn run() {
             commands::list_connectors,
             commands::list_installed,
             commands::install_connector,
+            commands::test_connection,
             commands::uninstall_connector,
         ])
         .run(tauri::generate_context!())

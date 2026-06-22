@@ -33,6 +33,19 @@ async fn main() -> anyhow::Result<()> {
         let engine = OracleEngine::connect(&config).await?;
         let server = make_server(Arc::new(engine), config, "oracle");
 
+        if std::env::args().any(|a| a == "--test-connection") {
+            match server.test_connection().await {
+                Ok(()) => {
+                    println!("Connection OK");
+                    return Ok(());
+                }
+                Err(e) => {
+                    eprintln!("{e}");
+                    std::process::exit(1);
+                }
+            }
+        }
+
         server_runtime::serve_stdio(server).await
     }
 

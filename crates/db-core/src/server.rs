@@ -127,6 +127,22 @@ impl DbServer {
     }
 }
 
+impl DbServer {
+    /// Make one cheap authenticated round-trip to verify the connection works.
+    /// Used by the `--test-connection` binary mode. Returns `Ok(())` on success.
+    ///
+    /// Oracle has no bare `SELECT 1` (it needs `FROM DUAL`); every other engine
+    /// accepts `SELECT 1`, so the probe is chosen from the engine name.
+    pub async fn test_connection(&self) -> anyhow::Result<()> {
+        let probe = if self.engine.name() == "Oracle" {
+            "SELECT 1 FROM DUAL"
+        } else {
+            "SELECT 1"
+        };
+        self.engine.query(probe, 1).await.map(|_| ())
+    }
+}
+
 #[tool_handler]
 impl ServerHandler for DbServer {
     fn get_info(&self) -> ServerInfo {

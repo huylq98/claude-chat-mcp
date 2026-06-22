@@ -44,6 +44,13 @@ impl BitbucketClient {
         })
     }
 
+    /// Cheapest authenticated GET, used by `--test-connection`: list one project.
+    pub async fn list_projects(&self, limit: u32) -> Result<Value, CoreError> {
+        self.http
+            .get_json("/rest/api/1.0/projects", &[("limit", limit.to_string())])
+            .await
+    }
+
     pub async fn list_repos(&self, project_key: &str, limit: u32) -> Result<Value, CoreError> {
         self.http
             .get_json(

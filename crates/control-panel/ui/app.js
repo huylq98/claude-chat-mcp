@@ -26,28 +26,34 @@ const STRINGS = {
     removed: "Connector removed.",
     missingRequired: "Please fill in the required fields.",
     docs: "Documentation",
+    testConn: "Test connection",
+    testing: "Testing connection...",
+    testOk: "Connection OK",
   },
   vi: {
     appName: "Claude Chat MCP",
-    title: "Bang dieu khien connector",
-    lede: "Bat hoac tat connector, nhap thong tin dang nhap, va chon vai tro quyen. Thay doi se duoc ghi truc tiep vao Claude Desktop.",
-    configure: "Cau hinh",
-    role: "Vai tro quyen",
-    viewer: "Nguoi xem (chi doc)",
-    writer: "Nguoi ghi (doc va ghi)",
-    install: "Cai dat",
-    update: "Cap nhat",
-    remove: "Go bo",
-    on: "Bat",
-    off: "Tat",
+    title: "Bảng điều khiển trình kết nối",
+    lede: "Bật hoặc tắt trình kết nối, nhập thông tin đăng nhập, và chọn vai trò quyền. Thay đổi được ghi trực tiếp vào Claude Desktop.",
+    configure: "Cấu hình",
+    role: "Vai trò quyền",
+    viewer: "Người xem (chỉ đọc)",
+    writer: "Người ghi (đọc và ghi)",
+    install: "Cài đặt",
+    update: "Cập nhật",
+    remove: "Gỡ bỏ",
+    on: "Bật",
+    off: "Tắt",
     restartNote:
-      "Bay gio hay thoat han va mo lai Claude Desktop de thay doi co hieu luc.",
-    installing: "Dang cai dat...",
-    removing: "Dang go bo...",
-    installed: "Da luu. Connector dang bat.",
-    removed: "Da go bo connector.",
-    missingRequired: "Vui long dien cac truong bat buoc.",
-    docs: "Tai lieu",
+      "Bây giờ hãy thoát hẳn và mở lại Claude Desktop để thay đổi có hiệu lực.",
+    installing: "Đang cài đặt...",
+    removing: "Đang gỡ bỏ...",
+    installed: "Đã lưu. Trình kết nối đang bật.",
+    removed: "Đã gỡ bỏ trình kết nối.",
+    missingRequired: "Vui lòng điền các trường bắt buộc.",
+    docs: "Tài liệu",
+    testConn: "Kiểm tra kết nối",
+    testing: "Đang kiểm tra kết nối...",
+    testOk: "Kết nối OK",
   },
 };
 
@@ -174,6 +180,7 @@ function buildCard(c) {
   }
 
   // Actions.
+  $(".btn-test", node).addEventListener("click", () => testConnection(c, node));
   installBtn.addEventListener("click", () => installConnector(c, node));
   removeBtn.addEventListener("click", () => removeConnector(c, node));
 
@@ -254,6 +261,28 @@ function collectValues(node) {
     if (val !== "") values[env] = val;
   });
   return { values, missing };
+}
+
+/* ── Test connection ────────────────────────────────────────────────── */
+async function testConnection(c, node) {
+  const status = $(".card-status", node);
+  const { values, missing } = collectValues(node);
+  if (missing) {
+    setStatus(status, "err", t("missingRequired"));
+    return;
+  }
+  const mode = $(".role-select", node).value;
+  const btn = $(".btn-test", node);
+  btn.disabled = true;
+  setStatus(status, "info", t("testing"));
+  try {
+    const msg = await invoke("test_connection", { id: c.id, values, mode });
+    setStatus(status, "ok", msg || t("testOk"));
+  } catch (e) {
+    setStatus(status, "err", String(e));
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 /* ── Install / Update ───────────────────────────────────────────────── */

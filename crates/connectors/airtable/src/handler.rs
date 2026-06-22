@@ -222,6 +222,15 @@ impl AirtableServer {
     }
 }
 
+impl AirtableServer {
+    /// Make one cheap authenticated call to verify the connection works.
+    /// Used by the `--test-connection` binary mode.
+    pub async fn test_connection(&self) -> anyhow::Result<()> {
+        self.client.get_json("/v0/meta/bases", &[]).await?;
+        Ok(())
+    }
+}
+
 #[tool_handler]
 impl ServerHandler for AirtableServer {
     fn get_info(&self) -> ServerInfo {

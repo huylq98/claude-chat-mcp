@@ -11,7 +11,7 @@ const STRINGS = {
     nav_connectors: "Connectors", nav_install: "Install",
     eyebrow: "Free · works with Claude Desktop",
     hero_title: "Connect Claude to the tools your company runs.",
-    hero_lede: "Let Claude read your company's Jira, Confluence, and databases to answer questions and do real work. Everything runs on your own computer, so your data never leaves it.",
+    hero_lede: "Let Claude read your company's Jira, Confluence, and databases and do real work. Everything runs on your own computer.",
     cta_install: "How it installs",
     h2_connectors: "Connectors", h2_install: "How to install",
     step1_h: "Download", step1_p: "Find your tool above and click \"Download for Claude Desktop\" to get a small file.",
@@ -28,7 +28,7 @@ const STRINGS = {
     nav_connectors: "Trình kết nối", nav_install: "Cài đặt",
     eyebrow: "Miễn phí · dùng với Claude Desktop",
     hero_title: "Kết nối Claude tới công cụ nội bộ công ty bạn dùng.",
-    hero_lede: "Cho phép Claude đọc Jira, Confluence và cơ sở dữ liệu của công ty bạn để trả lời câu hỏi và làm việc thật. Mọi thứ chạy ngay trên máy của bạn, nên dữ liệu không ra ngoài.",
+    hero_lede: "Cho phép Claude đọc Jira, Confluence và cơ sở dữ liệu của công ty bạn để làm việc thật. Mọi thứ chạy trên máy của bạn.",
     cta_install: "Cách cài đặt",
     h2_connectors: "Trình kết nối", h2_install: "Cách cài đặt",
     step1_h: "Tải về", step1_p: "Tìm công cụ ở trên và bấm \"Tải cho Claude Desktop\" để lấy một tệp nhỏ.",
@@ -90,7 +90,6 @@ function card(c) {
           <span>${t("add_to_claude")}</span>
           <span class="cta-icon" aria-hidden="true">↓</span>
         </a>
-        <p class="dl-hint">${t("install_hint")}</p>
       </div>
     </div>
   </article>`;

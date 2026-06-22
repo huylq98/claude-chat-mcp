@@ -74,6 +74,60 @@ pub fn install_connector(
     Ok(command)
 }
 
+/// Verify the credentials/URL/proxy before saving: run the connector binary with
+/// `--test-connection` and the entered env. Returns Ok with a message on success,
+/// Err with the failure reason. Times out after 15s.
+#[tauri::command]
+pub fn test_connection(
+    id: String,
+    values: HashMap<String, String>,
+    mode: String,
+) -> Result<String, String> {
+    let server_path =
+        extract_connector(&id).map_err(|e| format!("Could not prepare the connector: {e}"))?;
+
+    let mut cmd = std::process::Command::new(&server_path);
+    cmd.arg("--test-connection");
+    for (k, v) in &values {
+        let t = v.trim();
+        if !t.is_empty() {
+            cmd.env(k, t);
+        }
+    }
+    cmd.env(format!("{}_MODE", id.to_uppercase()), &mode);
+    cmd.stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+
+    let mut child = cmd
+        .spawn()
+        .map_err(|e| format!("Could not run the connector: {e}"))?;
+
+    let timeout = std::time::Duration::from_secs(15);
+    let start = std::time::Instant::now();
+    loop {
+        match child.try_wait().map_err(|e| e.to_string())? {
+            Some(status) => {
+                let out = child.wait_with_output().map_err(|e| e.to_string())?;
+                let stdout = String::from_utf8_lossy(&out.stdout).trim().to_string();
+                let stderr = String::from_utf8_lossy(&out.stderr).trim().to_string();
+                return if status.success() {
+                    Ok(if stdout.is_empty() { "Connection OK".into() } else { stdout })
+                } else {
+                    let msg = if !stderr.is_empty() { stderr } else { stdout };
+                    Err(if msg.is_empty() { "Connection failed".into() } else { msg })
+                };
+            }
+            None => {
+                if start.elapsed() > timeout {
+                    let _ = child.kill();
+                    return Err("Connection test timed out (15s). Check the URL, network, or proxy.".into());
+                }
+                std::thread::sleep(std::time::Duration::from_millis(150));
+            }
+        }
+    }
+}
+
 /// Remove a connector's `mcpServers` entry and delete its extracted binary.
 #[tauri::command]
 pub fn uninstall_connector(id: String) -> Result<(), String> {

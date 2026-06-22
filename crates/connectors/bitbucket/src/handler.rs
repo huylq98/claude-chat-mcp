@@ -120,6 +120,15 @@ impl Server {
     }
 }
 
+impl Server {
+    /// Make one cheap authenticated call to verify the connection works.
+    /// Used by the `--test-connection` binary mode.
+    pub async fn test_connection(&self) -> anyhow::Result<()> {
+        self.client.list_projects(1).await?;
+        Ok(())
+    }
+}
+
 #[tool_handler]
 impl ServerHandler for Server {
     fn get_info(&self) -> ServerInfo {

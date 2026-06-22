@@ -86,7 +86,7 @@ body {
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
 .brand-mark { width: 22px; height: 22px; border-radius: 7px; display: block; filter: drop-shadow(0 0 12px rgba(255, 122, 89, 0.45)); }
-.brand-name { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
+.brand-name { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
 .nav-links { display: flex; align-items: center; gap: 6px; }
 .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 0.92rem; padding: 8px 14px; border-radius: 999px; transition: color 0.3s var(--ease), background 0.3s var(--ease); }
 .nav-links a:hover { color: var(--text); background: var(--surface-2); }
@@ -208,13 +208,12 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem
   padding: 22px;
   display: flex; flex-direction: column; gap: 16px;
 }
-.group-pill { align-self: flex-start; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); background: rgba(255, 122, 89, 0.1); border: 1px solid rgba(255, 122, 89, 0.25); padding: 4px 10px; border-radius: 999px; }
+.group-pill { align-self: flex-start; font-size: 0.74rem; letter-spacing: 0; color: var(--accent); background: rgba(255, 122, 89, 0.1); border: 1px solid rgba(255, 122, 89, 0.25); padding: 4px 11px; border-radius: 999px; }
 .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.01em; margin: 0; }
 .card-desc { color: var(--text-dim); font-size: 0.95rem; margin: 0; }
 /* Pin actions to the card bottom so every download button lines up. */
-.card-actions { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+.card-actions { margin-top: auto; }
 .card-dl { width: 100%; justify-content: center; }
-.dl-hint { font-size: 0.78rem; color: var(--text-faint); margin: 0; text-align: center; }
 
 /* ---- Install steps ---- */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
@@ -231,9 +230,15 @@ code { font-family: var(--font-mono); font-size: 0.85em; color: var(--text-dim);
 
 /* ---- Responsive ---- */
 @media (max-width: 720px) {
+  .nav { padding: 8px 8px 8px 14px; }
   .nav-links { gap: 2px; }
-  .nav-links a { padding: 8px 10px; font-size: 0.85rem; }
+  .nav-links a { padding: 8px 9px; font-size: 0.82rem; }
+  .brand-name { font-size: 0.9rem; }
   .grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 460px) {
+  /* the wordmark + 4 nav items collide; drop the in-page anchors (targets are visible on scroll) */
+  .nav-links a[href="#connectors"], .nav-links a[href="#install"] { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
