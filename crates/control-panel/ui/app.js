@@ -31,6 +31,9 @@ const STRINGS = {
     testOk: "Connection OK",
     confirmRemove: "Remove the {name} connector? Claude Desktop will lose access, and the credentials you saved for it will be cleared.",
     roleHint: "Viewer lets Claude read your data only. Writer also lets Claude create, change, and delete it. Choose Viewer unless you need changes made.",
+    loadingConnectors: "Loading connectors...",
+    emptyState: "No connectors are bundled with this build.",
+    loadError: "Could not load connectors:",
   },
   vi: {
     appName: "Claude Chat MCP",
@@ -58,6 +61,9 @@ const STRINGS = {
     testOk: "Kết nối OK",
     confirmRemove: "Gỡ trình kết nối {name}? Claude Desktop sẽ mất quyền truy cập, và thông tin đăng nhập đã lưu sẽ bị xóa.",
     roleHint: "Người xem chỉ cho Claude đọc dữ liệu. Người ghi còn cho Claude tạo, sửa và xóa dữ liệu. Hãy chọn Người xem trừ khi bạn cần thay đổi.",
+    loadingConnectors: "Đang tải trình kết nối...",
+    emptyState: "Bản dựng này không có trình kết nối nào.",
+    loadError: "Không tải được trình kết nối:",
   },
 };
 
@@ -111,6 +117,13 @@ const tpl = $("#card-tpl");
 
 function render() {
   grid.innerHTML = "";
+  if (!connectors.length) {
+    const p = document.createElement("p");
+    p.className = "empty-state";
+    p.textContent = t("emptyState");
+    grid.appendChild(p);
+    return;
+  }
   for (const c of connectors) grid.appendChild(buildCard(c));
 }
 
@@ -252,21 +265,24 @@ function buildField(f, installed) {
 function collectValues(node) {
   const values = {};
   let missing = false;
+  $$(".field", node).forEach((w) => w.classList.remove("field-err"));
   $$(".field-input, .field-check", node).forEach((input) => {
     const env = input.dataset.env;
     const kind = input.dataset.kind;
-    let val;
-    if (kind === "bool") {
-      val = input.checked ? "true" : "false";
-    } else {
-      val = input.value.trim();
-    }
-    if (input.dataset.required === "true" && (val === "" || (kind === "bool" && !input.checked))) {
+    const val = kind === "bool" ? (input.checked ? "true" : "false") : input.value.trim();
+    if (input.dataset.required === "true" && kind !== "bool" && val === "") {
       missing = true;
+      const w = input.closest(".field");
+      if (w) w.classList.add("field-err");
     }
     if (val !== "") values[env] = val;
   });
   return { values, missing };
+}
+
+// Normalize a Tauri rejection (string or object) into a readable message.
+function errMsg(e) {
+  return typeof e === "string" ? e : e && e.message ? e.message : String(e);
 }
 
 /* ── Test connection ────────────────────────────────────────────────── */
@@ -285,7 +301,7 @@ async function testConnection(c, node) {
     const msg = await invoke("test_connection", { id: c.id, values, mode });
     setStatus(status, "ok", msg || t("testOk"));
   } catch (e) {
-    setStatus(status, "err", String(e));
+    setStatus(status, "err", errMsg(e));
   } finally {
     btn.disabled = false;
   }
@@ -316,7 +332,7 @@ async function installConnector(c, node) {
     setStatus(status, "ok", t("installed"));
     $(".restart-note", node).hidden = false;
   } catch (e) {
-    setStatus(status, "err", String(e));
+    setStatus(status, "err", errMsg(e));
   } finally {
     installBtn.disabled = false;
   }
@@ -342,7 +358,7 @@ async function removeConnector(c, node) {
     setStatus(status, "ok", t("removed"));
     $(".restart-note", node).hidden = false;
   } catch (e) {
-    setStatus(status, "err", String(e));
+    setStatus(status, "err", errMsg(e));
   } finally {
     removeBtn.disabled = false;
   }
@@ -350,11 +366,16 @@ async function removeConnector(c, node) {
 
 /* ── Boot ───────────────────────────────────────────────────────────── */
 async function init() {
+  const loading = document.createElement("p");
+  loading.className = "empty-state";
+  loading.textContent = t("loadingConnectors");
+  grid.appendChild(loading);
   try {
     await loadData();
     applyLang(); // applies chrome strings and calls render()
   } catch (e) {
-    setStatus(globalStatus, "err", "Could not load connectors: " + e);
+    grid.innerHTML = "";
+    setStatus(globalStatus, "err", t("loadError") + " " + errMsg(e));
   }
 }
 

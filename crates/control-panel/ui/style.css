@@ -427,6 +427,10 @@ select.field-input { cursor: pointer; }
   color: var(--accent);
 }
 
+.field-err .field-input { border-color: var(--bad); box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18); }
+.empty-state { text-align: center; color: var(--muted, #8b8b96); padding: 48px 0; }
+.role-hint { display: block; }
+
 .btn-danger {
   background: transparent;
   color: var(--bad);
