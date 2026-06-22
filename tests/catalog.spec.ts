@@ -76,6 +76,14 @@ test("page stays em-dash free in Vietnamese", async ({ page }) => {
   expect(text).not.toMatch(/[–—]/);
 });
 
+test("the control panel app is downloadable with an OS-specific installer", async ({ page }) => {
+  await page.goto("/");
+  const primary = page.locator("#app-dl-primary");
+  await expect(primary).toBeVisible();
+  await expect(primary).toHaveAttribute("href", /releases\/download\/cp-v[\d.]+\/.*\.(exe|dmg|AppImage)$/);
+  await expect(page.locator("#app-dl-all .app-dl-link").first()).toBeVisible();
+});
+
 test("page exposes core SEO metadata", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/Claude Chat MCP/);

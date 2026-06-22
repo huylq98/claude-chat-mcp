@@ -14,7 +14,13 @@ test("install section shows the three-step Claude Desktop flow", async ({ page }
 test("Vietnamese translates the install heading", async ({ page }) => {
   await page.goto("/");
   await page.locator('[data-lang="vi"]').click();
-  await expect(page.locator("#install h2")).toContainText("Cách cài đặt");
+  await expect(page.locator("#install h2")).toContainText("Hoặc cài từng cái một");
+});
+
+test("Vietnamese translates the get-the-app section", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-lang="vi"]').click();
+  await expect(page.locator("#app h2")).toContainText("Tải ứng dụng");
 });
 
 test("mobile viewport stacks the connector cards in one column", async ({ page }) => {

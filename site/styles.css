@@ -182,6 +182,18 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--hairline-strong); }
 .btn-ghost:hover { background: var(--surface-2); border-color: var(--hairline-strong); }
 
+/* ---- Get-the-app card ---- */
+.app-card { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; padding: 28px 32px; border-radius: 18px; }
+.app-copy h3 { margin: 0 0 8px; font-size: 1.3rem; }
+.app-copy p { color: var(--text-dim); margin: 0 0 8px; max-width: 52ch; }
+.app-note { font-size: 0.85rem; color: var(--text-faint); }
+.app-actions { display: flex; flex-direction: column; gap: 12px; align-items: stretch; }
+.app-dl-primary { width: 100%; justify-content: center; font-size: 1.02rem; padding: 14px 20px; }
+.app-dl-all { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: center; }
+.app-dl-link { font-size: 0.85rem; color: var(--text-dim); border-bottom: 1px solid transparent; }
+.app-dl-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+@media (max-width: 720px) { .app-card { grid-template-columns: 1fr; gap: 20px; padding: 22px; } }
+
 /* ---- Section heads ---- */
 .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
 .section-title { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }

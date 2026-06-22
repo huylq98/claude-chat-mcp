@@ -14,8 +14,16 @@ const STRINGS = {
     eyebrow: "Free · works with Claude Desktop",
     hero_title: "Connect Claude to the tools your company runs.",
     hero_lede: "Let Claude read your company's Jira, Confluence, and databases and do real work. Everything runs on your own computer.",
-    cta_install: "How it installs",
-    h2_connectors: "Connectors", h2_install: "How to install",
+    cta_install: "Get the app",
+    h2_connectors: "Connectors", h2_install: "Or install one at a time",
+    h2_app: "Get the app",
+    app_h: "One app to manage every connector",
+    app_p: "Install the control panel, then turn connectors on or off, enter your link and password, pick a permission, and test the connection. No files to drag.",
+    app_note: "Free. Works on Windows, macOS, and Linux.",
+    app_dl: "Download the app",
+    app_dl_for: "Download for",
+    os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (AppImage)",
+    app_other: "Other formats and older versions",
     step1_h: "Download", step1_p: "Find your tool above and click \"Download for Claude Desktop\" to get a small file.",
     step2_h: "Open in Claude Desktop", step2_p: "Open Claude Desktop, go to Settings then Extensions, and drag the file in. (Double-clicking the file also works.)",
     step3_h: "Fill in and install", step3_p: "Enter the web address and password your IT gave you, click Install, then reopen Claude Desktop. Now just ask Claude.",
@@ -30,8 +38,16 @@ const STRINGS = {
     eyebrow: "Miễn phí · dùng với Claude Desktop",
     hero_title: "Kết nối Claude tới công cụ nội bộ công ty bạn dùng.",
     hero_lede: "Cho phép Claude đọc Jira, Confluence và cơ sở dữ liệu của công ty bạn để làm việc thật. Mọi thứ chạy trên máy của bạn.",
-    cta_install: "Cách cài đặt",
-    h2_connectors: "Trình kết nối", h2_install: "Cách cài đặt",
+    cta_install: "Tải ứng dụng",
+    h2_connectors: "Trình kết nối", h2_install: "Hoặc cài từng cái một",
+    h2_app: "Tải ứng dụng",
+    app_h: "Một ứng dụng quản lý mọi trình kết nối",
+    app_p: "Cài bảng điều khiển, rồi bật tắt trình kết nối, nhập địa chỉ và mật khẩu, chọn quyền, và kiểm tra kết nối. Không cần kéo thả tệp.",
+    app_note: "Miễn phí. Chạy trên Windows, macOS và Linux.",
+    app_dl: "Tải ứng dụng",
+    app_dl_for: "Tải cho",
+    os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (AppImage)",
+    app_other: "Định dạng khác và phiên bản cũ",
     step1_h: "Tải về", step1_p: "Tìm công cụ ở trên và bấm \"Tải cho Claude Desktop\" để lấy một tệp nhỏ.",
     step2_h: "Mở trong Claude Desktop", step2_p: "Mở Claude Desktop, vào Settings rồi Extensions, và kéo tệp vào. (Bấm đúp vào tệp cũng được.)",
     step3_h: "Điền thông tin và cài", step3_p: "Nhập địa chỉ web và mật khẩu mà bộ phận IT cấp cho bạn, bấm Install, rồi mở lại Claude Desktop. Giờ chỉ cần hỏi Claude.",
@@ -97,6 +113,40 @@ const esc = (s) =>
   );
 
 const RELEASE_BASE = "https://github.com/huylq98/claude-chat-mcp/releases/latest/download";
+
+// Control-panel installers. Installer releases use a cp-v* tag (not "latest",
+// which belongs to the .mcpb release), and Tauri bakes the version into the
+// filename, so bump CP_TAG + CP_VERSION together when cutting a new installer.
+const CP_TAG = "cp-v0.11.0";
+const CP_VERSION = "0.11.0";
+const CP_BASE = `https://github.com/huylq98/claude-chat-mcp/releases/download/${CP_TAG}`;
+const CP_RELEASES = "https://github.com/huylq98/claude-chat-mcp/releases";
+const CP_INSTALLERS = {
+  windows: `Claude.Chat.MCP_${CP_VERSION}_x64-setup.exe`,
+  macos: `Claude.Chat.MCP_${CP_VERSION}_aarch64.dmg`,
+  linux: `Claude.Chat.MCP_${CP_VERSION}_amd64.AppImage`,
+};
+function detectOS() {
+  const p = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || "").toLowerCase();
+  if (p.includes("win")) return "windows";
+  if (p.includes("mac") || p.includes("iphone") || p.includes("ipad")) return "macos";
+  if (p.includes("linux") || p.includes("x11") || p.includes("android")) return "linux";
+  return null;
+}
+function renderApp() {
+  const primary = document.getElementById("app-dl-primary");
+  const all = document.getElementById("app-dl-all");
+  if (!primary || !all) return;
+  const order = ["windows", "macos", "linux"];
+  const primaryOs = detectOS() || "windows";
+  primary.href = `${CP_BASE}/${CP_INSTALLERS[primaryOs]}`;
+  primary.querySelector("span").textContent = `${t("app_dl_for")} ${t("os_" + primaryOs)}`;
+  all.innerHTML =
+    order.filter((o) => o !== primaryOs)
+      .map((o) => `<a class="app-dl-link" href="${CP_BASE}/${CP_INSTALLERS[o]}" rel="noopener">${esc(t("os_" + o))}</a>`)
+      .join("") +
+    `<a class="app-dl-link app-dl-more" href="${CP_RELEASES}" target="_blank" rel="noopener">${esc(t("app_other"))}</a>`;
+}
 
 function card(c) {
   const desc = currentLang === "vi"
@@ -212,6 +262,7 @@ function applyLang(lang) {
     buildFilters();
     renderGrid();
   }
+  renderApp();
 }
 
 function initLang() {
