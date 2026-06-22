@@ -12,3 +12,9 @@
 # local review artifacts
 /registry.json
 /site/registry.json
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example

@@ -6,9 +6,12 @@
   "scripts": {
     "serve": "node scripts/static-server.mjs site 4321",
     "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed"
+    "test:e2e:headed": "playwright test --headed",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0"
+    "@playwright/test": "^1.49.0",
+    "wrangler": "^4.103.0"
   }
 }
