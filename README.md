@@ -10,7 +10,7 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 
 ## Connectors
 
-16 connectors, grouped by what they connect to. Each one is its own standalone server.
+17 connectors, grouped by what they connect to. Each one is its own standalone server.
 
 ### Atlassian
 
@@ -47,8 +47,9 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 | ClickHouse | Read-only SQL over ClickHouse (HTTP interface). |
 | Oracle | Read-only SQL over Oracle. Requires a special build (see note below). |
 | Elasticsearch | Search self-hosted Elasticsearch or OpenSearch indices and read mappings. Can index documents in Writer mode. |
+| MongoDB | Query self-hosted MongoDB databases and collections. Can insert documents in Writer mode. |
 
-> **Oracle note:** Oracle has no pure-Rust driver, so it is built behind an `oracle` cargo feature and needs Oracle Instant Client installed at runtime. The other fifteen connectors are fully self-contained with nothing extra to install.
+> **Oracle note:** Oracle has no pure-Rust driver, so it is built behind an `oracle` cargo feature and needs Oracle Instant Client installed at runtime. The other sixteen connectors are fully self-contained with nothing extra to install.
 
 ## Install
 

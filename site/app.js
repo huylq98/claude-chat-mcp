@@ -24,7 +24,6 @@ const STRINGS = {
 
     all: "All", connectors_word: "connectors",
     add_to_claude: "Download for Claude Desktop",
-    install_hint: "Downloads a file. Open it in Claude Desktop to install.",
   },
   vi: {
     nav_connectors: "Trình kết nối", nav_install: "Cài đặt",
@@ -41,7 +40,6 @@ const STRINGS = {
 
     all: "Tất cả", connectors_word: "trình kết nối",
     add_to_claude: "Tải cho Claude Desktop",
-    install_hint: "Tải về một tệp. Mở trong Claude Desktop để cài đặt.",
   },
 };
 
@@ -64,6 +62,7 @@ const EN_DESC = {
   grafana: "Browse your company's Grafana dashboards, data sources, and alerts.",
   elasticsearch: "Search your company's Elasticsearch or OpenSearch indices and logs.",
   mattermost: "Read your company's Mattermost channels and messages, and post updates.",
+  mongodb: "Query your company's MongoDB databases and collections.",
 };
 const VI_DESC = {
   confluence: "Tìm và đọc các trang Confluence của công ty bạn.",
@@ -82,6 +81,7 @@ const VI_DESC = {
   grafana: "Xem bảng điều khiển, nguồn dữ liệu và cảnh báo Grafana của công ty bạn.",
   elasticsearch: "Tìm kiếm trong các chỉ mục và log Elasticsearch hoặc OpenSearch của công ty bạn.",
   mattermost: "Đọc các kênh và tin nhắn Mattermost của công ty bạn, và đăng cập nhật.",
+  mongodb: "Truy vấn cơ sở dữ liệu và collection MongoDB của công ty bạn.",
 };
 const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Dev: "Lập trình", Other: "Khác" };
 

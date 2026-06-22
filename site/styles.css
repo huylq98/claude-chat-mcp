@@ -179,7 +179,7 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .btn-primary { background: var(--accent); color: var(--accent-ink); }
 .btn-primary:hover { background: #ff8e72; }
 .btn-primary:hover .cta-icon { transform: translateY(3px); }
-.btn-ghost { background: var(--surface); color: var(--text); border-color: var(--hairline); }
+.btn-ghost { background: var(--surface); color: var(--text); border-color: var(--hairline-strong); }
 .btn-ghost:hover { background: var(--surface-2); border-color: var(--hairline-strong); }
 
 /* ---- Section heads ---- */

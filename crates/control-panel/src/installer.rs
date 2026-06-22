@@ -40,6 +40,7 @@ pub fn embedded_binary(id: &str) -> Option<&'static [u8]> {
         "grafana" => bin!("grafana"),
         "elasticsearch" => bin!("elasticsearch"),
         "mattermost" => bin!("mattermost"),
+        "mongodb" => bin!("mongodb"),
         _ => None,
     }
 }
