@@ -63,6 +63,7 @@ const EN_DESC = {
   redmine: "Search and read your team's Redmine projects and issues, and add notes.",
   grafana: "Browse your company's Grafana dashboards, data sources, and alerts.",
   elasticsearch: "Search your company's Elasticsearch or OpenSearch indices and logs.",
+  mattermost: "Read your company's Mattermost channels and messages, and post updates.",
 };
 const VI_DESC = {
   confluence: "Tìm và đọc các trang Confluence của công ty bạn.",
@@ -80,6 +81,7 @@ const VI_DESC = {
   redmine: "Tìm và đọc dự án và issue Redmine của nhóm bạn, và thêm ghi chú.",
   grafana: "Xem bảng điều khiển, nguồn dữ liệu và cảnh báo Grafana của công ty bạn.",
   elasticsearch: "Tìm kiếm trong các chỉ mục và log Elasticsearch hoặc OpenSearch của công ty bạn.",
+  mattermost: "Đọc các kênh và tin nhắn Mattermost của công ty bạn, và đăng cập nhật.",
 };
 const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Dev: "Lập trình", Other: "Khác" };
 

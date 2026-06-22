@@ -39,6 +39,7 @@ pub fn embedded_binary(id: &str) -> Option<&'static [u8]> {
         "redmine" => bin!("redmine"),
         "grafana" => bin!("grafana"),
         "elasticsearch" => bin!("elasticsearch"),
+        "mattermost" => bin!("mattermost"),
         _ => None,
     }
 }

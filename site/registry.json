@@ -764,6 +764,70 @@
       ]
     },
     {
+      "advanced_fields": [
+        {
+          "env": "MATTERMOST_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "MATTERMOST_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "MATTERMOST_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "MATTERMOST_URL",
+          "help": "e.g. https://chat.corp.com",
+          "kind": "text",
+          "label": "Mattermost base URL",
+          "required": true
+        },
+        {
+          "env": "MATTERMOST_TOKEN",
+          "help": "A personal access token from your Mattermost account settings",
+          "kind": "secret",
+          "label": "Personal Access Token",
+          "required": true
+        }
+      ],
+      "binary": "mattermost",
+      "description": "Read self-hosted Mattermost teams, channels, and messages (and post messages in Writer mode).",
+      "docs_url": "https://api.mattermost.com/",
+      "group": "Productivity",
+      "id": "mattermost",
+      "name": "Mattermost",
+      "notes": "Set MATTERMOST_URL and MATTERMOST_TOKEN. The write tool (post message) requires Writer mode via MATTERMOST_MODE.",
+      "tools": [
+        {
+          "description": "List the Mattermost teams you are a member of.",
+          "name": "mattermost_list_teams"
+        },
+        {
+          "description": "List channels in a Mattermost team.",
+          "name": "mattermost_list_channels"
+        },
+        {
+          "description": "Get recent posts in a Mattermost channel.",
+          "name": "mattermost_get_posts"
+        },
+        {
+          "description": "Post a message to a Mattermost channel.",
+          "name": "mattermost_post_message"
+        }
+      ]
+    },
+    {
       "auth_fields": [
         {
           "default": "127.0.0.1",

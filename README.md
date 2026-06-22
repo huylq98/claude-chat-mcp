@@ -10,7 +10,7 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 
 ## Connectors
 
-15 connectors, grouped by what they connect to. Each one is its own standalone server.
+16 connectors, grouped by what they connect to. Each one is its own standalone server.
 
 ### Atlassian
 
@@ -35,6 +35,7 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 |---|---|
 | Airtable | List bases, tables, and records, and read individual records. Can create and update records in Writer mode. |
 | Redmine | Search and read self-hosted Redmine projects and issues. Can create issues and notes in Writer mode. |
+| Mattermost | Read self-hosted Mattermost teams, channels, and messages. Can post messages in Writer mode. |
 
 ### Data
 
@@ -47,7 +48,7 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 | Oracle | Read-only SQL over Oracle. Requires a special build (see note below). |
 | Elasticsearch | Search self-hosted Elasticsearch or OpenSearch indices and read mappings. Can index documents in Writer mode. |
 
-> **Oracle note:** Oracle has no pure-Rust driver, so it is built behind an `oracle` cargo feature and needs Oracle Instant Client installed at runtime. The other twelve connectors are fully self-contained with nothing extra to install.
+> **Oracle note:** Oracle has no pure-Rust driver, so it is built behind an `oracle` cargo feature and needs Oracle Instant Client installed at runtime. The other fifteen connectors are fully self-contained with nothing extra to install.
 
 ## Install
 
