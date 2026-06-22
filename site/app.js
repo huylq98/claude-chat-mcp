@@ -59,6 +59,7 @@ const EN_DESC = {
   github: "Search your company's GitHub repositories and issues, and add comments.",
   jenkins: "See your company's build and deploy jobs, and start them.",
   redmine: "Search and read your team's Redmine projects and issues, and add notes.",
+  grafana: "Browse your company's Grafana dashboards, data sources, and alerts.",
 };
 const VI_DESC = {
   confluence: "Tìm và đọc các trang Confluence của công ty bạn.",
@@ -74,6 +75,7 @@ const VI_DESC = {
   github: "Tìm repository và issue GitHub của công ty bạn, và thêm bình luận.",
   jenkins: "Xem các tác vụ build và triển khai của công ty bạn, và chạy chúng.",
   redmine: "Tìm và đọc dự án và issue Redmine của nhóm bạn, và thêm ghi chú.",
+  grafana: "Xem bảng điều khiển, nguồn dữ liệu và cảnh báo Grafana của công ty bạn.",
 };
 const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Dev: "Lập trình", Other: "Khác" };
 

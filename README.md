@@ -1,80 +1,144 @@
 # Claude Chat MCP
 
-**Connect Claude Desktop to the self-hosted / enterprise tools your office actually uses.**
+**A free, open-source collection of local connectors that link Claude Desktop to the self-hosted and enterprise tools your team actually runs.**
 
-Anthropic's official connectors mostly cover the *public cloud* editions of tools (Confluence Cloud, etc.). But corporate users live in the **self-hosted / Data Center / on-prem** editions their company runs behind a firewall — and in tools Claude doesn't support at all. This project is a growing collection of local MCP connectors that fill exactly that gap.
+Anthropic's built-in connectors mostly target the public cloud editions of tools (Confluence Cloud, GitHub.com, and so on). But many teams live on the self-hosted, Data Center, and on-prem editions running behind a company firewall, plus tools Claude does not support at all. This project fills that gap.
 
-Each connector is a small, self-contained MCP server that Claude Desktop launches over stdio. No cloud, no hosting, works behind corporate proxies.
+Each connector is a small, self-contained MCP server that Claude Desktop launches on your own machine. There is no cloud service, no hosting to set up, and it works behind corporate proxies. Your credentials stay on your computer and are only ever sent to your own server.
 
-> Open-source (MIT). Cross-platform target: **Windows, macOS, Linux**. Windows ships as a proper installer (planned — see Roadmap).
+Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linux.
 
 ## Connectors
 
-Each tool/service is its **own** standalone connector (its own binary and process):
+14 connectors, grouped by what they connect to. Each one is its own standalone server.
 
-| Connector | Group | What it connects |
-|---|---|---|
-| **confluence** | Atlassian | Self-hosted Confluence (Server / Data Center): search + read pages |
-| **jira** | Atlassian | Self-hosted Jira: search issues (JQL) + read |
-| **bitbucket** | Atlassian | Bitbucket Server: repos, pull requests, commits |
-| **airtable** | Productivity | Airtable bases, tables, and records (read + create/update) |
-| **mysql** | Data | Read-only SQL over MySQL |
-| **mariadb** | Data | Read-only SQL over MariaDB |
-| **clickhouse** | Data | Read-only SQL over ClickHouse |
-| **oracle** | Data | Read-only SQL over Oracle¹ |
+### Atlassian
 
-¹ Oracle is gated behind the `oracle` build feature and requires Oracle Instant Client (it has no pure-Rust driver). The others are fully self-contained.
+| Connector | What it does |
+|---|---|
+| Confluence | Search and read self-hosted Confluence pages and spaces (Server / Data Center). |
+| Jira | Search and read self-hosted Jira issues and projects with JQL (Server / Data Center). |
+| Bitbucket | Browse self-hosted Bitbucket repositories, pull requests, and commits (Server / Data Center). |
 
-Run any connector with `--manifest` to see its config fields; `registry.json` aggregates all of them, and `scripts/serve-site.ps1` serves a bilingual (EN/VI) catalog site at http://localhost:4321.
+### Dev
 
-## Build (local, for review)
+| Connector | What it does |
+|---|---|
+| GitHub | Search and read GitHub Enterprise Server repos, issues, and pull requests. Can create issues and comments in Writer mode. |
+| GitLab | Search and read self-hosted GitLab projects, issues, and merge requests. Can create issues and comments in Writer mode. |
+| Jenkins | Browse self-hosted Jenkins jobs and builds. Can trigger builds in Writer mode. |
+| Grafana | Browse self-hosted Grafana dashboards, data sources, and alerts. Can add annotations in Writer mode. |
 
-Requires the Rust toolchain (stable) and, on Windows, **Visual Studio Build Tools with the C++ workload + Windows SDK** (the MSVC linker). The repo's wrapper loads the MSVC dev environment for you:
+### Productivity
 
-```powershell
-./scripts/cargo.ps1 build            # debug build of all connectors
-./scripts/cargo.ps1 test             # run the test suite
+| Connector | What it does |
+|---|---|
+| Airtable | List bases, tables, and records, and read individual records. Can create and update records in Writer mode. |
+| Redmine | Search and read self-hosted Redmine projects and issues. Can create issues and notes in Writer mode. |
+
+### Data
+
+| Connector | What it does |
+|---|---|
+| PostgreSQL | Read-only SQL: list databases, tables, and columns, and run guarded queries. |
+| MySQL | Read-only SQL over MySQL (same tools as above). |
+| MariaDB | Read-only SQL over MariaDB. |
+| ClickHouse | Read-only SQL over ClickHouse (HTTP interface). |
+| Oracle | Read-only SQL over Oracle. Requires a special build (see note below). |
+
+> **Oracle note:** Oracle has no pure-Rust driver, so it is built behind an `oracle` cargo feature and needs Oracle Instant Client installed at runtime. The other twelve connectors are fully self-contained with nothing extra to install.
+
+## Install
+
+There are two ways to add a connector. Most people should use the control panel app.
+
+### Option A: The control panel app (recommended)
+
+A small desktop app that does everything for you: it bundles the connectors, lets you fill in your details in a form, tests the connection, and writes the Claude Desktop config itself.
+
+1. Go to the [Releases page](https://github.com/huylq98/claude-chat-mcp/releases) and download the installer for your operating system:
+   - **Windows:** the `.msi` or `-setup.exe` file
+   - **macOS:** the `.dmg` file
+   - **Linux:** the `.deb` or `.AppImage` file
+2. Run the installer and open **Claude Chat MCP**.
+3. Pick a connector and click **Configure**.
+4. Enter your details:
+   - The **link** to your server (for example `https://wiki.corp.com`).
+   - Your **credentials** (usually a personal access token or API key; username and password also work for some connectors).
+   - Optionally a **proxy** or other network settings under **Advanced** (leave blank unless your IT team tells you otherwise).
+5. Choose a **permission role**: Viewer or Writer (see [Permissions](#permissions) below).
+6. Click **Test connection** to confirm it works, then **Install**.
+7. **Fully quit Claude Desktop** (on Windows, right-click the tray icon and choose Exit) and reopen it.
+
+Now ask Claude things like *"Search our Confluence for the deployment runbook"* or *"List the tables in the app database."*
+
+The app is also available in English and Vietnamese, and lets you update or remove connectors later from the same screen.
+
+> **A note on installers:** the installers are not code-signed yet. Windows SmartScreen or macOS Gatekeeper may warn you the first time you run them. This is expected for an unsigned open-source app.
+>
+> **WebView2 on Windows:** the app uses Microsoft's WebView2 runtime, which ships with Windows 11 and recent Windows 10. If it is missing, the app will point you to the free download.
+
+### Option B: Direct `.mcpb` bundle (advanced)
+
+If you would rather not install the control panel app, each connector is also published as a standalone `.mcpb` bundle that Claude Desktop can load directly.
+
+1. On the [Releases page](https://github.com/huylq98/claude-chat-mcp/releases), download the `.mcpb` file for the connector you want. Each bundle is universal and works on Windows, macOS, and Linux.
+2. In Claude Desktop, open **Settings > Extensions**.
+3. Double-click the `.mcpb` file, or drag it into that Extensions screen.
+4. Fill in the connector's configuration fields (link, credentials, and so on).
+5. Fully quit and reopen Claude Desktop.
+
+## Permissions
+
+Every connector runs in one of two roles, which you choose at install time:
+
+- **Viewer (read only):** Claude can read your data but cannot change anything. This is the safe default. Choose it unless you specifically need Claude to make changes.
+- **Writer (read and write):** Claude can also create, update, and delete data through the connector, for example creating a Jira-style issue or updating an Airtable record.
+
+The read-only Data connectors are always read only regardless of role. For the others, write tools are only enabled in Writer mode.
+
+## Privacy
+
+- You supply your own credentials at install time. Nothing is bundled with the connectors and nothing is hard-coded.
+- Connectors run entirely on your own machine and only talk to the server address you provide. No data is sent to this project or any third party.
+- Credentials are stored by Claude Desktop in its own local config file, the same way any MCP server's settings are.
+
+## Build from source
+
+For developers who want to build the connectors themselves.
+
+This is a Rust workspace. You need the stable Rust toolchain.
+
+```bash
+cargo build --release          # build all connector binaries
+cargo test                     # run the test suite
 ```
 
-On macOS/Linux you can use `cargo` directly (no wrapper needed).
-
-Binaries land in `target/debug/{atlassian,airtable,database}.exe`.
-
-## Try it in Claude Desktop
-
-Until the GUI configurator ships, register a built connector with your local Claude Desktop:
+On Windows, the connectors link with MSVC, so you need the Visual Studio Build Tools (C++ workload and the Windows SDK). The repo ships a wrapper that loads the MSVC environment for you:
 
 ```powershell
-# Confluence (self-hosted)
-./scripts/install-local.ps1 confluence @{ CONFLUENCE_URL="https://wiki.corp.com"; CONFLUENCE_TOKEN="<your PAT>" }
-
-# MySQL (read-only)
-./scripts/install-local.ps1 mysql @{ DB_HOST="127.0.0.1"; DB_USER="root"; DB_PASSWORD="secret"; DB_NAME="app" }
-
-# Airtable
-./scripts/install-local.ps1 airtable @{ AIRTABLE_TOKEN="<your PAT>" }
+./scripts/cargo.ps1 build
+./scripts/cargo.ps1 test
 ```
 
-> For non-technical users, the GUI installer (roadmap) replaces these commands with a click-through wizard. The `scripts/` path is the developer/reviewer route.
+Each connector binary supports a couple of helper flags:
 
-Then fully quit Claude Desktop (tray → Exit) and reopen it. Ask Claude things like
-*"Search our Confluence for the deployment runbook"* or *"List the tables in the app database."*
+- `--manifest` prints the connector's config descriptor (the fields shown in the UI).
+- `--test-connection` checks the credentials in the environment and exits.
 
-To do it by hand instead, add an entry to `claude_desktop_config.json` →
-`mcpServers` with `command` = the binary path and `env` = the connector's variables.
+The desktop control panel is a [Tauri](https://tauri.app/) app that lives in `crates/control-panel/`. It is **excluded from the main Cargo workspace** and built separately with `cargo tauri build`. It embeds the connector binaries, so build those first. See the build steps in `.github/workflows/control-panel.yml` for the exact sequence the CI uses.
 
-## Architecture
+## How it works
 
-See [ARCHITECTURE.md](ARCHITECTURE.md). In short: a shared `connector-core` (HTTP
-client, auth, proxy/PAC, retry) and `server-runtime` (stdio MCP host), with **one
-small server binary per connector**. Adding a connector means adding one crate —
-see [CONTRIBUTING.md](CONTRIBUTING.md).
+Claude Desktop launches one OS process per MCP entry, so this project ships one small server binary per connector. Each has its own process, its own tool namespace, and its own crash domain. A bug in one connector cannot take down another.
 
-## Roadmap
+A shared `connector-core` crate handles the common plumbing (HTTP client, authentication, proxy and PAC support, retries), and `server-runtime` provides the stdio MCP host. Adding a connector means adding one small crate.
 
-- [ ] GUI configurator (Tauri) — manifest-driven, multi-connector, writes the Claude Desktop config; Windows installer (MSI/NSIS), macOS `.pkg`/`.dmg`, Linux `.deb`/`.AppImage`.
-- [ ] More connectors (GitLab self-hosted, ServiceNow, internal APIs, …).
-- [ ] Companion website / SEO content hub generated from `registry.json`.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full design.
+
+## Contributing
+
+Contributions are welcome, especially new connectors. The repo is built so that adding a connector is mostly copy, paste, and fill in. See [CONTRIBUTING.md](CONTRIBUTING.md) for the step-by-step guide.
 
 ## License
 

@@ -417,6 +417,74 @@
     {
       "advanced_fields": [
         {
+          "env": "GRAFANA_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "GRAFANA_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "GRAFANA_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "GRAFANA_URL",
+          "help": "e.g. https://grafana.corp.com",
+          "kind": "text",
+          "label": "Grafana base URL",
+          "required": true
+        },
+        {
+          "env": "GRAFANA_TOKEN",
+          "help": "Grafana service account token or API key",
+          "kind": "secret",
+          "label": "API token",
+          "required": true
+        }
+      ],
+      "binary": "grafana",
+      "description": "Browse self-hosted Grafana dashboards, data sources, and alerts (and add annotations in Writer mode).",
+      "docs_url": "https://grafana.com/docs/grafana/latest/developers/http_api/",
+      "group": "Dev",
+      "id": "grafana",
+      "name": "Grafana",
+      "notes": "Set GRAFANA_URL and GRAFANA_TOKEN. The write tool (create annotation) requires Writer mode via GRAFANA_MODE.",
+      "tools": [
+        {
+          "description": "Search Grafana dashboards by title.",
+          "name": "grafana_search_dashboards"
+        },
+        {
+          "description": "Read a Grafana dashboard by its uid.",
+          "name": "grafana_get_dashboard"
+        },
+        {
+          "description": "List configured Grafana data sources.",
+          "name": "grafana_list_datasources"
+        },
+        {
+          "description": "List Grafana alert rules.",
+          "name": "grafana_list_alerts"
+        },
+        {
+          "description": "Create a Grafana annotation.",
+          "name": "grafana_create_annotation"
+        }
+      ]
+    },
+    {
+      "advanced_fields": [
+        {
           "env": "JENKINS_PROXY_URL",
           "kind": "text",
           "label": "Proxy URL",
