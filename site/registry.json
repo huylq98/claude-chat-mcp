@@ -417,6 +417,80 @@
     {
       "advanced_fields": [
         {
+          "env": "JENKINS_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "JENKINS_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "JENKINS_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "JENKINS_URL",
+          "help": "e.g. https://jenkins.corp.com",
+          "kind": "text",
+          "label": "Jenkins base URL",
+          "required": true
+        },
+        {
+          "env": "JENKINS_USER",
+          "kind": "text",
+          "label": "Username",
+          "required": true
+        },
+        {
+          "env": "JENKINS_TOKEN",
+          "help": "Jenkins API token from your user > Configure > API Token",
+          "kind": "secret",
+          "label": "API token",
+          "required": true
+        }
+      ],
+      "binary": "jenkins",
+      "description": "Browse self-hosted Jenkins jobs and builds (and trigger builds in Writer mode).",
+      "docs_url": "https://www.jenkins.io/doc/book/using/remote-access-api/",
+      "group": "Dev",
+      "id": "jenkins",
+      "name": "Jenkins",
+      "notes": "Set JENKINS_URL, JENKINS_USER, and JENKINS_TOKEN (your Jenkins API token).",
+      "tools": [
+        {
+          "description": "List Jenkins jobs and their status.",
+          "name": "jenkins_list_jobs"
+        },
+        {
+          "description": "Get a single Jenkins job by name.",
+          "name": "jenkins_get_job"
+        },
+        {
+          "description": "List recent builds for a Jenkins job.",
+          "name": "jenkins_list_builds"
+        },
+        {
+          "description": "Get a single Jenkins build by job and number.",
+          "name": "jenkins_get_build"
+        },
+        {
+          "description": "Trigger a new build for a Jenkins job.",
+          "name": "jenkins_trigger_build"
+        }
+      ]
+    },
+    {
+      "advanced_fields": [
+        {
           "env": "JIRA_PROXY_URL",
           "kind": "text",
           "label": "Proxy URL",

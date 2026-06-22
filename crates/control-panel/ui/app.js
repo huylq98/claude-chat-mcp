@@ -22,8 +22,11 @@ const STRINGS = {
       "Now fully quit and reopen Claude Desktop for this change to take effect.",
     installing: "Installing...",
     removing: "Removing...",
-    installed: "Saved. Connector is on.",
+    installed: "Saved. Restart Claude Desktop to finish.",
     removed: "Connector removed.",
+    advanced: "Advanced (only if your IT team told you to)",
+    advancedHint: "Leave these blank unless instructed.",
+    confirmUntested: "You have not run a successful Test connection. Install anyway?",
     missingRequired: "Please fill in the required fields.",
     docs: "Documentation",
     testConn: "Test connection",
@@ -53,8 +56,11 @@ const STRINGS = {
       "Bây giờ hãy thoát hẳn và mở lại Claude Desktop để thay đổi có hiệu lực.",
     installing: "Đang cài đặt...",
     removing: "Đang gỡ bỏ...",
-    installed: "Đã lưu. Trình kết nối đang bật.",
+    installed: "Đã lưu. Mở lại Claude Desktop để hoàn tất.",
     removed: "Đã gỡ bỏ trình kết nối.",
+    advanced: "Nâng cao (chỉ khi bộ phận IT yêu cầu)",
+    advancedHint: "Để trống trừ khi được hướng dẫn.",
+    confirmUntested: "Bạn chưa chạy Kiểm tra kết nối thành công. Vẫn cài đặt?",
     missingRequired: "Vui lòng điền các trường bắt buộc.",
     docs: "Tài liệu",
     testConn: "Kiểm tra kết nối",
@@ -84,7 +90,11 @@ function applyLang() {
 $$(".lang-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     lang = btn.dataset.lang;
-    $$(".lang-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    $$(".lang-btn").forEach((b) => {
+      const on = b === btn;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
     applyLang();
   });
 });
@@ -147,11 +157,27 @@ function buildCard(c) {
   pill.textContent = isOn ? t("on") : t("off");
   pill.classList.toggle("on", isOn);
 
-  // Build inputs for every auth field plus advanced field.
+  // Required credentials go in the main form. Advanced/network fields (proxy,
+  // CA bundle, SSL) are tucked into a collapsed section so non-technical users
+  // are not confused by IT plumbing next to their token.
   const form = $(".fields", node);
-  const fields = [...(c.auth_fields || []), ...(c.advanced_fields || [])];
-  for (const f of fields) {
-    form.appendChild(buildField(f, installed));
+  for (const f of (c.auth_fields || [])) form.appendChild(buildField(f, installed));
+  const adv = c.advanced_fields || [];
+  if (adv.length) {
+    const details = document.createElement("details");
+    details.className = "advanced";
+    const summary = document.createElement("summary");
+    summary.textContent = t("advanced");
+    details.appendChild(summary);
+    const hint = document.createElement("p");
+    hint.className = "advanced-hint";
+    hint.textContent = t("advancedHint");
+    details.appendChild(hint);
+    const advGrid = document.createElement("div");
+    advGrid.className = "fields";
+    for (const f of adv) advGrid.appendChild(buildField(f, installed));
+    details.appendChild(advGrid);
+    form.after(details);
   }
 
   // Permission role: relabel options for current language; prefill from env.
@@ -199,6 +225,9 @@ function buildCard(c) {
     expander.classList.toggle("open", !open);
     expander.setAttribute("aria-expanded", String(!open));
   });
+
+  // Editing any field invalidates a prior successful test.
+  node.addEventListener("input", () => { node.dataset.tested = ""; });
 
   // Actions.
   $(".btn-test", node).addEventListener("click", () => testConnection(c, node));
@@ -322,6 +351,7 @@ async function testConnection(c, node) {
   setStatus(status, "info", t("testing"));
   try {
     const msg = await invoke("test_connection", { id: c.id, values, mode });
+    node.dataset.tested = "ok";
     setStatus(status, "ok", msg || t("testOk"));
   } catch (e) {
     setStatus(status, "err", errMsg(e));
@@ -338,6 +368,7 @@ async function installConnector(c, node) {
     setStatus(status, "err", t("missingRequired"));
     return;
   }
+  if (node.dataset.tested !== "ok" && !window.confirm(t("confirmUntested"))) return;
   const mode = $(".role-select", node).value;
   const installBtn = $(".btn-install", node);
   installBtn.disabled = true;

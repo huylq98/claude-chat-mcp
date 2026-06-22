@@ -35,6 +35,7 @@ pub fn embedded_binary(id: &str) -> Option<&'static [u8]> {
         "gitlab" => bin!("gitlab"),
         "postgres" => bin!("postgres"),
         "github" => bin!("github"),
+        "jenkins" => bin!("jenkins"),
         _ => None,
     }
 }

@@ -434,6 +434,13 @@ select.field-input { cursor: pointer; }
 .secret-row .field-input { flex: 1; min-width: 0; }
 .reveal-btn { flex: none; padding: 0 12px; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 8px; color: var(--text-dim); cursor: pointer; font-size: 0.8rem; font-weight: 600; }
 .reveal-btn:hover { color: var(--text); border-color: var(--hairline-strong); }
+details.advanced { margin-top: 4px; }
+details.advanced summary { cursor: pointer; color: var(--text-dim); font-size: 0.85rem; list-style: none; }
+details.advanced summary::-webkit-details-marker { display: none; }
+details.advanced summary::before { content: "› "; }
+details.advanced[open] summary::before { content: "⌄ "; }
+.advanced-hint { font-size: 0.78rem; color: var(--text-faint, #8b8b96); margin: 6px 0 10px; }
+details.advanced .fields { margin-top: 8px; }
 
 .btn-danger {
   background: transparent;
