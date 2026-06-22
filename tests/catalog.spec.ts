@@ -76,6 +76,16 @@ test("page stays em-dash free in Vietnamese", async ({ page }) => {
   expect(text).not.toMatch(/[–—]/);
 });
 
+test("page exposes core SEO metadata", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle(/Claude Chat MCP/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /claudechatmcp\.com/);
+  await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
+  const ld = await page.locator('script[type="application/ld+json"]').first().textContent();
+  const graph = JSON.parse(ld || "{}")["@graph"];
+  expect(Array.isArray(graph) && graph.length).toBeGreaterThan(0);
+});
+
 test("no-results state offers a reset that restores the grid", async ({ page }) => {
   await page.goto("/");
   await page.waitForSelector(".card-shell");
