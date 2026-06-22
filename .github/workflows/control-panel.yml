@@ -63,6 +63,9 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          # Installer releases must not steal "latest" from the v* .mcpb releases,
+          # because the site links to /releases/latest/download/<id>.mcpb.
+          make_latest: false
           files: |
             crates/control-panel/target/release/bundle/**/*.msi
             crates/control-panel/target/release/bundle/**/*-setup.exe
