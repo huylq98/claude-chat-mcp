@@ -33,6 +33,21 @@ test("each card offers a one-click .mcpb download", async ({ page }) => {
   await expect(dl).toHaveAttribute("href", /\.mcpb$/);
 });
 
+test("download buttons are bottom-aligned across all cards", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForSelector(".card-shell");
+  // Gap from each download button's bottom to its card's bottom should be the
+  // same for every card (the action area is pinned to the bottom).
+  const gaps = await page.$$eval(".card-shell", (cards) =>
+    cards.map((card) => {
+      const btn = card.querySelector(".card-dl")!.getBoundingClientRect();
+      const c = card.getBoundingClientRect();
+      return Math.round(c.bottom - btn.bottom);
+    })
+  );
+  expect(Math.max(...gaps) - Math.min(...gaps)).toBeLessThanOrEqual(3);
+});
+
 test("group filter narrows the visible connectors", async ({ page }) => {
   await page.goto("/");
   const { connectors } = registry();

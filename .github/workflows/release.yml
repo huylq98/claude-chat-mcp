@@ -1,0 +1,83 @@
+name: Release MCPB bundles
+
+# On a version tag (or manual run), build the connector binaries on all three
+# OSes, assemble one universal .mcpb per connector (win+mac+linux inside, picked
+# by platform_overrides), and publish them to the GitHub Release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.plat }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            plat: win
+          - os: macos-latest
+            plat: mac
+          - os: ubuntu-latest
+            plat: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build connectors (release)
+        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle
+      - name: Collect binaries
+        shell: bash
+        run: |
+          mkdir -p out
+          for id in confluence jira bitbucket airtable mysql mariadb clickhouse oracle; do
+            if [ "${{ matrix.plat }}" = "win" ]; then cp "target/release/$id.exe" "out/$id.exe"; else cp "target/release/$id" "out/$id"; fi
+          done
+      # Signing is wired but inert until you set the repo variable ENABLE_SIGNING=true
+      # and add the matching secrets. Until then bundles ship unsigned.
+      - name: Sign Windows binaries (optional)
+        if: ${{ matrix.plat == 'win' && vars.ENABLE_SIGNING == 'true' }}
+        shell: pwsh
+        run: echo "TODO: import WINDOWS_PFX secret and signtool sign out/*.exe"
+      - name: Sign + notarize macOS binaries (optional)
+        if: ${{ matrix.plat == 'mac' && vars.ENABLE_SIGNING == 'true' }}
+        run: echo "TODO: codesign (Developer ID) + notarytool over out/*"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bin-${{ matrix.plat }}
+          path: out/
+
+  package:
+    name: Pack universal .mcpb + release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - name: Download per-OS binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Arrange binaries (win/mac/linux)
+        run: |
+          mkdir -p binaries/win binaries/mac binaries/linux
+          cp artifacts/bin-win/* binaries/win/
+          cp artifacts/bin-mac/* binaries/mac/
+          cp artifacts/bin-linux/* binaries/linux/
+          chmod +x binaries/mac/* binaries/linux/*
+      - name: Pack universal bundles
+        run: node scripts/pack-mcpb.mjs --bins binaries
+      - name: Publish to the release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/mcpb/*.mcpb
+          fail_on_unmatched_files: true

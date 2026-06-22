@@ -105,7 +105,7 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .muted { color: var(--text-faint); }
 
 /* Keyboard focus: a single coral ring on every interactive element. */
-:where(a, button, summary, input, .filter, .lang-btn, .copy-btn, .suggest-item):focus-visible {
+:where(a, button, input, .filter, .lang-btn, .suggest-item):focus-visible {
   outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px;
 }
 .search-input:focus-visible { outline: none; }
@@ -210,50 +210,18 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem
 }
 .group-pill { align-self: flex-start; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); background: rgba(255, 122, 89, 0.1); border: 1px solid rgba(255, 122, 89, 0.25); padding: 4px 10px; border-radius: 999px; }
 .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.01em; margin: 0; }
-.card-desc { color: var(--text-dim); font-size: 0.95rem; margin: 0; flex: 1; }
+.card-desc { color: var(--text-dim); font-size: 0.95rem; margin: 0; }
+/* Pin actions to the card bottom so every download button lines up. */
+.card-actions { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
 .card-dl { width: 100%; justify-content: center; }
-.dl-hint { font-size: 0.78rem; color: var(--text-faint); margin: -4px 0 0; text-align: center; }
-
-.snippet-block { position: relative; margin-bottom: 12px; }
-.snippet {
-  display: block; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.7;
-  color: #e7e7ea; background: #0a0b0d; border: 1px solid var(--hairline);
-  border-radius: var(--radius-sm); padding: 12px 44px 12px 14px;
-  white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;
-}
-.copy-btn {
-  position: absolute; top: 7px; right: 7px;
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 5px 11px; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 8px;
-  color: var(--text-dim); cursor: pointer; font-size: 0.76rem; font-family: var(--font-body); font-weight: 600;
-  transition: color 0.3s var(--ease), background 0.3s var(--ease);
-}
-.copy-btn:hover { color: var(--text); background: rgba(255, 122, 89, 0.18); }
-.copy-btn.copied { color: var(--accent); }
-
-details.fields { border-top: 1px solid var(--hairline); padding-top: 12px; }
-details.fields summary { cursor: pointer; color: var(--text-dim); font-size: 0.85rem; list-style: none; display: flex; align-items: center; gap: 8px; }
-details.fields summary::-webkit-details-marker { display: none; }
-details.fields summary .chev { transition: transform 0.3s var(--ease); }
-details.fields[open] summary .chev { transform: rotate(90deg); }
-.field-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.field-row:last-child { border-bottom: none; }
-.field-env { font-family: var(--font-mono); font-size: 0.78rem; color: #e7e7ea; }
-.field-meta { font-size: 0.78rem; color: var(--text-faint); text-align: right; }
-.req { color: var(--accent); }
-
-.card-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 4px; }
-.docs-link { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; transition: color 0.3s var(--ease); }
-.docs-link:hover { color: var(--accent); }
-.note { font-size: 0.78rem; color: var(--text-faint); }
+.dl-hint { font-size: 0.78rem; color: var(--text-faint); margin: 0; text-align: center; }
 
 /* ---- Install steps ---- */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
 .step { display: flex; gap: 16px; padding: 24px; border-radius: var(--radius-md); }
 .step-n { flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: rgba(255,122,89,0.12); border: 1px solid rgba(255,122,89,0.3); color: var(--accent); font-family: var(--font-display); font-weight: 600; }
 .step h3 { font-family: var(--font-display); margin: 0 0 6px; font-size: 1.1rem; }
-.step p { margin: 0 0 10px; color: var(--text-dim); font-size: 0.9rem; }
-.step .snippet { padding: 10px 14px; }
+.step p { margin: 0; color: var(--text-dim); font-size: 0.9rem; }
 
 /* ---- Footer ---- */
 .footer { width: min(var(--maxw), 100%); margin: 40px auto 0; padding: 28px 20px 48px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--hairline); color: var(--text-dim); font-size: 0.88rem; }
@@ -261,24 +229,13 @@ details.fields[open] summary .chev { transform: rotate(90deg); }
 .footer-link:hover { color: var(--accent); }
 code { font-family: var(--font-mono); font-size: 0.85em; color: var(--text-dim); }
 
-/* ---- Reveal animation ----
-   Gated behind .js so the content is visible by default (no-JS / headless
-   renderers never ship blank). JS adds the hidden state, the observer reveals. */
-.js .reveal { opacity: 0; transform: translateY(22px); filter: blur(6px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease), filter 0.8s var(--ease); }
-.js .reveal.in { opacity: 1; transform: none; filter: none; }
-/* Above-the-fold hero reveals on load (next frame), never gated on scroll, so a
-   headless/social-card snapshot or a slow observer callback can't ship it blank. */
-.js.ready .hero .reveal { opacity: 1; transform: none; filter: none; }
-
 /* ---- Responsive ---- */
 @media (max-width: 720px) {
   .nav-links a:not(.nav-cta) { display: none; }
   .grid { grid-template-columns: 1fr; }
-  .hero-stats { gap: 28px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; filter: none; transition: none; }
   * { transition: none !important; }
 }

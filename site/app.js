@@ -12,16 +12,16 @@ const STRINGS = {
     eyebrow: "Free, for Claude Desktop",
     hero_title: "Connect Claude to the tools your company runs.",
     hero_lede: "Local connectors for the self-hosted and on-prem editions Anthropic's cloud connectors skip. No cloud, no hosting, behind your firewall.",
-    cta_browse: "Browse connectors", cta_install: "How it installs",
-    h2_connectors: "Connectors", h2_install: "Install locally",
-    step1_h: "Build", step1_p: "Compile the connectors once.",
-    step2_h: "Register", step2_p: "Point Claude Desktop at the binary with the snippet on each connector card.",
-    step3_h: "Restart", step3_p: "Fully quit Claude Desktop (tray, then Exit) and reopen it. Ask Claude to use the new tools.",
-    footer_license: "Free to use", footer_src: "",
+    cta_install: "How it installs",
+    h2_connectors: "Connectors", h2_install: "How to install",
+    step1_h: "Download", step1_p: "Find your tool above and click \"Add to Claude Desktop\" to download a small file.",
+    step2_h: "Open in Claude Desktop", step2_p: "In Claude Desktop, open Settings and then Extensions, and drag the downloaded file in (or just double-click it).",
+    step3_h: "Fill in and install", step3_p: "Type your tool's web address and access key when asked, click Install, then reopen Claude Desktop. Now just ask Claude.",
+    footer_license: "Free to use",
     loading: "Loading…", search_ph: "Search for a tool, e.g. Jira or MySQL", no_results: "No connectors match",
 
     all: "All", connectors_word: "connectors",
-    docs: "Docs", add_to_claude: "Add to Claude Desktop",
+    add_to_claude: "Add to Claude Desktop",
     install_hint: "Downloads a file. Open it in Claude Desktop to install.",
   },
   vi: {
@@ -29,16 +29,16 @@ const STRINGS = {
     eyebrow: "Miễn phí, cho Claude Desktop",
     hero_title: "Kết nối Claude tới công cụ nội bộ công ty bạn dùng.",
     hero_lede: "Trình kết nối chạy nội bộ cho các phiên bản self-hosted mà trình kết nối đám mây của Anthropic bỏ qua. Không đám mây, chạy sau tường lửa.",
-    cta_browse: "Xem trình kết nối", cta_install: "Cách cài đặt",
-    h2_connectors: "Trình kết nối", h2_install: "Cài đặt cục bộ",
-    step1_h: "Biên dịch", step1_p: "Biên dịch các trình kết nối một lần.",
-    step2_h: "Đăng ký", step2_p: "Trỏ Claude Desktop tới tệp chạy bằng đoạn lệnh trên mỗi thẻ trình kết nối.",
-    step3_h: "Khởi động lại", step3_p: "Thoát hẳn Claude Desktop (khay hệ thống, rồi Exit) rồi mở lại. Yêu cầu Claude dùng công cụ mới.",
-    footer_license: "Miễn phí sử dụng", footer_src: "",
+    cta_install: "Cách cài đặt",
+    h2_connectors: "Trình kết nối", h2_install: "Cách cài đặt",
+    step1_h: "Tải về", step1_p: "Tìm công cụ ở trên và bấm \"Thêm vào Claude Desktop\" để tải một tệp nhỏ.",
+    step2_h: "Mở trong Claude Desktop", step2_p: "Trong Claude Desktop, mở Settings rồi Extensions, và kéo tệp vừa tải vào (hoặc bấm đúp).",
+    step3_h: "Điền thông tin và cài", step3_p: "Nhập địa chỉ web và khóa truy cập của công cụ khi được hỏi, bấm Install, rồi mở lại Claude Desktop. Giờ chỉ cần hỏi Claude.",
+    footer_license: "Miễn phí sử dụng",
     loading: "Đang tải…", search_ph: "Tìm công cụ, vd: Jira hoặc MySQL", no_results: "Không có trình kết nối phù hợp",
 
     all: "Tất cả", connectors_word: "trình kết nối",
-    docs: "Tài liệu", add_to_claude: "Thêm vào Claude Desktop",
+    add_to_claude: "Thêm vào Claude Desktop",
     install_hint: "Tải về một tệp. Mở trong Claude Desktop để cài đặt.",
   },
 };
@@ -75,26 +75,23 @@ function card(c) {
   const group = c.group || "Other";
   const groupLabel = currentLang === "vi" ? (GROUP_VI[group] || group) : group;
   const dl = `${RELEASE_BASE}/${esc(c.id)}.mcpb`;
-  const docs = c.docs_url
-    ? `<a class="docs-link" href="${esc(c.docs_url)}" target="_blank" rel="noopener">${t("docs")} ↗</a>`
-    : "";
-  const note = c.notes ? `<p class="note">${esc(c.notes)}</p>` : "";
 
   // One-click .mcpb: Claude Desktop collects the URL/token at install time, so the
-  // card stays simple (no command, no config table) for non-technical users.
+  // card stays simple. The action area is pinned to the bottom so every card's
+  // download button lines up regardless of description length.
   return `
   <article class="card-shell" data-group="${esc(group)}">
     <div class="card">
       <span class="group-pill">${esc(groupLabel)}</span>
       <h3>${esc(c.name)}</h3>
       <p class="card-desc">${esc(desc)}</p>
-      <a class="btn btn-primary card-dl" href="${dl}">
-        <span>${t("add_to_claude")}</span>
-        <span class="cta-icon" aria-hidden="true">↓</span>
-      </a>
-      <p class="dl-hint">${t("install_hint")}</p>
-      ${note}
-      ${docs ? `<div class="card-foot">${docs}</div>` : ""}
+      <div class="card-actions">
+        <a class="btn btn-primary card-dl" href="${dl}">
+          <span>${t("add_to_claude")}</span>
+          <span class="cta-icon" aria-hidden="true">↓</span>
+        </a>
+        <p class="dl-hint">${t("install_hint")}</p>
+      </div>
     </div>
   </article>`;
 }
@@ -118,7 +115,6 @@ function renderGrid() {
     return;
   }
   grid.innerHTML = shown.map(card).join("");
-  observeReveals();
 }
 
 function buildFilters() {
@@ -141,17 +137,6 @@ function buildFilters() {
 
 function setCount() {
   countEl.textContent = `${connectors.length} ${t("connectors_word")}`;
-}
-
-let io;
-function observeReveals() {
-  if (!io) {
-    io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }),
-      { threshold: 0.15 }
-    );
-  }
-  document.querySelectorAll(".reveal:not(.in)").forEach((el) => io.observe(el));
 }
 
 function applyLang(lang) {
@@ -240,11 +225,8 @@ function initSearch() {
 }
 
 async function main() {
-  // Reveal the hero on the next frame (load), independent of the scroll observer.
-  requestAnimationFrame(() => document.documentElement.classList.add("ready"));
   initLang();
   initSearch();
-  observeReveals();
   try {
     const res = await fetch("./registry.json", { cache: "no-store" });
     if (!res.ok) throw new Error(`registry.json ${res.status}`);
