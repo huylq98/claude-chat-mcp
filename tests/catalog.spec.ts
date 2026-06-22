@@ -59,6 +59,23 @@ test("group filter narrows the visible connectors", async ({ page }) => {
   await expect(page.locator(".card-shell")).toHaveCount(expected);
 });
 
+test("the Dev group filter shows only the code connectors", async ({ page }) => {
+  await page.goto("/");
+  const { connectors } = registry();
+  const devCount = connectors.filter((c: any) => (c.group || "Other") === "Dev").length;
+  test.skip(devCount === 0, "no Dev connectors");
+  await page.locator('.filter[data-group="Dev"]').click();
+  await expect(page.locator(".card-shell")).toHaveCount(devCount);
+});
+
+test("page stays em-dash free in Vietnamese", async ({ page }) => {
+  await page.goto("/");
+  await page.locator('[data-lang="vi"]').click();
+  await page.waitForSelector(".card-shell");
+  const text = await page.locator("body").innerText();
+  expect(text).not.toMatch(/[–—]/);
+});
+
 test("rendered page contains no em-dash or en-dash", async ({ page }) => {
   await page.goto("/");
   await page.waitForSelector(".card-shell");
