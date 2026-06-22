@@ -17,6 +17,7 @@ pub use config::DbConnConfig;
 pub use engine::{ColumnInfo, Engine, QueryResult};
 pub use engines::clickhouse::ClickhouseEngine;
 pub use engines::mysql::MysqlEngine;
+pub use engines::postgres::PostgresEngine;
 #[cfg(feature = "oracle")]
 pub use engines::oracle::OracleEngine;
 pub use server::{make_server, DbServer};

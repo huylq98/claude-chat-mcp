@@ -15,8 +15,8 @@ const STRINGS = {
     cta_install: "How it installs",
     h2_connectors: "Connectors", h2_install: "How to install",
     step1_h: "Download", step1_p: "Find your tool above and click \"Download for Claude Desktop\" to get a small file.",
-    step2_h: "Open in Claude Desktop", step2_p: "In Claude Desktop, open Settings and then Extensions, and drag the downloaded file in (or just double-click it).",
-    step3_h: "Fill in and install", step3_p: "Enter the web address and the password or token your IT gave you, click Install, then reopen Claude Desktop. Now just ask Claude.",
+    step2_h: "Open in Claude Desktop", step2_p: "Open Claude Desktop, go to Settings then Extensions, and drag the file in. (Double-clicking the file also works.)",
+    step3_h: "Fill in and install", step3_p: "Enter the web address and password your IT gave you, click Install, then reopen Claude Desktop. Now just ask Claude.",
     footer_license: "Free to use",
     loading: "Loading…", search_ph: "Search for a tool, e.g. Jira or Confluence", no_results: "No connectors match",
 
@@ -32,8 +32,8 @@ const STRINGS = {
     cta_install: "Cách cài đặt",
     h2_connectors: "Trình kết nối", h2_install: "Cách cài đặt",
     step1_h: "Tải về", step1_p: "Tìm công cụ ở trên và bấm \"Tải cho Claude Desktop\" để lấy một tệp nhỏ.",
-    step2_h: "Mở trong Claude Desktop", step2_p: "Trong Claude Desktop, mở Settings rồi Extensions, và kéo tệp vừa tải vào (hoặc bấm đúp).",
-    step3_h: "Điền thông tin và cài", step3_p: "Nhập địa chỉ web và mật khẩu hoặc token mà bộ phận IT cấp cho bạn, bấm Install, rồi mở lại Claude Desktop. Giờ chỉ cần hỏi Claude.",
+    step2_h: "Mở trong Claude Desktop", step2_p: "Mở Claude Desktop, vào Settings rồi Extensions, và kéo tệp vào. (Bấm đúp vào tệp cũng được.)",
+    step3_h: "Điền thông tin và cài", step3_p: "Nhập địa chỉ web và mật khẩu mà bộ phận IT cấp cho bạn, bấm Install, rồi mở lại Claude Desktop. Giờ chỉ cần hỏi Claude.",
     footer_license: "Miễn phí sử dụng",
     loading: "Đang tải…", search_ph: "Tìm công cụ, vd: Jira hoặc Confluence", no_results: "Không có trình kết nối phù hợp",
 
@@ -43,18 +43,31 @@ const STRINGS = {
   },
 };
 
-// Vietnamese connector descriptions, keyed by connector id (chrome-layer i18n;
-// registry.json stays English as the source of truth).
+// Plain-language connector descriptions for the cards (the decision surface).
+// registry.json stays the dev source of truth; these are the friendly overrides.
+const EN_DESC = {
+  confluence: "Search and read your company's Confluence pages.",
+  jira: "Search and read your team's Jira tickets.",
+  bitbucket: "Browse your company's code projects, reviews, and history.",
+  airtable: "Read and update your Airtable bases and records.",
+  mysql: "Ask questions of your company's MySQL database. Read-only.",
+  mariadb: "Ask questions of your company's MariaDB database. Read-only.",
+  clickhouse: "Ask questions of your company's ClickHouse database. Read-only.",
+  oracle: "Ask questions of your company's Oracle database. Read-only.",
+  postgres: "Ask questions of your company's PostgreSQL database. Read-only.",
+  gitlab: "Search your company's GitLab projects and tickets, and add comments.",
+};
 const VI_DESC = {
-  confluence: "Tìm kiếm và đọc trang Confluence tự lưu trữ (Server / Data Center).",
-  jira: "Tìm kiếm và đọc issue Jira bằng JQL trên bản tự lưu trữ.",
-  bitbucket: "Xem repository, pull request và commit trên Bitbucket Server.",
-  airtable: "Đọc và ghi base, bảng và bản ghi Airtable.",
-  mysql: "Truy vấn chỉ-đọc cơ sở dữ liệu MySQL.",
-  mariadb: "Truy vấn chỉ-đọc cơ sở dữ liệu MariaDB.",
-  clickhouse: "Truy vấn chỉ-đọc cơ sở dữ liệu ClickHouse.",
-  oracle: "Truy vấn chỉ-đọc cơ sở dữ liệu Oracle.",
-  gitlab: "Tìm và đọc dự án, issue và merge request trên GitLab tự lưu trữ (và tạo issue/bình luận ở chế độ Writer).",
+  confluence: "Tìm và đọc các trang Confluence của công ty bạn.",
+  jira: "Tìm và đọc các ticket Jira của nhóm bạn.",
+  bitbucket: "Xem các dự án mã nguồn, lượt review và lịch sử của công ty bạn.",
+  airtable: "Đọc và cập nhật base và bản ghi Airtable của bạn.",
+  mysql: "Hỏi đáp dữ liệu MySQL của công ty bạn. Chỉ đọc.",
+  mariadb: "Hỏi đáp dữ liệu MariaDB của công ty bạn. Chỉ đọc.",
+  clickhouse: "Hỏi đáp dữ liệu ClickHouse của công ty bạn. Chỉ đọc.",
+  oracle: "Hỏi đáp dữ liệu Oracle của công ty bạn. Chỉ đọc.",
+  postgres: "Hỏi đáp dữ liệu PostgreSQL của công ty bạn. Chỉ đọc.",
+  gitlab: "Tìm dự án và ticket GitLab của công ty bạn, và thêm bình luận.",
 };
 const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Dev: "Lập trình", Other: "Khác" };
 
@@ -72,7 +85,9 @@ const esc = (s) =>
 const RELEASE_BASE = "https://github.com/huylq98/claude-chat-mcp/releases/latest/download";
 
 function card(c) {
-  const desc = (currentLang === "vi" && VI_DESC[c.id]) ? VI_DESC[c.id] : (c.description || "");
+  const desc = currentLang === "vi"
+    ? (VI_DESC[c.id] || c.description || "")
+    : (EN_DESC[c.id] || c.description || "");
   const group = c.group || "Other";
   const groupLabel = currentLang === "vi" ? (GROUP_VI[group] || group) : group;
   const dl = `${RELEASE_BASE}/${esc(c.id)}.mcpb`;

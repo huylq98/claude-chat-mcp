@@ -615,6 +615,71 @@
           "name": "server_info"
         }
       ]
+    },
+    {
+      "auth_fields": [
+        {
+          "default": "127.0.0.1",
+          "env": "DB_HOST",
+          "kind": "text",
+          "label": "Host",
+          "required": true
+        },
+        {
+          "default": "5432",
+          "env": "DB_PORT",
+          "kind": "text",
+          "label": "Port",
+          "required": false
+        },
+        {
+          "env": "DB_USER",
+          "kind": "text",
+          "label": "User",
+          "required": true
+        },
+        {
+          "env": "DB_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        },
+        {
+          "env": "DB_NAME",
+          "kind": "text",
+          "label": "Database/Schema",
+          "required": false
+        }
+      ],
+      "binary": "postgres",
+      "description": "Read-only SQL access to PostgreSQL.",
+      "docs_url": "",
+      "group": "Data",
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "notes": "",
+      "tools": [
+        {
+          "description": "List databases / schemas on the server.",
+          "name": "list_databases"
+        },
+        {
+          "description": "List tables in a database.",
+          "name": "list_tables"
+        },
+        {
+          "description": "Show a table's columns and types.",
+          "name": "describe_table"
+        },
+        {
+          "description": "Run a read-only SQL query (guarded).",
+          "name": "run_query"
+        },
+        {
+          "description": "Show the engine and connection summary.",
+          "name": "server_info"
+        }
+      ]
     }
   ]
 }

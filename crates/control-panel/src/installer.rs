@@ -33,6 +33,7 @@ pub fn embedded_binary(id: &str) -> Option<&'static [u8]> {
         "clickhouse" => bin!("clickhouse"),
         "oracle" => bin!("oracle"),
         "gitlab" => bin!("gitlab"),
+        "postgres" => bin!("postgres"),
         _ => None,
     }
 }
