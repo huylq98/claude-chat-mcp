@@ -134,13 +134,16 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .search { position: relative; max-width: 560px; margin: 0 auto; display: flex; align-items: center; }
 .search-ic { position: absolute; left: 20px; color: var(--text-faint); display: flex; pointer-events: none; transition: color 0.3s var(--ease); }
 .search-input {
-  width: 100%; font-family: var(--font-body); font-size: 1.06rem; color: var(--text);
+  width: 100%; font-family: var(--font-body); font-size: 1.12rem; color: var(--text);
   background: var(--surface); border: 1px solid var(--hairline-strong); border-radius: 999px;
-  padding: 17px 22px 17px 54px; outline: none;
+  padding: 20px 24px 20px 58px; outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 40px rgba(0, 0, 0, 0.45);
   transition: border-color 0.3s var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease);
 }
 .search-input::placeholder { color: var(--text-faint); }
-.search-input:focus { border-color: var(--accent); background: var(--bg-2); box-shadow: 0 0 0 4px rgba(255, 122, 89, 0.15); }
+.search-input:focus { border-color: var(--accent); background: var(--bg-2); box-shadow: 0 0 0 4px rgba(255, 122, 89, 0.18), 0 18px 50px rgba(255, 122, 89, 0.08); }
+.search-ic { left: 22px; }
+.search-ic svg { width: 24px; height: 24px; }
 .search:focus-within .search-ic { color: var(--accent); }
 
 /* Autocomplete suggestions */
@@ -175,7 +178,7 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 /* ---- Section heads ---- */
 .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
 .section-title { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-.count { font-family: var(--font-body); font-size: 0.9rem; color: var(--text-faint); }
+.count { font-family: var(--font-body); font-size: 0.82rem; color: var(--text-dim); padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); }
 h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.02em; text-wrap: balance; margin: 0; }
 
 .filters { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -208,12 +211,16 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem
   padding: 22px;
   display: flex; flex-direction: column; gap: 16px;
 }
-.group-pill { align-self: flex-start; font-size: 0.74rem; letter-spacing: 0; color: var(--accent); background: rgba(255, 122, 89, 0.1); border: 1px solid rgba(255, 122, 89, 0.25); padding: 4px 11px; border-radius: 999px; }
+.group-pill { align-self: flex-start; font-size: 0.74rem; letter-spacing: 0; color: var(--text-faint); background: var(--surface); border: 1px solid var(--hairline); padding: 4px 11px; border-radius: 999px; }
 .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.01em; margin: 0; }
 .card-desc { color: var(--text-dim); font-size: 0.95rem; margin: 0; }
 /* Pin actions to the card bottom so every download button lines up. */
 .card-actions { margin-top: auto; }
-.card-dl { width: 100%; justify-content: center; }
+/* Quiet by default so 10+ cards don't become a wall of coral; the solid accent
+   is earned on card hover, keeping one live accent region at a time. */
+.card-dl { width: 100%; justify-content: center; background: rgba(255, 122, 89, 0.1); color: var(--accent); border-color: rgba(255, 122, 89, 0.28); }
+.card-shell:hover .card-dl, .card-dl:focus-visible { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.card-shell:hover .card-dl .cta-icon { transform: translateY(3px); }
 
 /* ---- Install steps ---- */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }

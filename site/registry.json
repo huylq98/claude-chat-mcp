@@ -273,6 +273,78 @@
     {
       "advanced_fields": [
         {
+          "env": "GITHUB_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "GITHUB_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "GITHUB_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "GITHUB_URL",
+          "help": "Your GitHub Enterprise API URL, e.g. https://github.company.com/api/v3",
+          "kind": "text",
+          "label": "GitHub API URL",
+          "required": true
+        },
+        {
+          "env": "GITHUB_TOKEN",
+          "help": "Personal Access Token with repo or read-only scope",
+          "kind": "secret",
+          "label": "Personal Access Token",
+          "required": true
+        }
+      ],
+      "binary": "github",
+      "description": "Search and read self-hosted GitHub repositories, issues, and pull requests (and create issues/comments in Writer mode).",
+      "docs_url": "https://docs.github.com/en/enterprise-server/rest",
+      "group": "Dev",
+      "id": "github",
+      "name": "GitHub",
+      "notes": "Set GITHUB_URL and GITHUB_TOKEN. Write tools (create issue, comment) require Writer mode via GITHUB_MODE.",
+      "tools": [
+        {
+          "description": "Search GitHub repositories by name or metadata.",
+          "name": "github_search_repos"
+        },
+        {
+          "description": "List issues in a GitHub repository.",
+          "name": "github_list_issues"
+        },
+        {
+          "description": "Read a GitHub issue by its number.",
+          "name": "github_get_issue"
+        },
+        {
+          "description": "List pull requests in a GitHub repository.",
+          "name": "github_list_pull_requests"
+        },
+        {
+          "description": "Create a new issue in a GitHub repository.",
+          "name": "github_create_issue"
+        },
+        {
+          "description": "Add a comment to a GitHub issue.",
+          "name": "github_comment_issue"
+        }
+      ]
+    },
+    {
+      "advanced_fields": [
+        {
           "env": "GITLAB_PROXY_URL",
           "kind": "text",
           "label": "Proxy URL",

@@ -34,6 +34,7 @@ pub fn embedded_binary(id: &str) -> Option<&'static [u8]> {
         "oracle" => bin!("oracle"),
         "gitlab" => bin!("gitlab"),
         "postgres" => bin!("postgres"),
+        "github" => bin!("github"),
         _ => None,
     }
 }

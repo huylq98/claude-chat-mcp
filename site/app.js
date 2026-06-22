@@ -56,6 +56,7 @@ const EN_DESC = {
   oracle: "Ask questions of your company's Oracle database. Read-only.",
   postgres: "Ask questions of your company's PostgreSQL database. Read-only.",
   gitlab: "Search your company's GitLab projects and tickets, and add comments.",
+  github: "Search your company's GitHub repositories and issues, and add comments.",
 };
 const VI_DESC = {
   confluence: "Tìm và đọc các trang Confluence của công ty bạn.",
@@ -68,6 +69,7 @@ const VI_DESC = {
   oracle: "Hỏi đáp dữ liệu Oracle của công ty bạn. Chỉ đọc.",
   postgres: "Hỏi đáp dữ liệu PostgreSQL của công ty bạn. Chỉ đọc.",
   gitlab: "Tìm dự án và ticket GitLab của công ty bạn, và thêm bình luận.",
+  github: "Tìm repository và issue GitHub của công ty bạn, và thêm bình luận.",
 };
 const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Dev: "Lập trình", Other: "Khác" };
 
