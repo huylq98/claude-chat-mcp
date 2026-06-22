@@ -430,6 +430,10 @@ select.field-input { cursor: pointer; }
 .field-err .field-input { border-color: var(--bad); box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18); }
 .empty-state { text-align: center; color: var(--muted, #8b8b96); padding: 48px 0; }
 .role-hint { display: block; }
+.secret-row { display: flex; gap: 6px; align-items: stretch; }
+.secret-row .field-input { flex: 1; min-width: 0; }
+.reveal-btn { flex: none; padding: 0 12px; background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 8px; color: var(--text-dim); cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+.reveal-btn:hover { color: var(--text); border-color: var(--hairline-strong); }
 
 .btn-danger {
   background: transparent;

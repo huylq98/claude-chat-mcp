@@ -34,6 +34,7 @@ const STRINGS = {
     loadingConnectors: "Loading connectors...",
     emptyState: "No connectors are bundled with this build.",
     loadError: "Could not load connectors:",
+    show: "Show", hide: "Hide",
   },
   vi: {
     appName: "Claude Chat MCP",
@@ -64,6 +65,7 @@ const STRINGS = {
     loadingConnectors: "Đang tải trình kết nối...",
     emptyState: "Bản dựng này không có trình kết nối nào.",
     loadError: "Không tải được trình kết nối:",
+    show: "Hiện", hide: "Ẩn",
   },
 };
 
@@ -250,7 +252,28 @@ function buildField(f, installed) {
   input.dataset.env = f.env;
   input.dataset.kind = f.kind;
   if (f.required) input.dataset.required = "true";
-  wrap.appendChild(input);
+
+  if (f.kind === "secret") {
+    // Wrap the secret input with a Show/Hide toggle so users can verify a paste.
+    const row = document.createElement("div");
+    row.className = "secret-row";
+    row.appendChild(input);
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "reveal-btn";
+    toggle.textContent = t("show");
+    toggle.setAttribute("aria-pressed", "false");
+    toggle.addEventListener("click", () => {
+      const showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      toggle.textContent = showing ? t("show") : t("hide");
+      toggle.setAttribute("aria-pressed", String(!showing));
+    });
+    row.appendChild(toggle);
+    wrap.appendChild(row);
+  } else {
+    wrap.appendChild(input);
+  }
 
   if (f.help) {
     const hint = document.createElement("span");
