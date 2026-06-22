@@ -9,33 +9,37 @@ const countEl = document.getElementById("conn-count");
 const STRINGS = {
   en: {
     nav_connectors: "Connectors", nav_install: "Install",
-    eyebrow: "Open-source · MCP for Claude Desktop",
-    hero_title: "Connect Claude to the tools<br />your company actually runs.",
+    eyebrow: "Free, for Claude Desktop",
+    hero_title: "Connect Claude to the tools your company runs.",
     hero_lede: "Local connectors for the self-hosted and on-prem editions Anthropic's cloud connectors skip. No cloud, no hosting, behind your firewall.",
     cta_browse: "Browse connectors", cta_install: "How it installs",
     h2_connectors: "Connectors", h2_install: "Install locally",
     step1_h: "Build", step1_p: "Compile the connectors once.",
     step2_h: "Register", step2_p: "Point Claude Desktop at the binary with the snippet on each connector card.",
     step3_h: "Restart", step3_p: "Fully quit Claude Desktop (tray, then Exit) and reopen it. Ask Claude to use the new tools.",
-    footer_license: "Open-source · MIT", footer_src: "Generated from <code>registry.json</code>",
-    loading: "Loading registry…",
+    footer_license: "Free to use", footer_src: "",
+    loading: "Loading…", search_ph: "Search for a tool, e.g. Jira or MySQL", no_results: "No connectors match",
+
     all: "All", connectors_word: "connectors",
     setup: "Setup & install", docs: "Docs", required: "required", optional: "optional",
+    copy: "Copy", copied: "Copied", suggestions: "Suggestions",
   },
   vi: {
     nav_connectors: "Trình kết nối", nav_install: "Cài đặt",
-    eyebrow: "Mã nguồn mở · MCP cho Claude Desktop",
-    hero_title: "Kết nối Claude tới những công cụ<br />nội bộ công ty bạn đang dùng.",
+    eyebrow: "Miễn phí, cho Claude Desktop",
+    hero_title: "Kết nối Claude tới công cụ nội bộ công ty bạn dùng.",
     hero_lede: "Trình kết nối chạy nội bộ cho các phiên bản self-hosted mà trình kết nối đám mây của Anthropic bỏ qua. Không đám mây, chạy sau tường lửa.",
     cta_browse: "Xem trình kết nối", cta_install: "Cách cài đặt",
     h2_connectors: "Trình kết nối", h2_install: "Cài đặt cục bộ",
     step1_h: "Biên dịch", step1_p: "Biên dịch các trình kết nối một lần.",
     step2_h: "Đăng ký", step2_p: "Trỏ Claude Desktop tới tệp chạy bằng đoạn lệnh trên mỗi thẻ trình kết nối.",
     step3_h: "Khởi động lại", step3_p: "Thoát hẳn Claude Desktop (khay hệ thống, rồi Exit) rồi mở lại. Yêu cầu Claude dùng công cụ mới.",
-    footer_license: "Mã nguồn mở · MIT", footer_src: "Tạo từ <code>registry.json</code>",
-    loading: "Đang tải danh sách…",
+    footer_license: "Miễn phí sử dụng", footer_src: "",
+    loading: "Đang tải…", search_ph: "Tìm công cụ, vd: Jira hoặc MySQL", no_results: "Không có trình kết nối phù hợp",
+
     all: "Tất cả", connectors_word: "trình kết nối",
     setup: "Cài đặt & cấu hình", docs: "Tài liệu", required: "bắt buộc", optional: "tùy chọn",
+    copy: "Sao chép", copied: "Đã chép", suggestions: "Gợi ý",
   },
 };
 
@@ -55,6 +59,7 @@ const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "N
 
 let currentLang = "en";
 let currentFilter = "All";
+let query = "";
 let connectors = [];
 
 const t = (k) => (STRINGS[currentLang] && STRINGS[currentLang][k]) || STRINGS.en[k] || k;
@@ -108,7 +113,7 @@ function card(c) {
   // Card front stays friendly: group, name, description. The technical setup
   // (install command + config fields) is tucked into a collapsed section.
   return `
-  <article class="card-shell reveal" data-group="${esc(group)}">
+  <article class="card-shell" data-group="${esc(group)}">
     <div class="card">
       <span class="group-pill">${esc(groupLabel)}</span>
       <h3>${esc(c.name)}</h3>
@@ -117,7 +122,7 @@ function card(c) {
         <summary><span class="chev">›</span> ${t("setup")}</summary>
         <div class="snippet-block">
           <code class="snippet">${esc(snippet)}</code>
-          <button class="copy-btn" type="button" aria-label="Copy install command" data-copy="${esc(snippet)}">⧉</button>
+          <button class="copy-btn" type="button" aria-label="Copy install command" data-copy="${esc(snippet)}">${t("copy")}</button>
         </div>
         ${fieldRows(c)}
         ${note}
@@ -127,9 +132,24 @@ function card(c) {
   </article>`;
 }
 
-function render(list, group) {
-  currentFilter = group || "All";
-  const shown = currentFilter !== "All" ? list.filter((c) => (c.group || "Other") === currentFilter) : list;
+function matchesQuery(c) {
+  if (!query) return true;
+  const hay = [c.name, c.id, c.description, c.group, VI_DESC[c.id] || ""].join(" ").toLowerCase();
+  return hay.includes(query);
+}
+
+function visibleList() {
+  return connectors.filter(
+    (c) => (currentFilter === "All" || (c.group || "Other") === currentFilter) && matchesQuery(c)
+  );
+}
+
+function renderGrid() {
+  const shown = visibleList();
+  if (shown.length === 0) {
+    grid.innerHTML = `<p class="muted no-results">${t("no_results")}</p>`;
+    return;
+  }
   grid.innerHTML = shown.map(card).join("");
   observeReveals();
   wireCopy();
@@ -147,7 +167,8 @@ function buildFilters() {
     btn.addEventListener("click", () => {
       filtersEl.querySelectorAll(".filter").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
-      render(connectors, btn.dataset.group);
+      currentFilter = btn.dataset.group;
+      renderGrid();
     });
   });
 }
@@ -172,9 +193,9 @@ function wireCopy() {
     btn.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(btn.dataset.copy);
-        btn.textContent = "✓";
+        btn.textContent = t("copied");
         btn.classList.add("copied");
-        setTimeout(() => { btn.textContent = "⧉"; btn.classList.remove("copied"); }, 1400);
+        setTimeout(() => { btn.textContent = t("copy"); btn.classList.remove("copied"); }, 1400);
       } catch { /* clipboard blocked; ignore */ }
     });
   });
@@ -192,12 +213,16 @@ function applyLang(lang) {
     const k = el.dataset.i18nHtml;
     if (dict[k] != null) el.innerHTML = dict[k];
   });
+  document.querySelectorAll("[data-i18n-ph]").forEach((el) => {
+    const k = el.dataset.i18nPh;
+    if (dict[k] != null) el.setAttribute("placeholder", dict[k]);
+  });
   document.querySelectorAll(".lang-btn").forEach((b) => b.classList.toggle("active", b.dataset.lang === currentLang));
   try { localStorage.setItem("lang", currentLang); } catch { /* ignore */ }
   if (connectors.length) {
     setCount();
     buildFilters();
-    render(connectors, currentFilter);
+    renderGrid();
   }
 }
 
@@ -210,8 +235,62 @@ function initLang() {
   );
 }
 
+function initSearch() {
+  const input = document.getElementById("search");
+  const box = document.getElementById("suggest");
+  if (!input) return;
+
+  const suggestionsFor = (q) =>
+    !q ? [] : connectors.filter((c) => [c.name, c.id, c.group].join(" ").toLowerCase().includes(q)).slice(0, 6);
+
+  function showSuggest(q) {
+    if (!box) return;
+    const items = suggestionsFor(q);
+    if (!items.length) { hideSuggest(); return; }
+    box.innerHTML = items
+      .map((c) => {
+        const group = currentLang === "vi" ? (GROUP_VI[c.group] || c.group) : (c.group || "");
+        return `<li class="suggest-item" role="option" data-name="${esc(c.name)}"><span>${esc(c.name)}</span><span class="suggest-group">${esc(group)}</span></li>`;
+      })
+      .join("");
+    box.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+  }
+  function hideSuggest() {
+    if (!box) return;
+    box.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+  }
+
+  input.addEventListener("input", () => {
+    query = input.value.trim().toLowerCase();
+    renderGrid();
+    showSuggest(query);
+  });
+  input.addEventListener("focus", () => { if (query) showSuggest(query); });
+  input.addEventListener("keydown", (e) => { if (e.key === "Escape") hideSuggest(); });
+  input.addEventListener("blur", () => setTimeout(hideSuggest, 120));
+
+  if (box) {
+    // mousedown (not click) so it fires before the input's blur hides the list
+    box.addEventListener("mousedown", (e) => {
+      const li = e.target.closest(".suggest-item");
+      if (!li) return;
+      e.preventDefault();
+      input.value = li.dataset.name;
+      query = li.dataset.name.trim().toLowerCase();
+      hideSuggest();
+      renderGrid();
+      input.focus();
+    });
+  }
+}
+
 async function main() {
+  // Reveal the hero on the next frame (load), independent of the scroll observer.
+  requestAnimationFrame(() => document.documentElement.classList.add("ready"));
   initLang();
+  initSearch();
   observeReveals();
   try {
     const res = await fetch("./registry.json", { cache: "no-store" });
@@ -220,7 +299,7 @@ async function main() {
     connectors = data.connectors || [];
     setCount();
     buildFilters();
-    render(connectors, "All");
+    renderGrid();
   } catch (e) {
     grid.innerHTML = `<p class="muted">Could not load registry.json (${esc(e.message)}). Run <code>./scripts/registry.ps1 --release</code> and serve via <code>./scripts/serve-site.ps1</code>.</p>`;
   }

@@ -3,11 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claude Chat MCP · connectors for self-hosted tools</title>
-  <meta name="description" content="Local MCP connectors that link Claude Desktop to the self-hosted and on-prem editions of the tools your company runs." />
+  <title>Claude Chat MCP · connect Claude to your work tools</title>
+  <meta name="description" content="Free connectors that let Claude work with the tools your company runs, like Jira, Confluence, and your databases. Runs on your computer." />
+  <link rel="canonical" href="https://claudechatmcp.com/" />
+  <meta name="theme-color" content="#060607" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://claudechatmcp.com/" />
+  <meta property="og:title" content="Claude Chat MCP" />
+  <meta property="og:description" content="Free connectors that let Claude work with the tools your company runs, like Jira, Confluence, and your databases." />
+  <meta property="og:image" content="https://claudechatmcp.com/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Claude Chat MCP" />
+  <meta name="twitter:description" content="Free connectors that let Claude work with the tools your company runs." />
+  <meta name="twitter:image" content="https://claudechatmcp.com/og-image.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="styles.css" />
   <script>document.documentElement.classList.add("js");</script>
 </head>
@@ -18,7 +30,20 @@
   <header class="nav-wrap">
     <nav class="nav glass">
       <a class="brand" href="#top">
-        <span class="brand-mark" aria-hidden="true"></span>
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <defs>
+            <linearGradient id="navmk" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ff9d83"/><stop offset="1" stop-color="#ff6a44"/>
+            </linearGradient>
+          </defs>
+          <rect x="1" y="1" width="30" height="30" rx="8.5" fill="url(#navmk)"/>
+          <g stroke="#231009" stroke-width="2.1" stroke-linecap="round">
+            <line x1="16" y1="16" x2="16" y2="7.6"/><line x1="16" y1="16" x2="9" y2="23"/><line x1="16" y1="16" x2="23" y2="23"/>
+          </g>
+          <g fill="#231009">
+            <circle cx="16" cy="16" r="3.5"/><circle cx="16" cy="7" r="2.5"/><circle cx="8.6" cy="23.4" r="2.5"/><circle cx="23.4" cy="23.4" r="2.5"/>
+          </g>
+        </svg>
         <span class="brand-name">Claude Chat MCP</span>
       </a>
       <div class="nav-links">
@@ -37,17 +62,22 @@
 
   <main id="top">
     <section class="hero">
-      <p class="eyebrow reveal" data-i18n="eyebrow">Open-source · MCP for Claude Desktop</p>
-      <h1 class="reveal" data-i18n-html="hero_title">Connect Claude to the tools<br />your company actually runs.</h1>
+      <p class="eyebrow reveal" data-i18n="eyebrow">Free, for Claude Desktop</p>
+      <h1 class="reveal" data-i18n-html="hero_title">Connect Claude to the tools your company runs.</h1>
       <p class="lede reveal" data-i18n="hero_lede">
         Local connectors for the self-hosted and on-prem editions Anthropic's cloud
         connectors skip. No cloud, no hosting, behind your firewall.
       </p>
+      <form class="search reveal" role="search" onsubmit="return false">
+        <span class="search-ic" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.5" y2="16.5"></line></svg>
+        </span>
+        <input id="search" class="search-input" type="search" autocomplete="off" spellcheck="false"
+               placeholder="Search for a tool, e.g. Jira or MySQL" data-i18n-ph="search_ph" aria-label="Search connectors"
+               role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list" />
+        <ul class="suggest" id="suggest" role="listbox" hidden></ul>
+      </form>
       <div class="hero-cta reveal">
-        <a class="btn btn-primary" href="#connectors">
-          <span data-i18n="cta_browse">Browse connectors</span>
-          <span class="cta-icon" aria-hidden="true">↓</span>
-        </a>
         <a class="btn btn-ghost" href="#install" data-i18n="cta_install">How it installs</a>
       </div>
     </section>
@@ -95,7 +125,7 @@
   </main>
 
   <footer class="footer">
-    <span data-i18n="footer_license">Open-source · MIT</span>
+    <span data-i18n="footer_license">Free to use</span>
     <a class="footer-link" href="https://github.com/huylq98/claude-chat-mcp" target="_blank" rel="noopener">GitHub</a>
   </footer>
 

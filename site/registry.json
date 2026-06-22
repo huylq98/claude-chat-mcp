@@ -1,0 +1,548 @@
+{
+  "version": 1,
+  "connectors": [
+    {
+      "advanced_fields": [
+        {
+          "env": "AIRTABLE_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "AIRTABLE_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "AIRTABLE_TOKEN",
+          "help": "Create at https://airtable.com/create/tokens with data.records:read scope (and write if needed).",
+          "kind": "secret",
+          "label": "Personal Access Token",
+          "required": true
+        }
+      ],
+      "binary": "airtable",
+      "description": "Read and write Airtable bases, tables, and records.",
+      "docs_url": "https://airtable.com/developers/web/api/introduction",
+      "group": "Productivity",
+      "id": "airtable",
+      "name": "Airtable",
+      "tools": [
+        {
+          "description": "List the bases the token can access.",
+          "name": "list_bases"
+        },
+        {
+          "description": "List tables and fields in a base.",
+          "name": "list_tables"
+        },
+        {
+          "description": "List records, with view and formula filters.",
+          "name": "list_records"
+        },
+        {
+          "description": "Fetch a single record by ID.",
+          "name": "get_record"
+        },
+        {
+          "description": "Create a record in a table.",
+          "name": "create_record"
+        },
+        {
+          "description": "Update fields on an existing record.",
+          "name": "update_record"
+        }
+      ]
+    },
+    {
+      "advanced_fields": [
+        {
+          "env": "BITBUCKET_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "BITBUCKET_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "BITBUCKET_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "BITBUCKET_URL",
+          "help": "e.g. https://bitbucket.corp.com",
+          "kind": "text",
+          "label": "Bitbucket base URL",
+          "required": true
+        },
+        {
+          "env": "BITBUCKET_TOKEN",
+          "help": "Recommended for Data Center 5.5+. Generate in Profile, Personal Access Tokens.",
+          "kind": "secret",
+          "label": "Personal Access Token",
+          "required": false
+        },
+        {
+          "env": "BITBUCKET_USERNAME",
+          "help": "Use with password if you don't have a PAT.",
+          "kind": "text",
+          "label": "Username",
+          "required": false
+        },
+        {
+          "env": "BITBUCKET_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        }
+      ],
+      "binary": "bitbucket",
+      "description": "Browse self-hosted Bitbucket repositories, pull requests, and commits (Server / Data Center).",
+      "docs_url": "https://developer.atlassian.com/server/bitbucket/rest/",
+      "group": "Atlassian",
+      "id": "bitbucket",
+      "name": "Bitbucket",
+      "notes": "Set BITBUCKET_URL and either a token or username+password.",
+      "tools": [
+        {
+          "description": "List repos in a Bitbucket project.",
+          "name": "bitbucket_list_repos"
+        },
+        {
+          "description": "List a repo's pull requests.",
+          "name": "bitbucket_list_pull_requests"
+        },
+        {
+          "description": "List a repo's recent commits.",
+          "name": "bitbucket_get_commits"
+        }
+      ]
+    },
+    {
+      "auth_fields": [
+        {
+          "default": "127.0.0.1",
+          "env": "DB_HOST",
+          "kind": "text",
+          "label": "Host",
+          "required": true
+        },
+        {
+          "default": "8123",
+          "env": "DB_PORT",
+          "kind": "text",
+          "label": "Port",
+          "required": false
+        },
+        {
+          "env": "DB_USER",
+          "kind": "text",
+          "label": "User",
+          "required": true
+        },
+        {
+          "env": "DB_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        },
+        {
+          "env": "DB_NAME",
+          "kind": "text",
+          "label": "Database/Schema",
+          "required": false
+        }
+      ],
+      "binary": "clickhouse",
+      "description": "Read-only SQL access to a ClickHouse database over HTTP.",
+      "docs_url": "",
+      "group": "Data",
+      "id": "clickhouse",
+      "name": "ClickHouse",
+      "notes": "",
+      "tools": [
+        {
+          "description": "List databases / schemas on the server.",
+          "name": "list_databases"
+        },
+        {
+          "description": "List tables in a database.",
+          "name": "list_tables"
+        },
+        {
+          "description": "Show a table's columns and types.",
+          "name": "describe_table"
+        },
+        {
+          "description": "Run a read-only SQL query (guarded).",
+          "name": "run_query"
+        },
+        {
+          "description": "Show the engine and connection summary.",
+          "name": "server_info"
+        }
+      ]
+    },
+    {
+      "advanced_fields": [
+        {
+          "env": "CONFLUENCE_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "CONFLUENCE_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "CONFLUENCE_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "CONFLUENCE_URL",
+          "help": "e.g. https://wiki.corp.com",
+          "kind": "text",
+          "label": "Confluence base URL",
+          "required": true
+        },
+        {
+          "env": "CONFLUENCE_TOKEN",
+          "help": "Recommended for Data Center 7.9+. Generate in Profile, Personal Access Tokens.",
+          "kind": "secret",
+          "label": "Personal Access Token",
+          "required": false
+        },
+        {
+          "env": "CONFLUENCE_USERNAME",
+          "help": "Use with password if you don't have a PAT.",
+          "kind": "text",
+          "label": "Username",
+          "required": false
+        },
+        {
+          "env": "CONFLUENCE_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        }
+      ],
+      "binary": "confluence",
+      "description": "Search and read self-hosted Confluence pages (Data Center / Server).",
+      "docs_url": "https://developer.atlassian.com/server/confluence/",
+      "group": "Atlassian",
+      "id": "confluence",
+      "name": "Confluence",
+      "notes": "Set CONFLUENCE_URL and either a token or username+password.",
+      "tools": [
+        {
+          "description": "Search Confluence pages with CQL.",
+          "name": "confluence_search"
+        },
+        {
+          "description": "Read a Confluence page by ID.",
+          "name": "confluence_get_page"
+        },
+        {
+          "description": "List accessible Confluence spaces.",
+          "name": "confluence_list_spaces"
+        }
+      ]
+    },
+    {
+      "advanced_fields": [
+        {
+          "env": "JIRA_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "JIRA_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "JIRA_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "JIRA_URL",
+          "help": "e.g. https://jira.corp.com",
+          "kind": "text",
+          "label": "Jira base URL",
+          "required": true
+        },
+        {
+          "env": "JIRA_TOKEN",
+          "help": "Recommended for Data Center 7.9+. Generate in Profile, Personal Access Tokens.",
+          "kind": "secret",
+          "label": "Personal Access Token",
+          "required": false
+        },
+        {
+          "env": "JIRA_USERNAME",
+          "help": "Use with password if you don't have a PAT.",
+          "kind": "text",
+          "label": "Username",
+          "required": false
+        },
+        {
+          "env": "JIRA_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        }
+      ],
+      "binary": "jira",
+      "description": "Search and read self-hosted Jira issues (Data Center / Server).",
+      "docs_url": "https://developer.atlassian.com/server/jira/platform/rest/",
+      "group": "Atlassian",
+      "id": "jira",
+      "name": "Jira",
+      "notes": "Set JIRA_URL and either a token or username+password.",
+      "tools": [
+        {
+          "description": "Search Jira issues with JQL.",
+          "name": "jira_search"
+        },
+        {
+          "description": "Read a Jira issue by key.",
+          "name": "jira_get_issue"
+        },
+        {
+          "description": "List Jira projects.",
+          "name": "jira_list_projects"
+        }
+      ]
+    },
+    {
+      "auth_fields": [
+        {
+          "default": "127.0.0.1",
+          "env": "DB_HOST",
+          "kind": "text",
+          "label": "Host",
+          "required": true
+        },
+        {
+          "default": "3306",
+          "env": "DB_PORT",
+          "kind": "text",
+          "label": "Port",
+          "required": false
+        },
+        {
+          "env": "DB_USER",
+          "kind": "text",
+          "label": "User",
+          "required": true
+        },
+        {
+          "env": "DB_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        },
+        {
+          "env": "DB_NAME",
+          "kind": "text",
+          "label": "Database/Schema",
+          "required": false
+        }
+      ],
+      "binary": "mariadb",
+      "description": "Read-only SQL access to a MariaDB database.",
+      "docs_url": "",
+      "group": "Data",
+      "id": "mariadb",
+      "name": "MariaDB",
+      "notes": "",
+      "tools": [
+        {
+          "description": "List databases / schemas on the server.",
+          "name": "list_databases"
+        },
+        {
+          "description": "List tables in a database.",
+          "name": "list_tables"
+        },
+        {
+          "description": "Show a table's columns and types.",
+          "name": "describe_table"
+        },
+        {
+          "description": "Run a read-only SQL query (guarded).",
+          "name": "run_query"
+        },
+        {
+          "description": "Show the engine and connection summary.",
+          "name": "server_info"
+        }
+      ]
+    },
+    {
+      "auth_fields": [
+        {
+          "default": "127.0.0.1",
+          "env": "DB_HOST",
+          "kind": "text",
+          "label": "Host",
+          "required": true
+        },
+        {
+          "default": "3306",
+          "env": "DB_PORT",
+          "kind": "text",
+          "label": "Port",
+          "required": false
+        },
+        {
+          "env": "DB_USER",
+          "kind": "text",
+          "label": "User",
+          "required": true
+        },
+        {
+          "env": "DB_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        },
+        {
+          "env": "DB_NAME",
+          "kind": "text",
+          "label": "Database/Schema",
+          "required": false
+        }
+      ],
+      "binary": "mysql",
+      "description": "Read-only SQL access to a MySQL database.",
+      "docs_url": "",
+      "group": "Data",
+      "id": "mysql",
+      "name": "MySQL",
+      "notes": "",
+      "tools": [
+        {
+          "description": "List databases / schemas on the server.",
+          "name": "list_databases"
+        },
+        {
+          "description": "List tables in a database.",
+          "name": "list_tables"
+        },
+        {
+          "description": "Show a table's columns and types.",
+          "name": "describe_table"
+        },
+        {
+          "description": "Run a read-only SQL query (guarded).",
+          "name": "run_query"
+        },
+        {
+          "description": "Show the engine and connection summary.",
+          "name": "server_info"
+        }
+      ]
+    },
+    {
+      "auth_fields": [
+        {
+          "default": "127.0.0.1",
+          "env": "DB_HOST",
+          "kind": "text",
+          "label": "Host",
+          "required": true
+        },
+        {
+          "default": "1521",
+          "env": "DB_PORT",
+          "kind": "text",
+          "label": "Port",
+          "required": false
+        },
+        {
+          "env": "DB_USER",
+          "kind": "text",
+          "label": "User",
+          "required": true
+        },
+        {
+          "env": "DB_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        },
+        {
+          "env": "DB_NAME",
+          "kind": "text",
+          "label": "Database/Schema",
+          "required": false
+        },
+        {
+          "env": "DB_SERVICE",
+          "kind": "text",
+          "label": "Service Name",
+          "required": false
+        }
+      ],
+      "binary": "oracle",
+      "description": "Read-only SQL access to an Oracle database.",
+      "docs_url": "",
+      "group": "Data",
+      "id": "oracle",
+      "name": "Oracle",
+      "notes": "Requires building with --features oracle and Oracle Instant Client installed.",
+      "tools": [
+        {
+          "description": "List databases / schemas on the server.",
+          "name": "list_databases"
+        },
+        {
+          "description": "List tables in a database.",
+          "name": "list_tables"
+        },
+        {
+          "description": "Show a table's columns and types.",
+          "name": "describe_table"
+        },
+        {
+          "description": "Run a read-only SQL query (guarded).",
+          "name": "run_query"
+        },
+        {
+          "description": "Show the engine and connection summary.",
+          "name": "server_info"
+        }
+      ]
+    }
+  ]
+}

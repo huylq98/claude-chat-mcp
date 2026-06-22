@@ -14,7 +14,7 @@ test("switching to Vietnamese translates the hero", async ({ page }) => {
   await page.locator('[data-lang="vi"]').click();
   await expect(page.locator("html")).toHaveAttribute("lang", "vi");
   await expect(page.locator(".hero h1")).toContainText("Kết nối Claude");
-  await expect(page.locator(".btn-primary")).toContainText("Xem trình kết nối");
+  await expect(page.locator("#search")).toHaveAttribute("placeholder", /Tìm công cụ/);
 });
 
 test("language choice persists across reload", async ({ page }) => {

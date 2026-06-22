@@ -9,9 +9,8 @@
 /playwright-report
 /.playwright
 
-# local review artifacts
+# local review artifacts (root copy is generated; site/registry.json is committed for deploy)
 /registry.json
-/site/registry.json
 
 # wrangler files
 .wrangler

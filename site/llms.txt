@@ -1,0 +1,17 @@
+# Claude Chat MCP
+
+> Free, open-source MCP connectors that let Claude Desktop work with the self-hosted and on-prem tools a company runs, like Confluence, Jira, Bitbucket, Airtable, and SQL databases. Each connector is a small local program; nothing runs in the cloud.
+
+The website at https://claudechatmcp.com is a searchable catalog of the available connectors, in English and Vietnamese. The catalog data lives at https://claudechatmcp.com/registry.json.
+
+## Connectors
+- Confluence: search and read pages in a self-hosted Confluence (Server / Data Center).
+- Jira: search and read issues with JQL in a self-hosted Jira.
+- Bitbucket: browse repositories, pull requests, and commits on Bitbucket Server.
+- Airtable: read and update Airtable bases, tables, and records.
+- MySQL, MariaDB, ClickHouse, Oracle: read-only SQL access to each database.
+
+## Links
+- Catalog: https://claudechatmcp.com/
+- Source code: https://github.com/huylq98/claude-chat-mcp
+- Connector registry (JSON): https://claudechatmcp.com/registry.json
