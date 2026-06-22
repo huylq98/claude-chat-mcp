@@ -159,7 +159,9 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .suggest-group { font-family: var(--font-body); font-size: 0.78rem; color: var(--text-faint); }
 
 .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; margin-top: 22px; }
-.no-results { text-align: center; padding: 48px 0; font-size: 1rem; }
+.no-results { grid-column: 1 / -1; text-align: center; padding: 72px 0; display: grid; gap: 14px; justify-items: center; }
+.no-results-mark { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 16px; background: var(--surface); border: 1px solid var(--hairline); color: var(--text-faint); font-size: 1.5rem; }
+.no-results-title { color: var(--text-dim); margin: 0; font-size: 1rem; }
 
 .btn {
   display: inline-flex; align-items: center; gap: 10px;

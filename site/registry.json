@@ -826,6 +826,74 @@
           "name": "server_info"
         }
       ]
+    },
+    {
+      "advanced_fields": [
+        {
+          "env": "REDMINE_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "REDMINE_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "REDMINE_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "REDMINE_URL",
+          "help": "e.g. https://redmine.corp.com",
+          "kind": "text",
+          "label": "Redmine base URL",
+          "required": true
+        },
+        {
+          "env": "REDMINE_TOKEN",
+          "help": "Your Redmine API access key from My account > API access key",
+          "kind": "secret",
+          "label": "API access key",
+          "required": true
+        }
+      ],
+      "binary": "redmine",
+      "description": "Search and read self-hosted Redmine projects and issues (and create issues/notes in Writer mode).",
+      "docs_url": "https://www.redmine.org/projects/redmine/wiki/Rest_api",
+      "group": "Productivity",
+      "id": "redmine",
+      "name": "Redmine",
+      "notes": "Set REDMINE_URL and REDMINE_TOKEN. Write tools (create issue, add note) require Writer mode via REDMINE_MODE.",
+      "tools": [
+        {
+          "description": "List Redmine projects.",
+          "name": "redmine_list_projects"
+        },
+        {
+          "description": "List issues in Redmine, optionally filtered by project.",
+          "name": "redmine_list_issues"
+        },
+        {
+          "description": "Read a Redmine issue by its id.",
+          "name": "redmine_get_issue"
+        },
+        {
+          "description": "Create a new issue in a Redmine project.",
+          "name": "redmine_create_issue"
+        },
+        {
+          "description": "Add a note to a Redmine issue.",
+          "name": "redmine_add_note"
+        }
+      ]
     }
   ]
 }

@@ -76,6 +76,15 @@ test("page stays em-dash free in Vietnamese", async ({ page }) => {
   expect(text).not.toMatch(/[–—]/);
 });
 
+test("no-results state offers a reset that restores the grid", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForSelector(".card-shell");
+  await page.fill("#search", "zzqqxx-no-such-tool");
+  await expect(page.locator(".no-results")).toBeVisible();
+  await page.locator("#empty-reset").click();
+  await expect(page.locator(".card-shell").first()).toBeVisible();
+});
+
 test("rendered page contains no em-dash or en-dash", async ({ page }) => {
   await page.goto("/");
   await page.waitForSelector(".card-shell");

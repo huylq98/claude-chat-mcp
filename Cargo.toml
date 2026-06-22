@@ -16,6 +16,7 @@ members = [
     "crates/connectors/postgres",
     "crates/connectors/github",
     "crates/connectors/jenkins",
+    "crates/connectors/redmine",
 ]
 # The Tauri control-panel app is built separately (it embeds the connector
 # binaries via include_bytes!, so it can't build until resources/ is populated).
