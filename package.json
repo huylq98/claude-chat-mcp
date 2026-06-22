@@ -1,0 +1,14 @@
+{
+  "name": "claude-chat-mcp-site",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local catalog site + Playwright evaluation harness for Claude Chat MCP connectors.",
+  "scripts": {
+    "serve": "node scripts/static-server.mjs site 4321",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

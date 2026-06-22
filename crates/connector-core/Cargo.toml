@@ -1,0 +1,25 @@
+[package]
+name = "connector-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+reqwest = { workspace = true }
+url = { workspace = true }
+regex = { workspace = true }
+tracing = { workspace = true }
+urlencoding = "2"
+base64 = "0.22"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winhttp", "winbase", "errhandlingapi"] }
+
+[dev-dependencies]
+wiremock = "0.6"
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

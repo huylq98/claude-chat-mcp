@@ -1,0 +1,14 @@
+/target
+**/*.rs.bk
+.env
+*.pdb
+
+# node / playwright
+/node_modules
+/test-results
+/playwright-report
+/.playwright
+
+# local review artifacts
+/registry.json
+/site/registry.json

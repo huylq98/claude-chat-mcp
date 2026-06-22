@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Chat MCP · connectors for self-hosted tools</title>
+  <meta name="description" content="Local MCP connectors that link Claude Desktop to the self-hosted and on-prem editions of the tools your company runs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav-wrap">
+    <nav class="nav glass">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Claude Chat MCP</span>
+      </a>
+      <div class="nav-links">
+        <a href="#connectors" data-i18n="nav_connectors">Connectors</a>
+        <a href="#install" data-i18n="nav_install">Install</a>
+        <a class="nav-cta" href="https://github.com/huylq98/claude-chat-mcp" target="_blank" rel="noopener">
+          GitHub <span class="cta-icon" aria-hidden="true">↗</span>
+        </a>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="vi">VI</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow reveal" data-i18n="eyebrow">Open-source · MCP for Claude Desktop</p>
+      <h1 class="reveal" data-i18n-html="hero_title">Connect Claude to the tools<br />your company actually runs.</h1>
+      <p class="lede reveal" data-i18n="hero_lede">
+        Local connectors for the self-hosted and on-prem editions Anthropic's cloud
+        connectors skip. No cloud, no hosting, behind your firewall.
+      </p>
+      <div class="hero-cta reveal">
+        <a class="btn btn-primary" href="#connectors">
+          <span data-i18n="cta_browse">Browse connectors</span>
+          <span class="cta-icon" aria-hidden="true">↓</span>
+        </a>
+        <a class="btn btn-ghost" href="#install" data-i18n="cta_install">How it installs</a>
+      </div>
+    </section>
+
+    <section id="connectors" class="section">
+      <div class="section-head">
+        <div class="section-title">
+          <h2 data-i18n="h2_connectors">Connectors</h2>
+          <span class="count" id="conn-count"></span>
+        </div>
+        <div class="filters" id="filters" role="tablist" aria-label="Filter connectors by group"></div>
+      </div>
+      <div id="grid" class="grid">
+        <p class="muted loading" id="loading" data-i18n="loading">Loading registry…</p>
+      </div>
+    </section>
+
+    <section id="install" class="section">
+      <h2 data-i18n="h2_install">Install locally</h2>
+      <ol class="steps">
+        <li class="step glass">
+          <span class="step-n">1</span>
+          <div>
+            <h3 data-i18n="step1_h">Build</h3>
+            <p data-i18n="step1_p">Compile the connectors once.</p>
+            <code class="snippet">./scripts/cargo.ps1 build --release</code>
+          </div>
+        </li>
+        <li class="step glass">
+          <span class="step-n">2</span>
+          <div>
+            <h3 data-i18n="step2_h">Register</h3>
+            <p data-i18n="step2_p">Point Claude Desktop at the binary with the snippet on each connector card.</p>
+          </div>
+        </li>
+        <li class="step glass">
+          <span class="step-n">3</span>
+          <div>
+            <h3 data-i18n="step3_h">Restart</h3>
+            <p data-i18n="step3_p">Fully quit Claude Desktop (tray, then Exit) and reopen it. Ask Claude to use the new tools.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span data-i18n="footer_license">Open-source · MIT</span>
+    <a class="footer-link" href="https://github.com/huylq98/claude-chat-mcp" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
