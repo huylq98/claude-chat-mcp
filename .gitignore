@@ -13,6 +13,12 @@
 # local review artifacts (root copy is generated; site/registry.json is committed for deploy)
 /registry.json
 
+# control-panel embeds per-OS connector binaries + a registry copy at build time
+/crates/control-panel/resources/*.exe
+/crates/control-panel/resources/*.bin
+/crates/control-panel/resources/registry.json
+/crates/control-panel/target
+
 # wrangler files
 .wrangler
 .dev.vars*

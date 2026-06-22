@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Claude Chat MCP</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="bg-mesh" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <main class="shell">
+      <header class="masthead">
+        <div class="mark">
+          <svg width="16" height="16" viewBox="0 0 14 14" aria-hidden="true">
+            <rect x="1" y="1" width="5" height="5" fill="currentColor" />
+            <rect x="8" y="1" width="5" height="5" fill="currentColor" opacity=".55" />
+            <rect x="1" y="8" width="5" height="5" fill="currentColor" opacity=".55" />
+            <rect x="8" y="8" width="5" height="5" fill="currentColor" opacity=".25" />
+          </svg>
+          <span data-i18n="appName">Claude Chat MCP</span>
+        </div>
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="vi">VI</button>
+        </div>
+      </header>
+
+      <section class="intro">
+        <h1 data-i18n="title">Connector control panel</h1>
+        <p class="lede" data-i18n="lede">
+          Turn connectors on or off, set credentials, and choose a permission role.
+          Changes are written to Claude Desktop directly.
+        </p>
+      </section>
+
+      <div id="global-status" class="status" aria-live="polite"></div>
+
+      <div id="connectors" class="connector-grid"></div>
+    </main>
+
+    <!-- Card template -->
+    <template id="card-tpl">
+      <article class="card" data-state="off">
+        <div class="card-head">
+          <div class="card-id">
+            <span class="card-group"></span>
+            <h2 class="card-name"></h2>
+            <p class="card-desc"></p>
+          </div>
+          <div class="card-state">
+            <span class="state-pill" data-i18n="off">Off</span>
+          </div>
+        </div>
+        <button type="button" class="expander">
+          <span class="expander-label" data-i18n="configure">Configure</span>
+          <span class="chev">v</span>
+        </button>
+        <div class="card-body" hidden>
+          <form class="fields" autocomplete="off" novalidate></form>
+          <div class="role-row">
+            <label class="field-label" data-i18n="role">Permission role</label>
+            <select class="role-select">
+              <option value="viewer" data-i18n="viewer">Viewer (read only)</option>
+              <option value="writer" data-i18n="writer">Writer (read and write)</option>
+            </select>
+          </div>
+          <p class="card-notes" hidden></p>
+          <div class="card-status status" aria-live="polite"></div>
+          <div class="card-actions">
+            <button type="button" class="btn btn-primary btn-install">
+              <span data-i18n="install">Install</span>
+            </button>
+            <button type="button" class="btn btn-danger btn-remove" hidden data-i18n="remove">
+              Remove
+            </button>
+          </div>
+          <p class="restart-note" hidden data-i18n="restartNote">
+            Now fully quit and reopen Claude Desktop for this change to take effect.
+          </p>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

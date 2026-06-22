@@ -9,36 +9,36 @@ const countEl = document.getElementById("conn-count");
 const STRINGS = {
   en: {
     nav_connectors: "Connectors", nav_install: "Install",
-    eyebrow: "Free, for Claude Desktop",
+    eyebrow: "Free · works with Claude Desktop",
     hero_title: "Connect Claude to the tools your company runs.",
-    hero_lede: "Local connectors for the self-hosted and on-prem editions Anthropic's cloud connectors skip. No cloud, no hosting, behind your firewall.",
+    hero_lede: "Let Claude read your company's Jira, Confluence, and databases to answer questions and do real work. Everything runs on your own computer, so your data never leaves it.",
     cta_install: "How it installs",
     h2_connectors: "Connectors", h2_install: "How to install",
-    step1_h: "Download", step1_p: "Find your tool above and click \"Add to Claude Desktop\" to download a small file.",
+    step1_h: "Download", step1_p: "Find your tool above and click \"Download for Claude Desktop\" to get a small file.",
     step2_h: "Open in Claude Desktop", step2_p: "In Claude Desktop, open Settings and then Extensions, and drag the downloaded file in (or just double-click it).",
-    step3_h: "Fill in and install", step3_p: "Type your tool's web address and access key when asked, click Install, then reopen Claude Desktop. Now just ask Claude.",
+    step3_h: "Fill in and install", step3_p: "Enter the web address and the password or token your IT gave you, click Install, then reopen Claude Desktop. Now just ask Claude.",
     footer_license: "Free to use",
-    loading: "Loading…", search_ph: "Search for a tool, e.g. Jira or MySQL", no_results: "No connectors match",
+    loading: "Loading…", search_ph: "Search for a tool, e.g. Jira or Confluence", no_results: "No connectors match",
 
     all: "All", connectors_word: "connectors",
-    add_to_claude: "Add to Claude Desktop",
+    add_to_claude: "Download for Claude Desktop",
     install_hint: "Downloads a file. Open it in Claude Desktop to install.",
   },
   vi: {
     nav_connectors: "Trình kết nối", nav_install: "Cài đặt",
-    eyebrow: "Miễn phí, cho Claude Desktop",
+    eyebrow: "Miễn phí · dùng với Claude Desktop",
     hero_title: "Kết nối Claude tới công cụ nội bộ công ty bạn dùng.",
-    hero_lede: "Trình kết nối chạy nội bộ cho các phiên bản self-hosted mà trình kết nối đám mây của Anthropic bỏ qua. Không đám mây, chạy sau tường lửa.",
+    hero_lede: "Cho phép Claude đọc Jira, Confluence và cơ sở dữ liệu của công ty bạn để trả lời câu hỏi và làm việc thật. Mọi thứ chạy ngay trên máy của bạn, nên dữ liệu không ra ngoài.",
     cta_install: "Cách cài đặt",
     h2_connectors: "Trình kết nối", h2_install: "Cách cài đặt",
-    step1_h: "Tải về", step1_p: "Tìm công cụ ở trên và bấm \"Thêm vào Claude Desktop\" để tải một tệp nhỏ.",
+    step1_h: "Tải về", step1_p: "Tìm công cụ ở trên và bấm \"Tải cho Claude Desktop\" để lấy một tệp nhỏ.",
     step2_h: "Mở trong Claude Desktop", step2_p: "Trong Claude Desktop, mở Settings rồi Extensions, và kéo tệp vừa tải vào (hoặc bấm đúp).",
-    step3_h: "Điền thông tin và cài", step3_p: "Nhập địa chỉ web và khóa truy cập của công cụ khi được hỏi, bấm Install, rồi mở lại Claude Desktop. Giờ chỉ cần hỏi Claude.",
+    step3_h: "Điền thông tin và cài", step3_p: "Nhập địa chỉ web và mật khẩu hoặc token mà bộ phận IT cấp cho bạn, bấm Install, rồi mở lại Claude Desktop. Giờ chỉ cần hỏi Claude.",
     footer_license: "Miễn phí sử dụng",
-    loading: "Đang tải…", search_ph: "Tìm công cụ, vd: Jira hoặc MySQL", no_results: "Không có trình kết nối phù hợp",
+    loading: "Đang tải…", search_ph: "Tìm công cụ, vd: Jira hoặc Confluence", no_results: "Không có trình kết nối phù hợp",
 
     all: "Tất cả", connectors_word: "trình kết nối",
-    add_to_claude: "Thêm vào Claude Desktop",
+    add_to_claude: "Tải cho Claude Desktop",
     install_hint: "Tải về một tệp. Mở trong Claude Desktop để cài đặt.",
   },
 };
@@ -86,7 +86,7 @@ function card(c) {
       <h3>${esc(c.name)}</h3>
       <p class="card-desc">${esc(desc)}</p>
       <div class="card-actions">
-        <a class="btn btn-primary card-dl" href="${dl}">
+        <a class="btn btn-primary card-dl" href="${dl}" download>
           <span>${t("add_to_claude")}</span>
           <span class="cta-icon" aria-hidden="true">↓</span>
         </a>
@@ -122,13 +122,15 @@ function buildFilters() {
   filtersEl.innerHTML = groups
     .map((g) => {
       const label = g === "All" ? t("all") : (currentLang === "vi" ? (GROUP_VI[g] || g) : g);
-      return `<button class="filter${g === currentFilter ? " active" : ""}" data-group="${esc(g)}">${esc(label)}</button>`;
+      const on = g === currentFilter;
+      return `<button class="filter${on ? " active" : ""}" aria-pressed="${on}" data-group="${esc(g)}">${esc(label)}</button>`;
     })
     .join("");
   filtersEl.querySelectorAll(".filter").forEach((btn) => {
     btn.addEventListener("click", () => {
-      filtersEl.querySelectorAll(".filter").forEach((b) => b.classList.remove("active"));
+      filtersEl.querySelectorAll(".filter").forEach((b) => { b.classList.remove("active"); b.setAttribute("aria-pressed", "false"); });
       btn.classList.add("active");
+      btn.setAttribute("aria-pressed", "true");
       currentFilter = btn.dataset.group;
       renderGrid();
     });
@@ -155,7 +157,11 @@ function applyLang(lang) {
     const k = el.dataset.i18nPh;
     if (dict[k] != null) el.setAttribute("placeholder", dict[k]);
   });
-  document.querySelectorAll(".lang-btn").forEach((b) => b.classList.toggle("active", b.dataset.lang === currentLang));
+  document.querySelectorAll(".lang-btn").forEach((b) => {
+    const on = b.dataset.lang === currentLang;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-pressed", String(on));
+  });
   try { localStorage.setItem("lang", currentLang); } catch { /* ignore */ }
   if (connectors.length) {
     setCount();
@@ -177,27 +183,48 @@ function initSearch() {
   const input = document.getElementById("search");
   const box = document.getElementById("suggest");
   if (!input) return;
+  let active = -1;
 
   const suggestionsFor = (q) =>
     !q ? [] : connectors.filter((c) => [c.name, c.id, c.group].join(" ").toLowerCase().includes(q)).slice(0, 6);
+  const itemEls = () => (box ? [...box.querySelectorAll(".suggest-item")] : []);
 
   function showSuggest(q) {
     if (!box) return;
     const items = suggestionsFor(q);
     if (!items.length) { hideSuggest(); return; }
+    active = -1;
     box.innerHTML = items
-      .map((c) => {
+      .map((c, i) => {
         const group = currentLang === "vi" ? (GROUP_VI[c.group] || c.group) : (c.group || "");
-        return `<li class="suggest-item" role="option" data-name="${esc(c.name)}"><span>${esc(c.name)}</span><span class="suggest-group">${esc(group)}</span></li>`;
+        return `<li class="suggest-item" id="sg-${i}" role="option" data-name="${esc(c.name)}"><span>${esc(c.name)}</span><span class="suggest-group">${esc(group)}</span></li>`;
       })
       .join("");
     box.hidden = false;
     input.setAttribute("aria-expanded", "true");
+    input.removeAttribute("aria-activedescendant");
   }
   function hideSuggest() {
     if (!box) return;
     box.hidden = true;
+    active = -1;
     input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+  }
+  function setActive(i) {
+    const els = itemEls();
+    if (!els.length) return;
+    active = (i + els.length) % els.length;
+    els.forEach((el, n) => el.classList.toggle("is-active", n === active));
+    input.setAttribute("aria-activedescendant", els[active].id);
+  }
+  function choose(li) {
+    if (!li) return;
+    input.value = li.dataset.name;
+    query = li.dataset.name.trim().toLowerCase();
+    hideSuggest();
+    renderGrid();
+    input.focus();
   }
 
   input.addEventListener("input", () => {
@@ -206,7 +233,13 @@ function initSearch() {
     showSuggest(query);
   });
   input.addEventListener("focus", () => { if (query) showSuggest(query); });
-  input.addEventListener("keydown", (e) => { if (e.key === "Escape") hideSuggest(); });
+  input.addEventListener("keydown", (e) => {
+    if (box.hidden) { if (e.key === "Escape") hideSuggest(); return; }
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive(active + 1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive(active - 1); }
+    else if (e.key === "Enter" && active > -1) { e.preventDefault(); choose(itemEls()[active]); }
+    else if (e.key === "Escape") { hideSuggest(); }
+  });
   input.addEventListener("blur", () => setTimeout(hideSuggest, 120));
 
   if (box) {
@@ -215,11 +248,7 @@ function initSearch() {
       const li = e.target.closest(".suggest-item");
       if (!li) return;
       e.preventDefault();
-      input.value = li.dataset.name;
-      query = li.dataset.name.trim().toLowerCase();
-      hideSuggest();
-      renderGrid();
-      input.focus();
+      choose(li);
     });
   }
 }

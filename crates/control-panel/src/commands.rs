@@ -1,0 +1,84 @@
+use crate::claude_config::{
+    default_config_path, read_installed, remove_entry, write_entry, InstalledEntry,
+};
+use crate::installer::{
+    default_install_dir, extract_connector, probe_writable, remove_connector_file,
+};
+use crate::registry::{self, Connector};
+use serde_json::{json, Map, Value};
+use std::collections::HashMap;
+
+/// All connectors from the embedded registry.
+#[tauri::command]
+pub fn list_connectors() -> Vec<Connector> {
+    registry::load()
+}
+
+/// All currently-installed connector entries from claude_desktop_config.json.
+#[tauri::command]
+pub fn list_installed() -> Result<Vec<InstalledEntry>, String> {
+    read_installed(&default_config_path()).map_err(|e| e.to_string())
+}
+
+/// Extract the connector binary, write its `mcpServers` entry, and return the
+/// install path.
+///
+/// `values` is keyed by the connector's env var names (from the registry).
+/// `mode` is "viewer" or "writer"; we add `<UPPER(id)>_MODE = mode` to env.
+#[tauri::command]
+pub fn install_connector(
+    id: String,
+    values: HashMap<String, String>,
+    mode: String,
+) -> Result<String, String> {
+    let dir = default_install_dir();
+    if let Err(e) = probe_writable(&dir) {
+        return Err(format!(
+            "Cannot write to {}: {e}. Check permissions or your antivirus.",
+            dir.display()
+        ));
+    }
+
+    let server_path = extract_connector(&id).map_err(|e| {
+        if e.raw_os_error() == Some(32) {
+            format!(
+                "Failed to extract the connector binary: the previous server is still running \
+                 and has the file locked. Fully quit Claude Desktop (check the system tray) and \
+                 try again. ({e})"
+            )
+        } else {
+            format!(
+                "Failed to extract the connector binary: {e}. Your antivirus may be blocking \
+                 this (add an exception)."
+            )
+        }
+    })?;
+
+    // Build env from the provided values, dropping empties.
+    let mut env: Map<String, Value> = Map::new();
+    for (k, v) in values {
+        let trimmed = v.trim();
+        if !trimmed.is_empty() {
+            env.insert(k, json!(trimmed));
+        }
+    }
+    // Permission role env var, e.g. AIRTABLE_MODE = viewer.
+    env.insert(format!("{}_MODE", id.to_uppercase()), json!(mode));
+
+    let command = server_path.to_string_lossy().replace('\\', "/");
+    let config_path = default_config_path();
+    write_entry(&config_path, &id, &command, env).map_err(|e| {
+        format!("Cannot write Claude Desktop config: {e}. Try running as Administrator.")
+    })?;
+
+    Ok(command)
+}
+
+/// Remove a connector's `mcpServers` entry and delete its extracted binary.
+#[tauri::command]
+pub fn uninstall_connector(id: String) -> Result<(), String> {
+    let config_path = default_config_path();
+    remove_entry(&config_path, &id).map_err(|e| format!("Failed to update config: {e}"))?;
+    remove_connector_file(&id);
+    Ok(())
+}

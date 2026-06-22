@@ -46,6 +46,19 @@ test("cards are visible on load without scrolling", async ({ page }) => {
   await expect(page.locator(".card-shell").first()).toBeVisible();
 });
 
+test("suggestions are keyboard-navigable (Arrow + Enter)", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForSelector(".card-shell");
+  const input = page.locator("#search");
+  await input.fill("ji");
+  await expect(page.locator("#suggest .suggest-item").first()).toBeVisible();
+  await input.press("ArrowDown");
+  await expect(page.locator(".suggest-item.is-active")).toHaveText(/Jira/);
+  await input.press("Enter");
+  await expect(page.locator(".card-shell")).toHaveCount(1);
+  await expect(page.locator(".card-shell h3")).toHaveText("Jira");
+});
+
 test("a query with no matches shows a no-results message", async ({ page }) => {
   await page.goto("/");
   await page.waitForSelector(".card-shell");
