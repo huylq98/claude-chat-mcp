@@ -273,6 +273,75 @@
     {
       "advanced_fields": [
         {
+          "env": "ES_PROXY_URL",
+          "kind": "text",
+          "label": "Proxy URL",
+          "required": false
+        },
+        {
+          "env": "ES_CA_BUNDLE",
+          "kind": "text",
+          "label": "CA bundle path",
+          "required": false
+        },
+        {
+          "default": "true",
+          "env": "ES_SSL_VERIFY",
+          "kind": "bool",
+          "label": "Verify SSL",
+          "required": false
+        }
+      ],
+      "auth_fields": [
+        {
+          "env": "ES_URL",
+          "help": "e.g. https://your-es-host:9200",
+          "kind": "text",
+          "label": "Elasticsearch base URL",
+          "required": true
+        },
+        {
+          "env": "ES_USER",
+          "kind": "text",
+          "label": "Username",
+          "required": false
+        },
+        {
+          "env": "ES_PASSWORD",
+          "kind": "secret",
+          "label": "Password",
+          "required": false
+        }
+      ],
+      "binary": "elasticsearch",
+      "description": "Search self-hosted Elasticsearch or OpenSearch indices and read mappings (and index documents in Writer mode).",
+      "docs_url": "https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html",
+      "group": "Data",
+      "id": "elasticsearch",
+      "name": "Elasticsearch",
+      "notes": "Set ES_URL. Credentials (ES_USER, ES_PASSWORD) are optional for unauthenticated clusters. The write tool (index document) requires Writer mode via ES_MODE.",
+      "tools": [
+        {
+          "description": "List indices in the cluster.",
+          "name": "es_list_indices"
+        },
+        {
+          "description": "Get the field mapping for an index.",
+          "name": "es_get_mapping"
+        },
+        {
+          "description": "Search an index with an optional Lucene query string.",
+          "name": "es_search"
+        },
+        {
+          "description": "Index a JSON document into an index.",
+          "name": "es_index_document"
+        }
+      ]
+    },
+    {
+      "advanced_fields": [
+        {
           "env": "GITHUB_PROXY_URL",
           "kind": "text",
           "label": "Proxy URL",

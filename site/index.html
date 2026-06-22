@@ -75,8 +75,9 @@
         <input id="search" class="search-input" type="search" autocomplete="off" spellcheck="false"
                placeholder="Search for a tool, e.g. Jira or Confluence" data-i18n-ph="search_ph" aria-label="Search connectors"
                role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list" />
-        <ul class="suggest" id="suggest" role="listbox" hidden></ul>
+        <ul class="suggest" id="suggest" role="listbox" aria-label="Search suggestions" hidden></ul>
       </form>
+      <span id="sr-status" class="sr-only" aria-live="polite"></span>
       <div class="hero-cta">
         <a class="btn btn-ghost" href="#install" data-i18n="cta_install">How it installs</a>
       </div>

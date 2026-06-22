@@ -5,6 +5,8 @@
 const grid = document.getElementById("grid");
 const filtersEl = document.getElementById("filters");
 const countEl = document.getElementById("conn-count");
+const srStatus = document.getElementById("sr-status");
+function srAnnounce(msg) { if (srStatus) srStatus.textContent = msg; }
 
 const STRINGS = {
   en: {
@@ -18,7 +20,7 @@ const STRINGS = {
     step2_h: "Open in Claude Desktop", step2_p: "Open Claude Desktop, go to Settings then Extensions, and drag the file in. (Double-clicking the file also works.)",
     step3_h: "Fill in and install", step3_p: "Enter the web address and password your IT gave you, click Install, then reopen Claude Desktop. Now just ask Claude.",
     footer_license: "Free to use",
-    loading: "Loading…", search_ph: "Search for a tool, e.g. Jira or Confluence", no_results: "No connectors match", clear_search: "Show all",
+    loading: "Loading…", search_ph: "Search for a tool, e.g. Jira or Confluence", no_results: "No connectors match", clear_search: "Show all", suggestions: "suggestions",
 
     all: "All", connectors_word: "connectors",
     add_to_claude: "Download for Claude Desktop",
@@ -35,7 +37,7 @@ const STRINGS = {
     step2_h: "Mở trong Claude Desktop", step2_p: "Mở Claude Desktop, vào Settings rồi Extensions, và kéo tệp vào. (Bấm đúp vào tệp cũng được.)",
     step3_h: "Điền thông tin và cài", step3_p: "Nhập địa chỉ web và mật khẩu mà bộ phận IT cấp cho bạn, bấm Install, rồi mở lại Claude Desktop. Giờ chỉ cần hỏi Claude.",
     footer_license: "Miễn phí sử dụng",
-    loading: "Đang tải…", search_ph: "Tìm công cụ, vd: Jira hoặc Confluence", no_results: "Không có trình kết nối phù hợp", clear_search: "Hiện tất cả",
+    loading: "Đang tải…", search_ph: "Tìm công cụ, vd: Jira hoặc Confluence", no_results: "Không có trình kết nối phù hợp", clear_search: "Hiện tất cả", suggestions: "gợi ý",
 
     all: "Tất cả", connectors_word: "trình kết nối",
     add_to_claude: "Tải cho Claude Desktop",
@@ -60,6 +62,7 @@ const EN_DESC = {
   jenkins: "See your company's build and deploy jobs, and start them.",
   redmine: "Search and read your team's Redmine projects and issues, and add notes.",
   grafana: "Browse your company's Grafana dashboards, data sources, and alerts.",
+  elasticsearch: "Search your company's Elasticsearch or OpenSearch indices and logs.",
 };
 const VI_DESC = {
   confluence: "Tìm và đọc các trang Confluence của công ty bạn.",
@@ -76,6 +79,7 @@ const VI_DESC = {
   jenkins: "Xem các tác vụ build và triển khai của công ty bạn, và chạy chúng.",
   redmine: "Tìm và đọc dự án và issue Redmine của nhóm bạn, và thêm ghi chú.",
   grafana: "Xem bảng điều khiển, nguồn dữ liệu và cảnh báo Grafana của công ty bạn.",
+  elasticsearch: "Tìm kiếm trong các chỉ mục và log Elasticsearch hoặc OpenSearch của công ty bạn.",
 };
 const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Dev: "Lập trình", Other: "Khác" };
 
@@ -140,6 +144,7 @@ function renderGrid() {
         <p class="no-results-title">${t("no_results")}</p>
         <button type="button" class="btn btn-ghost" id="empty-reset">${t("clear_search")}</button>
       </div>`;
+    srAnnounce(t("no_results"));
     const reset = document.getElementById("empty-reset");
     if (reset) reset.addEventListener("click", () => {
       query = "";
@@ -240,6 +245,7 @@ function initSearch() {
     box.hidden = false;
     input.setAttribute("aria-expanded", "true");
     input.removeAttribute("aria-activedescendant");
+    srAnnounce(`${items.length} ${t("suggestions")}`);
   }
   function hideSuggest() {
     if (!box) return;

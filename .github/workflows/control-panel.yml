@@ -35,13 +35,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
       - name: Build connector binaries
-        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle --bin gitlab --bin postgres --bin github --bin jenkins --bin redmine --bin grafana
+        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle --bin gitlab --bin postgres --bin github --bin jenkins --bin redmine --bin grafana --bin elasticsearch
       - name: Stage app resources (this OS's binaries + registry)
         shell: bash
         run: |
           mkdir -p crates/control-panel/resources
           cp site/registry.json crates/control-panel/resources/registry.json
-          for id in confluence jira bitbucket airtable mysql mariadb clickhouse oracle gitlab postgres github jenkins redmine grafana; do
+          for id in confluence jira bitbucket airtable mysql mariadb clickhouse oracle gitlab postgres github jenkins redmine grafana elasticsearch; do
             if [ "${{ matrix.plat }}" = "win" ]; then cp "target/release/$id.exe" "crates/control-panel/resources/$id.exe"; else cp "target/release/$id" "crates/control-panel/resources/$id"; fi
           done
       - name: Install Tauri CLI
