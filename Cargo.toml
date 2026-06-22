@@ -12,6 +12,7 @@ members = [
     "crates/connectors/mariadb",
     "crates/connectors/clickhouse",
     "crates/connectors/oracle",
+    "crates/connectors/gitlab",
 ]
 # The Tauri control-panel app is built separately (it embeds the connector
 # binaries via include_bytes!, so it can't build until resources/ is populated).

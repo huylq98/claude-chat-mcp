@@ -54,8 +54,9 @@ const VI_DESC = {
   mariadb: "Truy vấn chỉ-đọc cơ sở dữ liệu MariaDB.",
   clickhouse: "Truy vấn chỉ-đọc cơ sở dữ liệu ClickHouse.",
   oracle: "Truy vấn chỉ-đọc cơ sở dữ liệu Oracle.",
+  gitlab: "Tìm và đọc dự án, issue và merge request trên GitLab tự lưu trữ (và tạo issue/bình luận ở chế độ Writer).",
 };
-const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Other: "Khác" };
+const GROUP_VI = { Atlassian: "Atlassian", Data: "Dữ liệu", Productivity: "Năng suất", Dev: "Lập trình", Other: "Khác" };
 
 let currentLang = "en";
 let currentFilter = "All";

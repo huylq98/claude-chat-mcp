@@ -29,6 +29,8 @@ const STRINGS = {
     testConn: "Test connection",
     testing: "Testing connection...",
     testOk: "Connection OK",
+    confirmRemove: "Remove the {name} connector? Claude Desktop will lose access, and the credentials you saved for it will be cleared.",
+    roleHint: "Viewer lets Claude read your data only. Writer also lets Claude create, change, and delete it. Choose Viewer unless you need changes made.",
   },
   vi: {
     appName: "Claude Chat MCP",
@@ -54,6 +56,8 @@ const STRINGS = {
     testConn: "Kiểm tra kết nối",
     testing: "Đang kiểm tra kết nối...",
     testOk: "Kết nối OK",
+    confirmRemove: "Gỡ trình kết nối {name}? Claude Desktop sẽ mất quyền truy cập, và thông tin đăng nhập đã lưu sẽ bị xóa.",
+    roleHint: "Người xem chỉ cho Claude đọc dữ liệu. Người ghi còn cho Claude tạo, sửa và xóa dữ liệu. Hãy chọn Người xem trừ khi bạn cần thay đổi.",
   },
 };
 
@@ -115,6 +119,10 @@ function buildCard(c) {
   const installed = installedById[c.id];
   const isOn = !!installed;
 
+  // Translate the card chrome (Configure, role label/hint, restart note, Remove)
+  // for the current language; specific dynamic labels are overridden below.
+  $$("[data-i18n]", node).forEach((el) => { el.textContent = t(el.dataset.i18n); });
+
   node.dataset.state = isOn ? "on" : "off";
   $(".card-group", node).textContent = c.group;
   $(".card-name", node).textContent = c.name;
@@ -169,15 +177,13 @@ function buildCard(c) {
   // Expander toggle.
   const expander = $(".expander", node);
   const body = $(".card-body", node);
+  expander.setAttribute("aria-expanded", "false");
   expander.addEventListener("click", () => {
     const open = !body.hidden;
     body.hidden = open;
     expander.classList.toggle("open", !open);
+    expander.setAttribute("aria-expanded", String(!open));
   });
-  if (isOn) {
-    body.hidden = false;
-    expander.classList.add("open");
-  }
 
   // Actions.
   $(".btn-test", node).addEventListener("click", () => testConnection(c, node));
@@ -318,6 +324,7 @@ async function installConnector(c, node) {
 
 /* ── Remove ─────────────────────────────────────────────────────────── */
 async function removeConnector(c, node) {
+  if (!window.confirm(t("confirmRemove").replace("{name}", c.name))) return;
   const status = $(".card-status", node);
   const removeBtn = $(".btn-remove", node);
   removeBtn.disabled = true;

@@ -29,12 +29,12 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Build connectors
-        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle
+        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle --bin gitlab
       - name: Collect binaries
         shell: bash
         run: |
           mkdir -p out
-          for id in confluence jira bitbucket airtable mysql mariadb clickhouse oracle; do
+          for id in confluence jira bitbucket airtable mysql mariadb clickhouse oracle gitlab; do
             if [ "${{ matrix.plat }}" = "win" ]; then cp "target/release/$id.exe" "out/$id.exe"; else cp "target/release/$id" "out/$id"; fi
           done
       - uses: actions/upload-artifact@v4
