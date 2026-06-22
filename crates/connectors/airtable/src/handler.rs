@@ -89,10 +89,17 @@ impl AirtableServer {
         let config = AirtableConfig::from_env();
         config.validate()?;
         let client = crate::client::build_client(&config)?;
+        // Viewer mode strips the write tools so Claude only sees read-only ones.
+        let mut tool_router = Self::tool_router();
+        if connector_core::Mode::from_env("AIRTABLE_MODE").is_viewer() {
+            for write_tool in ["create_record", "update_record"] {
+                tool_router.remove_route(write_tool);
+            }
+        }
         Ok(Self {
             client: Arc::new(client),
             config: Arc::new(config),
-            tool_router: Self::tool_router(),
+            tool_router,
         })
     }
 

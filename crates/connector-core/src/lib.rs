@@ -9,11 +9,13 @@ pub mod error;
 pub mod format;
 pub mod http;
 pub mod pac;
+pub mod perms;
 pub mod system_proxy;
 
 pub use error::CoreError;
 pub use format::{strip_html, truncate};
 pub use http::{Auth, HttpClient, HttpConfig};
+pub use perms::Mode;
 
 /// If `proxy_url` is unset, inherit the Windows system proxy (the same PAC /
 /// static config the user's browser uses). Makes connectors "just work" on
