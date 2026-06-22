@@ -317,18 +317,23 @@ function buildField(f, installed) {
 function collectValues(node) {
   const values = {};
   let missing = false;
+  let firstErr = null;
   $$(".field", node).forEach((w) => w.classList.remove("field-err"));
   $$(".field-input, .field-check", node).forEach((input) => {
+    input.removeAttribute("aria-invalid");
     const env = input.dataset.env;
     const kind = input.dataset.kind;
     const val = kind === "bool" ? (input.checked ? "true" : "false") : input.value.trim();
     if (input.dataset.required === "true" && kind !== "bool" && val === "") {
       missing = true;
+      input.setAttribute("aria-invalid", "true");
       const w = input.closest(".field");
       if (w) w.classList.add("field-err");
+      if (!firstErr) firstErr = input;
     }
     if (val !== "") values[env] = val;
   });
+  if (firstErr) firstErr.focus(); // move focus to the first problem, not color alone
   return { values, missing };
 }
 
