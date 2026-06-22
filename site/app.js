@@ -46,9 +46,9 @@ const STRINGS = {
 // Plain-language connector descriptions for the cards (the decision surface).
 // registry.json stays the dev source of truth; these are the friendly overrides.
 const EN_DESC = {
-  confluence: "Search and read your company's Confluence pages.",
-  jira: "Search and read your team's Jira tickets.",
-  bitbucket: "Browse your company's code projects, reviews, and history.",
+  confluence: "Search and read your company's Confluence pages, and add pages or comments.",
+  jira: "Search and read your team's Jira tickets, and create tickets or comments.",
+  bitbucket: "Browse your company's code projects and reviews, and comment on pull requests.",
   airtable: "Read and update your Airtable bases and records.",
   mysql: "Ask questions of your company's MySQL database. Read-only.",
   mariadb: "Ask questions of your company's MariaDB database. Read-only.",
@@ -65,9 +65,9 @@ const EN_DESC = {
   mongodb: "Query your company's MongoDB databases and collections.",
 };
 const VI_DESC = {
-  confluence: "Tìm và đọc các trang Confluence của công ty bạn.",
-  jira: "Tìm và đọc các ticket Jira của nhóm bạn.",
-  bitbucket: "Xem các dự án mã nguồn, lượt review và lịch sử của công ty bạn.",
+  confluence: "Tìm và đọc các trang Confluence của công ty bạn, và thêm trang hoặc bình luận.",
+  jira: "Tìm và đọc các ticket Jira của nhóm bạn, và tạo ticket hoặc bình luận.",
+  bitbucket: "Xem các dự án mã nguồn và lượt review của công ty bạn, và bình luận trên pull request.",
   airtable: "Đọc và cập nhật base và bản ghi Airtable của bạn.",
   mysql: "Hỏi đáp dữ liệu MySQL của công ty bạn. Chỉ đọc.",
   mariadb: "Hỏi đáp dữ liệu MariaDB của công ty bạn. Chỉ đọc.",

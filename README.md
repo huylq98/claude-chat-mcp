@@ -16,9 +16,9 @@ Open source under the [MIT license](LICENSE). Built for Windows, macOS, and Linu
 
 | Connector | What it does |
 |---|---|
-| Confluence | Search and read self-hosted Confluence pages and spaces (Server / Data Center). |
-| Jira | Search and read self-hosted Jira issues and projects with JQL (Server / Data Center). |
-| Bitbucket | Browse self-hosted Bitbucket repositories, pull requests, and commits (Server / Data Center). |
+| Confluence | Search and read self-hosted Confluence pages and spaces (Server / Data Center). Can create pages and comments in Writer mode. |
+| Jira | Search and read self-hosted Jira issues and projects with JQL (Server / Data Center). Can create issues and comments in Writer mode. |
+| Bitbucket | Browse self-hosted Bitbucket repositories, pull requests, and commits (Server / Data Center). Can comment on pull requests in Writer mode. |
 
 ### Dev
 

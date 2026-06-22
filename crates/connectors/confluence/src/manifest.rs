@@ -15,7 +15,9 @@ pub fn manifest() -> Value {
         "tools": [
             {"name": "confluence_search", "description": "Search Confluence pages with CQL."},
             {"name": "confluence_get_page", "description": "Read a Confluence page by ID."},
-            {"name": "confluence_list_spaces", "description": "List accessible Confluence spaces."}
+            {"name": "confluence_list_spaces", "description": "List accessible Confluence spaces."},
+            {"name": "confluence_create_page", "description": "Create a new Confluence page in a space."},
+            {"name": "confluence_add_comment", "description": "Add a comment to a Confluence page."}
         ],
         "auth_fields": [
             {"env": "CONFLUENCE_URL", "label": "Confluence base URL", "kind": "text", "required": true, "help": "e.g. https://wiki.corp.com"},
@@ -28,7 +30,7 @@ pub fn manifest() -> Value {
             {"env": "CONFLUENCE_CA_BUNDLE", "label": "CA bundle path", "kind": "text", "required": false},
             {"env": "CONFLUENCE_SSL_VERIFY", "label": "Verify SSL", "kind": "bool", "required": false, "default": "true"}
         ],
-        "notes": "Set CONFLUENCE_URL and either a token or username+password."
+        "notes": "Set CONFLUENCE_URL and either a token or username+password. Write tools (create page, add comment) require Writer mode via CONFLUENCE_MODE."
     })
 }
 

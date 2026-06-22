@@ -44,6 +44,18 @@ pub struct CommitsArgs {
     pub limit: Option<u32>,
 }
 
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct AddPrCommentArgs {
+    /// The Bitbucket project key.
+    pub project_key: String,
+    /// The repository slug.
+    pub repo_slug: String,
+    /// The pull request id.
+    pub pull_request_id: u64,
+    /// The comment text.
+    pub text: String,
+}
+
 // ---- Server ------------------------------------------------------------------
 
 #[derive(Clone)]
@@ -64,10 +76,17 @@ impl Server {
         let config = Config::from_env();
         config.validate()?;
         let client = BitbucketClient::from_config(&config)?;
+        // Viewer mode strips the write tools so Claude only sees read-only ones.
+        let mut tool_router = Self::tool_router();
+        if connector_core::Mode::from_env("BITBUCKET_MODE").is_viewer() {
+            for write_tool in ["bitbucket_add_pr_comment"] {
+                tool_router.remove_route(write_tool);
+            }
+        }
         Ok(Self {
             client: Arc::new(client),
             config: Arc::new(config),
-            tool_router: Self::tool_router(),
+            tool_router,
         })
     }
 
@@ -114,6 +133,27 @@ impl Server {
             .await
         {
             Ok(d) => format::commits(&d),
+            Err(e) => format::error(&e),
+        };
+        ok(text)
+    }
+
+    #[tool(description = "Add a comment to a Bitbucket pull request (Writer mode).")]
+    async fn bitbucket_add_pr_comment(
+        &self,
+        Parameters(args): Parameters<AddPrCommentArgs>,
+    ) -> Result<CallToolResult, rmcp::ErrorData> {
+        let text = match self
+            .client
+            .add_pr_comment(
+                &args.project_key,
+                &args.repo_slug,
+                args.pull_request_id,
+                &args.text,
+            )
+            .await
+        {
+            Ok(d) => format::created_pr_comment(&d),
             Err(e) => format::error(&e),
         };
         ok(text)

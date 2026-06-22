@@ -69,6 +69,23 @@ pub fn spaces(data: &Value) -> String {
     out.join("\n")
 }
 
+pub fn created_page(data: &Value, base_url: &str) -> String {
+    let title = s(data, "/title");
+    let id = s(data, "/id");
+    let webui = s(data, "/_links/webui");
+    let link = if webui.is_empty() {
+        String::new()
+    } else {
+        format!("\n{base_url}{webui}")
+    };
+    format!("Created page **{title}** (id `{id}`).{link}")
+}
+
+pub fn created_comment(data: &Value) -> String {
+    let id = s(data, "/id");
+    format!("Added comment (id `{id}`).")
+}
+
 /// Shared error rendering: surface the message to the model as text.
 pub fn error(e: &connector_core::CoreError) -> String {
     let code = e.status_code();

@@ -34,6 +34,24 @@ pub struct ListLimitArgs {
     pub limit: Option<u32>,
 }
 
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct CreatePageArgs {
+    /// The space key the page belongs to, e.g. `ENG`.
+    pub space_key: String,
+    /// The page title.
+    pub title: String,
+    /// The page body in Confluence storage (XHTML) format.
+    pub body: String,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct AddCommentArgs {
+    /// The numeric Confluence page ID to comment on.
+    pub page_id: String,
+    /// The comment body in Confluence storage (XHTML) format.
+    pub body: String,
+}
+
 // ---- Server ------------------------------------------------------------------
 
 #[derive(Clone)]
@@ -53,10 +71,17 @@ impl Server {
         let config = Config::from_env();
         config.validate()?;
         let client = ConfluenceClient::from_config(&config)?;
+        // Viewer mode strips the write tools so Claude only sees read-only ones.
+        let mut tool_router = Self::tool_router();
+        if connector_core::Mode::from_env("CONFLUENCE_MODE").is_viewer() {
+            for write_tool in ["confluence_create_page", "confluence_add_comment"] {
+                tool_router.remove_route(write_tool);
+            }
+        }
         Ok(Self {
             client: Arc::new(client),
             config: Arc::new(config),
-            tool_router: Self::tool_router(),
+            tool_router,
         })
     }
 
@@ -101,6 +126,34 @@ impl Server {
         let limit = args.limit.unwrap_or(50);
         let text = match self.client.list_spaces(limit).await {
             Ok(d) => format::spaces(&d),
+            Err(e) => format::error(&e),
+        };
+        ok(text)
+    }
+
+    #[tool(description = "Create a new Confluence page in a space (Writer mode).")]
+    async fn confluence_create_page(
+        &self,
+        Parameters(args): Parameters<CreatePageArgs>,
+    ) -> Result<CallToolResult, rmcp::ErrorData> {
+        let text = match self
+            .client
+            .create_page(&args.space_key, &args.title, &args.body)
+            .await
+        {
+            Ok(d) => format::created_page(&d, self.base()),
+            Err(e) => format::error(&e),
+        };
+        ok(text)
+    }
+
+    #[tool(description = "Add a comment to a Confluence page (Writer mode).")]
+    async fn confluence_add_comment(
+        &self,
+        Parameters(args): Parameters<AddCommentArgs>,
+    ) -> Result<CallToolResult, rmcp::ErrorData> {
+        let text = match self.client.add_comment(&args.page_id, &args.body).await {
+            Ok(d) => format::created_comment(&d),
             Err(e) => format::error(&e),
         };
         ok(text)

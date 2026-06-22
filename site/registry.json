@@ -116,7 +116,7 @@
       "group": "Atlassian",
       "id": "bitbucket",
       "name": "Bitbucket",
-      "notes": "Set BITBUCKET_URL and either a token or username+password.",
+      "notes": "Set BITBUCKET_URL and either a token or username+password. Write tools (add PR comment) require Writer mode via BITBUCKET_MODE.",
       "tools": [
         {
           "description": "List repos in a Bitbucket project.",
@@ -129,6 +129,10 @@
         {
           "description": "List a repo's recent commits.",
           "name": "bitbucket_get_commits"
+        },
+        {
+          "description": "Add a comment to a Bitbucket pull request.",
+          "name": "bitbucket_add_pr_comment"
         }
       ]
     },
@@ -254,7 +258,7 @@
       "group": "Atlassian",
       "id": "confluence",
       "name": "Confluence",
-      "notes": "Set CONFLUENCE_URL and either a token or username+password.",
+      "notes": "Set CONFLUENCE_URL and either a token or username+password. Write tools (create page, add comment) require Writer mode via CONFLUENCE_MODE.",
       "tools": [
         {
           "description": "Search Confluence pages with CQL.",
@@ -267,6 +271,14 @@
         {
           "description": "List accessible Confluence spaces.",
           "name": "confluence_list_spaces"
+        },
+        {
+          "description": "Create a new Confluence page in a space.",
+          "name": "confluence_create_page"
+        },
+        {
+          "description": "Add a comment to a Confluence page.",
+          "name": "confluence_add_comment"
         }
       ]
     },
@@ -682,7 +694,7 @@
       "group": "Atlassian",
       "id": "jira",
       "name": "Jira",
-      "notes": "Set JIRA_URL and either a token or username+password.",
+      "notes": "Set JIRA_URL and either a token or username+password. Write tools (create issue, add comment) require Writer mode via JIRA_MODE.",
       "tools": [
         {
           "description": "Search Jira issues with JQL.",
@@ -695,6 +707,14 @@
         {
           "description": "List Jira projects.",
           "name": "jira_list_projects"
+        },
+        {
+          "description": "Create a new Jira issue in a project.",
+          "name": "jira_create_issue"
+        },
+        {
+          "description": "Add a comment to a Jira issue.",
+          "name": "jira_add_comment"
         }
       ]
     },

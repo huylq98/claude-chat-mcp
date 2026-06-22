@@ -70,6 +70,11 @@ pub fn commits(data: &Value) -> String {
     out.join("\n")
 }
 
+pub fn created_pr_comment(data: &Value) -> String {
+    let id = data.pointer("/id").and_then(Value::as_i64).unwrap_or(0);
+    format!("Added pull request comment (id `{id}`).")
+}
+
 /// Shared error rendering: surface the message to the model as text.
 pub fn error(e: &connector_core::CoreError) -> String {
     let code = e.status_code();

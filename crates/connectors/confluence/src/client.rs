@@ -5,7 +5,7 @@
 
 use crate::config::Config;
 use connector_core::{Auth, CoreError, HttpClient, HttpConfig};
-use serde_json::Value;
+use serde_json::{json, Value};
 
 fn build_client(base_url: &str, cfg: &Config) -> Result<HttpClient, CoreError> {
     let auth = if let Some(token) = cfg.token.as_deref().filter(|t| !t.trim().is_empty()) {
@@ -75,6 +75,34 @@ impl ConfluenceClient {
                     ("expand", "description.plain".to_string()),
                 ],
             )
+            .await
+    }
+
+    pub async fn create_page(
+        &self,
+        space_key: &str,
+        title: &str,
+        body: &str,
+    ) -> Result<Value, CoreError> {
+        let payload = json!({
+            "type": "page",
+            "title": title,
+            "space": { "key": space_key },
+            "body": { "storage": { "value": body, "representation": "storage" } }
+        });
+        self.http
+            .send_json(reqwest::Method::POST, "/rest/api/content", payload)
+            .await
+    }
+
+    pub async fn add_comment(&self, page_id: &str, body: &str) -> Result<Value, CoreError> {
+        let payload = json!({
+            "type": "comment",
+            "container": { "id": page_id, "type": "page" },
+            "body": { "storage": { "value": body, "representation": "storage" } }
+        });
+        self.http
+            .send_json(reqwest::Method::POST, "/rest/api/content", payload)
             .await
     }
 }

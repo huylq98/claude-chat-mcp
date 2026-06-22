@@ -5,7 +5,7 @@
 
 use crate::config::Config;
 use connector_core::{Auth, CoreError, HttpClient, HttpConfig};
-use serde_json::Value;
+use serde_json::{json, Value};
 
 fn build_client(base_url: &str, cfg: &Config) -> Result<HttpClient, CoreError> {
     let auth = if let Some(token) = cfg.token.as_deref().filter(|t| !t.trim().is_empty()) {
@@ -86,6 +86,22 @@ impl BitbucketClient {
                 &format!("/rest/api/1.0/projects/{project_key}/repos/{repo_slug}/commits"),
                 &[("limit", limit.to_string())],
             )
+            .await
+    }
+
+    pub async fn add_pr_comment(
+        &self,
+        project_key: &str,
+        repo_slug: &str,
+        pull_request_id: u64,
+        text: &str,
+    ) -> Result<Value, CoreError> {
+        let path = format!(
+            "/rest/api/1.0/projects/{project_key}/repos/{repo_slug}/pull-requests/{pull_request_id}/comments"
+        );
+        let payload = json!({ "text": text });
+        self.http
+            .send_json(reqwest::Method::POST, &path, payload)
             .await
     }
 }

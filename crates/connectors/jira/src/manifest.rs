@@ -15,7 +15,9 @@ pub fn manifest() -> Value {
         "tools": [
             {"name": "jira_search", "description": "Search Jira issues with JQL."},
             {"name": "jira_get_issue", "description": "Read a Jira issue by key."},
-            {"name": "jira_list_projects", "description": "List Jira projects."}
+            {"name": "jira_list_projects", "description": "List Jira projects."},
+            {"name": "jira_create_issue", "description": "Create a new Jira issue in a project."},
+            {"name": "jira_add_comment", "description": "Add a comment to a Jira issue."}
         ],
         "auth_fields": [
             {"env": "JIRA_URL", "label": "Jira base URL", "kind": "text", "required": true, "help": "e.g. https://jira.corp.com"},
@@ -28,7 +30,7 @@ pub fn manifest() -> Value {
             {"env": "JIRA_CA_BUNDLE", "label": "CA bundle path", "kind": "text", "required": false},
             {"env": "JIRA_SSL_VERIFY", "label": "Verify SSL", "kind": "bool", "required": false, "default": "true"}
         ],
-        "notes": "Set JIRA_URL and either a token or username+password."
+        "notes": "Set JIRA_URL and either a token or username+password. Write tools (create issue, add comment) require Writer mode via JIRA_MODE."
     })
 }
 

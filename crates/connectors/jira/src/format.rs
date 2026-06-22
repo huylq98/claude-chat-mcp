@@ -73,6 +73,16 @@ pub fn projects(data: &Value) -> String {
     out.join("\n")
 }
 
+pub fn created_issue(data: &Value) -> String {
+    let key = s(data, "/key");
+    format!("Created issue **{key}**.")
+}
+
+pub fn created_comment(data: &Value) -> String {
+    let id = s(data, "/id");
+    format!("Added comment (id `{id}`).")
+}
+
 /// Shared error rendering: surface the message to the model as text.
 pub fn error(e: &connector_core::CoreError) -> String {
     let code = e.status_code();

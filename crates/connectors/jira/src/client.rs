@@ -5,7 +5,7 @@
 
 use crate::config::Config;
 use connector_core::{Auth, CoreError, HttpClient, HttpConfig};
-use serde_json::Value;
+use serde_json::{json, Value};
 
 fn build_client(base_url: &str, cfg: &Config) -> Result<HttpClient, CoreError> {
     let auth = if let Some(token) = cfg.token.as_deref().filter(|t| !t.trim().is_empty()) {
@@ -68,5 +68,33 @@ impl JiraClient {
 
     pub async fn list_projects(&self) -> Result<Value, CoreError> {
         self.http.get_json("/rest/api/2/project", &[]).await
+    }
+
+    pub async fn create_issue(
+        &self,
+        project_key: &str,
+        summary: &str,
+        description: &str,
+        issue_type: &str,
+    ) -> Result<Value, CoreError> {
+        let payload = json!({
+            "fields": {
+                "project": { "key": project_key },
+                "summary": summary,
+                "description": description,
+                "issuetype": { "name": issue_type }
+            }
+        });
+        self.http
+            .send_json(reqwest::Method::POST, "/rest/api/2/issue", payload)
+            .await
+    }
+
+    pub async fn add_comment(&self, issue_key: &str, body: &str) -> Result<Value, CoreError> {
+        let path = format!("/rest/api/2/issue/{issue_key}/comment");
+        let payload = json!({ "body": body });
+        self.http
+            .send_json(reqwest::Method::POST, &path, payload)
+            .await
     }
 }
