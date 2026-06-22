@@ -26,6 +26,13 @@ test("each connector card shows a name and description", async ({ page }) => {
   await expect(first.locator(".card-desc")).toBeVisible();
 });
 
+test("each card offers a one-click .mcpb download", async ({ page }) => {
+  await page.goto("/");
+  const dl = page.locator(".card-shell").first().locator("a.card-dl");
+  await expect(dl).toBeVisible();
+  await expect(dl).toHaveAttribute("href", /\.mcpb$/);
+});
+
 test("group filter narrows the visible connectors", async ({ page }) => {
   await page.goto("/");
   const { connectors } = registry();

@@ -210,7 +210,9 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem
 }
 .group-pill { align-self: flex-start; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); background: rgba(255, 122, 89, 0.1); border: 1px solid rgba(255, 122, 89, 0.25); padding: 4px 10px; border-radius: 999px; }
 .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.01em; margin: 0; }
-.card-desc { color: var(--text-dim); font-size: 0.95rem; margin: 0; }
+.card-desc { color: var(--text-dim); font-size: 0.95rem; margin: 0; flex: 1; }
+.card-dl { width: 100%; justify-content: center; }
+.dl-hint { font-size: 0.78rem; color: var(--text-faint); margin: -4px 0 0; text-align: center; }
 
 .snippet-block { position: relative; margin-bottom: 12px; }
 .snippet {

@@ -21,8 +21,8 @@ const STRINGS = {
     loading: "Loading…", search_ph: "Search for a tool, e.g. Jira or MySQL", no_results: "No connectors match",
 
     all: "All", connectors_word: "connectors",
-    setup: "Setup & install", docs: "Docs", required: "required", optional: "optional",
-    copy: "Copy", copied: "Copied", suggestions: "Suggestions",
+    docs: "Docs", add_to_claude: "Add to Claude Desktop",
+    install_hint: "Downloads a file. Open it in Claude Desktop to install.",
   },
   vi: {
     nav_connectors: "Trình kết nối", nav_install: "Cài đặt",
@@ -38,8 +38,8 @@ const STRINGS = {
     loading: "Đang tải…", search_ph: "Tìm công cụ, vd: Jira hoặc MySQL", no_results: "Không có trình kết nối phù hợp",
 
     all: "Tất cả", connectors_word: "trình kết nối",
-    setup: "Cài đặt & cấu hình", docs: "Tài liệu", required: "bắt buộc", optional: "tùy chọn",
-    copy: "Sao chép", copied: "Đã chép", suggestions: "Gợi ý",
+    docs: "Tài liệu", add_to_claude: "Thêm vào Claude Desktop",
+    install_hint: "Tải về một tệp. Mở trong Claude Desktop để cài đặt.",
   },
 };
 
@@ -68,65 +68,32 @@ const esc = (s) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
   );
 
-function placeholder(f) {
-  if (f.default) return f.default;
-  if (f.kind === "secret") return "<your token>";
-  if (f.kind === "select" && f.options && f.options.length) return f.options[0];
-  return "...";
-}
-
-function snippetFor(c) {
-  const fields = c.auth_fields || [];
-  const picked = [];
-  const add = (f) => { if (f && !picked.includes(f)) picked.push(f); };
-  fields.forEach((f) => { if (f.required) add(f); });
-  fields.forEach((f) => { if (f.kind === "secret") add(f); });
-  if (!picked.some((f) => f.kind === "text" || f.kind === "select")) {
-    add(fields.find((f) => f.kind === "text" || f.kind === "select"));
-  }
-  if (picked.length === 0) fields.slice(0, 2).forEach(add);
-  const pairs = picked.map((f) => `${f.env}="${placeholder(f)}"`).join("; ");
-  return `./scripts/install-local.ps1 ${c.id} @{ ${pairs} }`;
-}
-
-function fieldRows(c) {
-  const all = [...(c.auth_fields || []), ...(c.advanced_fields || [])];
-  return all
-    .map((f) => {
-      const req = f.required ? `<span class="req">${t("required")}</span>` : t("optional");
-      const kind = f.kind === "secret" ? "secret" : f.kind || "text";
-      return `<div class="field-row"><span class="field-env">${esc(f.env)}</span><span class="field-meta">${esc(kind)} · ${req}</span></div>`;
-    })
-    .join("");
-}
+const RELEASE_BASE = "https://github.com/huylq98/claude-chat-mcp/releases/latest/download";
 
 function card(c) {
-  const snippet = snippetFor(c);
   const desc = (currentLang === "vi" && VI_DESC[c.id]) ? VI_DESC[c.id] : (c.description || "");
   const group = c.group || "Other";
   const groupLabel = currentLang === "vi" ? (GROUP_VI[group] || group) : group;
+  const dl = `${RELEASE_BASE}/${esc(c.id)}.mcpb`;
   const docs = c.docs_url
     ? `<a class="docs-link" href="${esc(c.docs_url)}" target="_blank" rel="noopener">${t("docs")} ↗</a>`
     : "";
   const note = c.notes ? `<p class="note">${esc(c.notes)}</p>` : "";
 
-  // Card front stays friendly: group, name, description. The technical setup
-  // (install command + config fields) is tucked into a collapsed section.
+  // One-click .mcpb: Claude Desktop collects the URL/token at install time, so the
+  // card stays simple (no command, no config table) for non-technical users.
   return `
   <article class="card-shell" data-group="${esc(group)}">
     <div class="card">
       <span class="group-pill">${esc(groupLabel)}</span>
       <h3>${esc(c.name)}</h3>
       <p class="card-desc">${esc(desc)}</p>
-      <details class="fields">
-        <summary><span class="chev">›</span> ${t("setup")}</summary>
-        <div class="snippet-block">
-          <code class="snippet">${esc(snippet)}</code>
-          <button class="copy-btn" type="button" aria-label="Copy install command" data-copy="${esc(snippet)}">${t("copy")}</button>
-        </div>
-        ${fieldRows(c)}
-        ${note}
-      </details>
+      <a class="btn btn-primary card-dl" href="${dl}">
+        <span>${t("add_to_claude")}</span>
+        <span class="cta-icon" aria-hidden="true">↓</span>
+      </a>
+      <p class="dl-hint">${t("install_hint")}</p>
+      ${note}
       ${docs ? `<div class="card-foot">${docs}</div>` : ""}
     </div>
   </article>`;
@@ -152,7 +119,6 @@ function renderGrid() {
   }
   grid.innerHTML = shown.map(card).join("");
   observeReveals();
-  wireCopy();
 }
 
 function buildFilters() {
@@ -186,19 +152,6 @@ function observeReveals() {
     );
   }
   document.querySelectorAll(".reveal:not(.in)").forEach((el) => io.observe(el));
-}
-
-function wireCopy() {
-  document.querySelectorAll(".copy-btn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(btn.dataset.copy);
-        btn.textContent = t("copied");
-        btn.classList.add("copied");
-        setTimeout(() => { btn.textContent = t("copy"); btn.classList.remove("copied"); }, 1400);
-      } catch { /* clipboard blocked; ignore */ }
-    });
-  });
 }
 
 function applyLang(lang) {
