@@ -1,0 +1,71 @@
+name: Tests
+
+# E2E + unit coverage for the download -> install -> manage-connectors flow.
+#   core-tests     – the control-panel logic (config read/write, fetch-on-demand
+#                    download + checksum verify) on Windows, macOS, and Linux.
+#   site-tests     – the catalog site (catalog/search/i18n/install sections).
+#   link-integrity – validates the LIVE release download links (runs on a
+#                    schedule, on release, or manually — not on every push,
+#                    since it needs a published release to check against).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 6 * * *"
+  release:
+    types: [published]
+
+jobs:
+  core-tests:
+    if: github.event_name != 'schedule' && github.event_name != 'release'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "crates/control-panel"
+      - name: Linux Tauri system deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Stage registry into resources
+        shell: bash
+        run: |
+          mkdir -p crates/control-panel/resources
+          cp site/registry.json crates/control-panel/resources/registry.json
+      - name: Run control-panel tests
+        run: cargo test --manifest-path crates/control-panel/Cargo.toml
+
+  site-tests:
+    if: github.event_name != 'schedule' && github.event_name != 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run site tests (excludes the live-release link guard)
+        run: npx playwright test tests/catalog.spec.ts tests/i18n.spec.ts tests/install.spec.ts tests/search.spec.ts
+
+  link-integrity:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify the live release download links
+        run: npx playwright test tests/links.spec.ts
