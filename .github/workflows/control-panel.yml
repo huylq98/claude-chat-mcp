@@ -1,9 +1,13 @@
 name: Build control-panel installers
 
-# Build the desktop control-panel installer on all three OSes. Each OS build
-# compiles that OS's connector binaries, stages them into the app's resources/
-# (the app embeds them via include_bytes!), then runs `tauri build` to produce
-# the native installer (Windows MSI/NSIS, macOS dmg, Linux deb/AppImage).
+# Three-stage pipeline:
+#   build    – compile each platform's 18 connector binaries, upload them.
+#   manifest – hash every binary into binaries.json, rename them as release
+#              assets (<id>-<plat>), publish them + checksums to the release.
+#   app      – embed binaries.json + registry.json (NO connector binaries — the
+#              app downloads them on demand), run `tauri build`, publish the
+#              thin installers. Because nothing is embedded, every installer is
+#              now a few MB (the Linux AppImage no longer carries 18 binaries).
 on:
   push:
     tags: ["cp-v*"]
@@ -11,6 +15,9 @@ on:
 
 permissions:
   contents: write
+
+env:
+  CONNECTORS: "confluence jira bitbucket airtable mysql mariadb clickhouse oracle gitlab postgres github jenkins redmine grafana elasticsearch mattermost mongodb sentry"
 
 jobs:
   build:
@@ -21,7 +28,87 @@ jobs:
           - os: windows-latest
             plat: win
           - os: macos-latest
-            plat: mac
+            plat: mac-arm
+          - os: macos-13
+            plat: mac-intel
+          - os: ubuntu-latest
+            plat: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build connector binaries
+        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle --bin gitlab --bin postgres --bin github --bin jenkins --bin redmine --bin grafana --bin elasticsearch --bin mattermost --bin mongodb --bin sentry
+      - name: Collect this platform's binaries (raw names)
+        shell: bash
+        run: |
+          mkdir -p conn
+          for id in $CONNECTORS; do
+            if [ "${{ matrix.plat }}" = "win" ]; then cp "target/release/$id.exe" "conn/$id.exe"; else cp "target/release/$id" "conn/$id"; fi
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: conn-${{ matrix.plat }}
+          path: conn/
+
+  manifest:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Read app version
+        id: ver
+        run: echo "version=$(jq -r .version crates/control-panel/tauri.conf.json)" >> "$GITHUB_OUTPUT"
+      - name: Generate binaries.json (per-platform sha256)
+        run: |
+          node scripts/gen-binaries-json.mjs \
+            --win artifacts/conn-win \
+            --mac-arm artifacts/conn-mac-arm \
+            --mac-intel artifacts/conn-mac-intel \
+            --linux artifacts/conn-linux \
+            --version "${{ steps.ver.outputs.version }}" \
+            --out binaries.json
+          cat binaries.json | head -20
+      - name: Arrange release assets (<id>-<plat>) + checksums
+        run: |
+          mkdir -p release-assets
+          for id in $CONNECTORS; do
+            cp "artifacts/conn-win/$id.exe"        "release-assets/$id-win.exe"
+            cp "artifacts/conn-mac-arm/$id"        "release-assets/$id-mac-arm"
+            cp "artifacts/conn-mac-intel/$id"      "release-assets/$id-mac-intel"
+            cp "artifacts/conn-linux/$id"          "release-assets/$id-linux"
+          done
+          ( cd release-assets && sha256sum * > ../checksums.txt )
+          cp checksums.txt release-assets/checksums.txt
+      - name: Upload binaries.json for the app job
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-json
+          path: binaries.json
+      - name: Publish connector binaries + checksums to the release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          make_latest: false
+          files: release-assets/*
+
+  app:
+    needs: manifest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            plat: win
+          - os: macos-latest
+            plat: mac-arm
           - os: macos-13
             plat: mac-intel
           - os: ubuntu-latest
@@ -36,16 +123,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-      - name: Build connector binaries
-        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle --bin gitlab --bin postgres --bin github --bin jenkins --bin redmine --bin grafana --bin elasticsearch --bin mattermost --bin mongodb --bin sentry
-      - name: Stage app resources (this OS's binaries + registry)
+      - name: Stage app resources (registry + binaries manifest only)
         shell: bash
         run: |
           mkdir -p crates/control-panel/resources
           cp site/registry.json crates/control-panel/resources/registry.json
-          for id in confluence jira bitbucket airtable mysql mariadb clickhouse oracle gitlab postgres github jenkins redmine grafana elasticsearch mattermost mongodb sentry; do
-            if [ "${{ matrix.plat }}" = "win" ]; then cp "target/release/$id.exe" "crates/control-panel/resources/$id.exe"; else cp "target/release/$id" "crates/control-panel/resources/$id"; fi
-          done
+      - uses: actions/download-artifact@v4
+        with:
+          name: binaries-json
+          path: crates/control-panel/resources
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.0" --locked
       - name: Build app + installer

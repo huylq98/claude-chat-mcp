@@ -23,8 +23,9 @@ members = [
     "crates/connectors/mongodb",
     "crates/connectors/sentry",
 ]
-# The Tauri control-panel app is built separately (it embeds the connector
-# binaries via include_bytes!, so it can't build until resources/ is populated).
+# The Tauri control-panel app is built separately (its own Cargo.lock; it needs
+# the Tauri toolchain). It downloads connector binaries on demand at runtime, so
+# it only needs resources/registry.json + resources/binaries.json to build.
 exclude = ["crates/control-panel"]
 
 [workspace.package]
