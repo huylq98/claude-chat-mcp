@@ -121,8 +121,12 @@ const RELEASE_BASE = "https://github.com/huylq98/claude-chat-mcp/releases/latest
 // Control-panel installers. Installer releases use a cp-v* tag (not "latest",
 // which belongs to the .mcpb release), and Tauri bakes the version into the
 // filename, so bump CP_TAG + CP_VERSION together when cutting a new installer.
-const CP_TAG = "cp-v0.14.0";
-const CP_VERSION = "0.14.0";
+// Temporarily pinned to the last fully-published installer release while the
+// cp-v0.14.0 (fetch-on-demand) build clears the macOS-Intel runner queue. The
+// 0.13.0 .deb (32MB) downloads reliably; flip both back to 0.14.0 once it
+// publishes. (Keep CP_TAG/CP_VERSION in sync with the live release.)
+const CP_TAG = "cp-v0.13.0";
+const CP_VERSION = "0.13.0";
 const CP_BASE = `https://github.com/huylq98/claude-chat-mcp/releases/download/${CP_TAG}`;
 const CP_RELEASES = "https://github.com/huylq98/claude-chat-mcp/releases";
 const CP_INSTALLERS = {
