@@ -54,6 +54,8 @@ jobs:
           node-version: "20"
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Seed root registry.json (gitignored; generated locally) from the committed site copy
+        run: cp site/registry.json registry.json
       - name: Run site tests (excludes the live-release link guard)
         run: npx playwright test tests/catalog.spec.ts tests/i18n.spec.ts tests/install.spec.ts tests/search.spec.ts
 
