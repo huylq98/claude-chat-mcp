@@ -181,6 +181,11 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .btn-primary:hover .cta-icon { transform: translateY(3px); }
 .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--hairline-strong); }
 .btn-ghost:hover { background: var(--surface-2); border-color: var(--hairline-strong); }
+/* Hero download: the loud, catchy primary CTA for the app. */
+.btn-lg { font-size: 1.05rem; padding: 16px 30px; }
+.hero-dl { box-shadow: 0 10px 30px rgba(255, 122, 89, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+.hero-dl:hover { transform: translateY(-1px); box-shadow: 0 16px 44px rgba(255, 122, 89, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+.hero-dl-note { margin: 14px 0 0; font-size: 0.85rem; color: var(--text-faint); }
 
 /* ---- Get-the-app card ---- */
 .app-card { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; padding: 28px 32px; border-radius: 18px; }
@@ -196,7 +201,9 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 
 /* ---- Section heads ---- */
 .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
+.section-headline { display: flex; flex-direction: column; gap: 10px; }
 .section-title { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.section-sub { margin: 0; color: var(--text-dim); font-size: 0.96rem; max-width: 58ch; }
 .count { font-family: var(--font-body); font-size: 0.82rem; color: var(--text-dim); padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); }
 h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.02em; text-wrap: balance; margin: 0; }
 
@@ -233,13 +240,21 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem
 .group-pill { align-self: flex-start; font-size: 0.74rem; letter-spacing: 0; color: var(--text-faint); background: var(--surface); border: 1px solid var(--hairline); padding: 4px 11px; border-radius: 999px; }
 .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; letter-spacing: -0.01em; margin: 0; }
 .card-desc { color: var(--text-dim); font-size: 0.95rem; margin: 0; }
-/* Pin actions to the card bottom so every download button lines up. */
-.card-actions { margin-top: auto; }
-/* Quiet by default so 10+ cards don't become a wall of coral; the solid accent
-   is earned on card hover, keeping one live accent region at a time. */
-.card-dl { width: 100%; justify-content: center; background: rgba(255, 122, 89, 0.1); color: var(--accent); border-color: rgba(255, 122, 89, 0.28); }
-.card-shell:hover .card-dl, .card-dl:focus-visible { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
-.card-shell:hover .card-dl .cta-icon { transform: translateY(3px); }
+/* Pin the action to the card bottom so every link lines up. */
+.card-actions { margin-top: auto; padding-top: 4px; }
+/* Quiet secondary link: the catalog is a showcase, not a wall of download
+   buttons. The app (hero CTA) is the primary install path; this stays for people
+   who prefer to drag a single .mcpb in. */
+.card-dl {
+  display: inline-flex; align-items: center; gap: 7px; width: max-content;
+  font-family: var(--font-body); font-size: 0.84rem; font-weight: 500;
+  color: var(--text-faint); text-decoration: none;
+  padding: 6px 0; border: 0; background: none;
+  transition: color 0.3s var(--ease);
+}
+.card-dl .cta-icon { font-size: 0.9em; }
+.card-shell:hover .card-dl, .card-dl:hover, .card-dl:focus-visible { color: var(--accent); }
+.card-shell:hover .card-dl .cta-icon, .card-dl:hover .cta-icon { transform: translateY(2px); }
 
 /* ---- Install steps ---- */
 .steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }

@@ -15,7 +15,11 @@ const STRINGS = {
     hero_title: "Connect Claude to the tools your company runs.",
     hero_lede: "Let Claude read your company's Jira, Confluence, and databases and do real work. Everything runs on your own computer.",
     cta_install: "Get the app",
-    h2_connectors: "Connectors", h2_install: "Or install one at a time",
+    h2_connectors: "What Claude can connect to", h2_install: "Or install one at a time",
+    conn_sub: "Every connector below comes built into the app. Install once, then turn the ones you need on or off.",
+    cta_download: "Download the app", cta_browse: "Browse connectors",
+    cta_platforms: "Free and open source. Windows, macOS, Linux.",
+    card_dl_manual: "Download .mcpb",
     h2_app: "Get the app",
     app_h: "One app to manage every connector",
     app_p: "Install the app, then turn connectors on or off, enter your link and password, pick a permission, and test the connection. No files to drag.",
@@ -25,7 +29,7 @@ const STRINGS = {
     os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (.deb)",
     os_linux_appimage: "Linux (AppImage)",
     app_other: "Other formats and older versions",
-    step1_h: "Download", step1_p: "Find your tool above and click \"Download for Claude Desktop\" to get a small file.",
+    step1_h: "Download", step1_p: "Prefer to do it by hand? Use the small Download .mcpb link on any connector to get a single file.",
     step2_h: "Open in Claude Desktop", step2_p: "Open Claude Desktop, go to Settings then Extensions, and drag the file in. (Double-clicking the file also works.)",
     step3_h: "Fill in and install", step3_p: "Enter the web address and password your IT gave you, click Install, then reopen Claude Desktop. Now just ask Claude.",
     footer_license: "Free to use",
@@ -40,7 +44,11 @@ const STRINGS = {
     hero_title: "Kết nối Claude tới công cụ nội bộ công ty bạn dùng.",
     hero_lede: "Cho phép Claude đọc Jira, Confluence và cơ sở dữ liệu của công ty bạn để làm việc thật. Mọi thứ chạy trên máy của bạn.",
     cta_install: "Tải ứng dụng",
-    h2_connectors: "Trình kết nối", h2_install: "Hoặc cài từng cái một",
+    h2_connectors: "Những gì Claude có thể kết nối", h2_install: "Hoặc cài từng cái một",
+    conn_sub: "Mọi trình kết nối bên dưới đều có sẵn trong ứng dụng. Cài một lần, rồi bật tắt cái bạn cần.",
+    cta_download: "Tải ứng dụng", cta_browse: "Xem trình kết nối",
+    cta_platforms: "Miễn phí và mã nguồn mở. Windows, macOS, Linux.",
+    card_dl_manual: "Tải .mcpb",
     h2_app: "Tải ứng dụng",
     app_h: "Một ứng dụng quản lý mọi trình kết nối",
     app_p: "Cài ứng dụng, rồi bật tắt trình kết nối, nhập địa chỉ và mật khẩu, chọn quyền, và kiểm tra kết nối. Không cần kéo thả tệp.",
@@ -50,7 +58,7 @@ const STRINGS = {
     os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (.deb)",
     os_linux_appimage: "Linux (AppImage)",
     app_other: "Định dạng khác và phiên bản cũ",
-    step1_h: "Tải về", step1_p: "Tìm công cụ ở trên và bấm \"Tải cho Claude Desktop\" để lấy một tệp nhỏ.",
+    step1_h: "Tải về", step1_p: "Muốn làm thủ công? Dùng liên kết Tải .mcpb nhỏ trên mỗi trình kết nối để lấy một tệp.",
     step2_h: "Mở trong Claude Desktop", step2_p: "Mở Claude Desktop, vào Settings rồi Extensions, và kéo tệp vào. (Bấm đúp vào tệp cũng được.)",
     step3_h: "Điền thông tin và cài", step3_p: "Nhập địa chỉ web và mật khẩu mà bộ phận IT cấp cho bạn, bấm Install, rồi mở lại Claude Desktop. Giờ chỉ cần hỏi Claude.",
     footer_license: "Miễn phí sử dụng",
@@ -152,6 +160,9 @@ function renderApp() {
   const primaryOs = detectOS() || "windows";
   primary.href = `${CP_BASE}/${CP_INSTALLERS[primaryOs]}`;
   primary.querySelector("span").textContent = `${t("app_dl_for")} ${t("os_" + primaryOs)}`;
+  // The hero download points at the same OS-detected installer (the catchy CTA).
+  const heroDl = document.getElementById("hero-dl");
+  if (heroDl) heroDl.href = `${CP_BASE}/${CP_INSTALLERS[primaryOs]}`;
   all.innerHTML =
     order.filter((o) => o !== primaryOs)
       .map((o) => `<a class="app-dl-link" href="${CP_BASE}/${CP_INSTALLERS[o]}" aria-label="${esc(t("app_dl_for") + " " + t("os_" + o))}" rel="noopener">${esc(t("os_" + o))}</a>`)
@@ -168,9 +179,10 @@ function card(c) {
   const groupLabel = currentLang === "vi" ? (GROUP_VI[group] || group) : group;
   const dl = `${RELEASE_BASE}/${esc(c.id)}.mcpb`;
 
-  // One-click .mcpb: Claude Desktop collects the URL/token at install time, so the
-  // card stays simple. The action area is pinned to the bottom so every card's
-  // download button lines up regardless of description length.
+  // Cards are a showcase of what Claude can connect to; the app is the install
+  // path. The per-connector .mcpb stays as a quiet secondary link for people who
+  // prefer to drag a single file in. The action area is pinned to the bottom so
+  // every link lines up regardless of description length.
   return `
   <article class="card-shell" data-group="${esc(group)}">
     <div class="card">
@@ -178,9 +190,9 @@ function card(c) {
       <h3>${esc(c.name)}</h3>
       <p class="card-desc">${esc(desc)}</p>
       <div class="card-actions">
-        <a class="btn btn-primary card-dl" href="${dl}" download>
-          <span>${t("add_to_claude")}</span>
+        <a class="card-dl" href="${dl}" download aria-label="${esc(t("card_dl_manual") + ": " + c.name)}">
           <span class="cta-icon" aria-hidden="true">↓</span>
+          <span>${t("card_dl_manual")}</span>
         </a>
       </div>
     </div>

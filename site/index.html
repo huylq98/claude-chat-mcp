@@ -143,15 +143,23 @@
       </form>
       <span id="sr-status" class="sr-only" aria-live="polite"></span>
       <div class="hero-cta">
-        <a class="btn btn-ghost" href="#app" data-i18n="cta_install">Get the app</a>
+        <a class="btn btn-primary btn-lg hero-dl" id="hero-dl" href="#app" rel="noopener">
+          <span class="hero-dl-label" data-i18n="cta_download">Download the app</span>
+          <span class="cta-icon" aria-hidden="true">↓</span>
+        </a>
+        <a class="btn btn-ghost" href="#connectors" data-i18n="cta_browse">Browse connectors</a>
       </div>
+      <p class="hero-dl-note" data-i18n="cta_platforms">Free and open source. Windows, macOS, Linux.</p>
     </section>
 
     <section id="connectors" class="section">
       <div class="section-head">
-        <div class="section-title">
-          <h2 data-i18n="h2_connectors">Connectors</h2>
-          <span class="count" id="conn-count"></span>
+        <div class="section-headline">
+          <div class="section-title">
+            <h2 data-i18n="h2_connectors">What Claude can connect to</h2>
+            <span class="count" id="conn-count"></span>
+          </div>
+          <p class="section-sub" data-i18n="conn_sub">Every connector below comes built into the app. Install once, then turn the ones you need on or off.</p>
         </div>
         <div class="filters" id="filters" role="group" aria-label="Filter connectors by group"></div>
       </div>
