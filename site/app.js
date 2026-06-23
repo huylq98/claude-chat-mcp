@@ -22,7 +22,8 @@ const STRINGS = {
     app_note: "Free. Works on Windows, macOS, and Linux.",
     app_dl: "Download the app",
     app_dl_for: "Download for",
-    os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (AppImage)",
+    os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (.deb)",
+    os_linux_appimage: "Linux (AppImage)",
     app_other: "Other formats and older versions",
     step1_h: "Download", step1_p: "Find your tool above and click \"Download for Claude Desktop\" to get a small file.",
     step2_h: "Open in Claude Desktop", step2_p: "Open Claude Desktop, go to Settings then Extensions, and drag the file in. (Double-clicking the file also works.)",
@@ -46,7 +47,8 @@ const STRINGS = {
     app_note: "Miễn phí. Chạy trên Windows, macOS và Linux.",
     app_dl: "Tải ứng dụng",
     app_dl_for: "Tải cho",
-    os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (AppImage)",
+    os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (.deb)",
+    os_linux_appimage: "Linux (AppImage)",
     app_other: "Định dạng khác và phiên bản cũ",
     step1_h: "Tải về", step1_p: "Tìm công cụ ở trên và bấm \"Tải cho Claude Desktop\" để lấy một tệp nhỏ.",
     step2_h: "Mở trong Claude Desktop", step2_p: "Mở Claude Desktop, vào Settings rồi Extensions, và kéo tệp vào. (Bấm đúp vào tệp cũng được.)",
@@ -119,15 +121,18 @@ const RELEASE_BASE = "https://github.com/huylq98/claude-chat-mcp/releases/latest
 // Control-panel installers. Installer releases use a cp-v* tag (not "latest",
 // which belongs to the .mcpb release), and Tauri bakes the version into the
 // filename, so bump CP_TAG + CP_VERSION together when cutting a new installer.
-const CP_TAG = "cp-v0.11.0";
-const CP_VERSION = "0.11.0";
+const CP_TAG = "cp-v0.14.0";
+const CP_VERSION = "0.14.0";
 const CP_BASE = `https://github.com/huylq98/claude-chat-mcp/releases/download/${CP_TAG}`;
 const CP_RELEASES = "https://github.com/huylq98/claude-chat-mcp/releases";
 const CP_INSTALLERS = {
   windows: `Claude.Chat.MCP_${CP_VERSION}_x64-setup.exe`,
   macos: `Claude.Chat.MCP_${CP_VERSION}_aarch64.dmg`,
-  linux: `Claude.Chat.MCP_${CP_VERSION}_amd64.AppImage`,
+  // Default Linux download is the small .deb; the AppImage is offered as an
+  // extra link below for non-Debian distros.
+  linux: `Claude.Chat.MCP_${CP_VERSION}_amd64.deb`,
 };
+const CP_LINUX_APPIMAGE = `Claude.Chat.MCP_${CP_VERSION}_amd64.AppImage`;
 function detectOS() {
   const p = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || "").toLowerCase();
   if (p.includes("win")) return "windows";
@@ -147,6 +152,7 @@ function renderApp() {
     order.filter((o) => o !== primaryOs)
       .map((o) => `<a class="app-dl-link" href="${CP_BASE}/${CP_INSTALLERS[o]}" aria-label="${esc(t("app_dl_for") + " " + t("os_" + o))}" rel="noopener">${esc(t("os_" + o))}</a>`)
       .join("") +
+    `<a class="app-dl-link" href="${CP_BASE}/${CP_LINUX_APPIMAGE}" aria-label="${esc(t("app_dl_for") + " " + t("os_linux_appimage"))}" rel="noopener">${esc(t("os_linux_appimage"))}</a>` +
     `<a class="app-dl-link app-dl-more" href="${CP_RELEASES}" target="_blank" rel="noopener">${esc(t("app_other"))}</a>`;
 }
 
