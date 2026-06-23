@@ -3,11 +3,11 @@
 //
 // Usage:
 //   node scripts/gen-binaries-json.mjs \
-//     --win <dir> --mac <dir> --linux <dir> \
+//     --win <dir> --mac-arm <dir> --mac-intel <dir> --linux <dir> \
 //     --version <v> --out <path>
 //
-// Each <dir> holds the per-OS connector binaries: `<id>.exe` for Windows,
-// bare `<id>` for mac/linux.
+// Each <dir> holds that platform's connector binaries: `<id>.exe` for Windows,
+// bare `<id>` for the others. `mac-arm` is Apple Silicon, `mac-intel` is x86_64.
 
 import { readFileSync, writeFileSync, statSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -26,12 +26,17 @@ function arg(name, def) {
   throw new Error(`missing required --${name}`);
 }
 
-const dirs = { win: arg("win"), mac: arg("mac"), linux: arg("linux") };
+const dirs = {
+  win: arg("win"),
+  "mac-arm": arg("mac-arm"),
+  "mac-intel": arg("mac-intel"),
+  linux: arg("linux"),
+};
 const version = arg("version");
 const out = arg("out", "crates/control-panel/resources/binaries.json");
 
-function meta(dir, id, os) {
-  const file = join(dir, os === "win" ? `${id}.exe` : id);
+function meta(dir, id, plat) {
+  const file = join(dir, plat === "win" ? `${id}.exe` : id);
   const buf = readFileSync(file);
   return {
     sha256: createHash("sha256").update(buf).digest("hex"),
@@ -43,7 +48,8 @@ const binaries = {};
 for (const id of IDS) {
   binaries[id] = {
     win: meta(dirs.win, id, "win"),
-    mac: meta(dirs.mac, id, "mac"),
+    "mac-arm": meta(dirs["mac-arm"], id, "mac-arm"),
+    "mac-intel": meta(dirs["mac-intel"], id, "mac-intel"),
     linux: meta(dirs.linux, id, "linux"),
   };
 }

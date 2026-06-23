@@ -8,8 +8,9 @@ use std::time::Duration;
 /// test override (when set, fetch from `<base>/<id><ext>` instead of GitHub).
 fn resolve_url(id: &str) -> String {
     if let Some(base) = std::env::var_os("CCMCP_FETCH_BASE") {
+        let plat = crate::binaries::current_plat();
         let ext = if cfg!(windows) { ".exe" } else { "" };
-        return format!("{}/{id}{ext}", base.to_string_lossy());
+        return format!("{}/{id}-{plat}{ext}", base.to_string_lossy());
     }
     crate::binaries::download_url(id)
 }
