@@ -1,49 +1,23 @@
+use sha2::{Digest, Sha256};
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-/// Returns the embedded release bytes for a connector id, or `None` if the id
-/// is unknown.
-///
-/// Each `crates/control-panel/resources/<id>.exe` (on Windows) or
-/// `resources/<id>` (other platforms) must exist at compile time. The lead
-/// populates `resources/`.
-pub fn embedded_binary(id: &str) -> Option<&'static [u8]> {
-    macro_rules! bin {
-        ($name:literal) => {{
-            #[cfg(windows)]
-            {
-                Some(include_bytes!(concat!("../resources/", $name, ".exe")) as &'static [u8])
-            }
-            #[cfg(not(windows))]
-            {
-                Some(include_bytes!(concat!("../resources/", $name)) as &'static [u8])
-            }
-        }};
+/// Resolve the download URL for a connector, honoring the `CCMCP_FETCH_BASE`
+/// test override (when set, fetch from `<base>/<id><ext>` instead of GitHub).
+fn resolve_url(id: &str) -> String {
+    if let Some(base) = std::env::var_os("CCMCP_FETCH_BASE") {
+        let ext = if cfg!(windows) { ".exe" } else { "" };
+        return format!("{}/{id}{ext}", base.to_string_lossy());
     }
+    crate::binaries::download_url(id)
+}
 
-    match id {
-        "confluence" => bin!("confluence"),
-        "jira" => bin!("jira"),
-        "bitbucket" => bin!("bitbucket"),
-        "airtable" => bin!("airtable"),
-        "mysql" => bin!("mysql"),
-        "mariadb" => bin!("mariadb"),
-        "clickhouse" => bin!("clickhouse"),
-        "oracle" => bin!("oracle"),
-        "gitlab" => bin!("gitlab"),
-        "postgres" => bin!("postgres"),
-        "github" => bin!("github"),
-        "jenkins" => bin!("jenkins"),
-        "redmine" => bin!("redmine"),
-        "grafana" => bin!("grafana"),
-        "elasticsearch" => bin!("elasticsearch"),
-        "mattermost" => bin!("mattermost"),
-        "mongodb" => bin!("mongodb"),
-        "sentry" => bin!("sentry"),
-        _ => None,
-    }
+fn sha256_hex(bytes: &[u8]) -> String {
+    let mut h = Sha256::new();
+    h.update(bytes);
+    h.finalize().iter().map(|b| format!("{b:02x}")).collect()
 }
 
 /// On-disk file name for a connector binary.
@@ -92,19 +66,62 @@ pub fn default_install_dir() -> PathBuf {
     }
 }
 
-/// Extract a connector's embedded binary into the install dir and return its
-/// path. Errors if the id has no embedded binary or the write fails.
-pub fn extract_connector(id: &str) -> io::Result<PathBuf> {
-    let bytes = embedded_binary(id).ok_or_else(|| {
+/// Return the connector binary path, downloading + verifying it on first use.
+///
+/// If a cached binary exists and its sha256 matches the expected hash, it is
+/// reused. Otherwise the per-OS binary is downloaded from the app's own
+/// `cp-v<version>` release, its sha256 checked against the hash baked into the
+/// app (an empty expected hash — the dev placeholder — skips verification),
+/// then cached and made executable.
+pub fn fetch_connector(id: &str) -> io::Result<PathBuf> {
+    let (expected_sha, _expected_size) = crate::binaries::current_os_hash(id).ok_or_else(|| {
         io::Error::new(
             io::ErrorKind::NotFound,
-            format!("no embedded binary for connector '{id}'"),
+            format!("no binary manifest entry for connector '{id}'"),
         )
     })?;
+
     let dir = default_install_dir();
     fs::create_dir_all(&dir)?;
     let target = dir.join(binary_file_name(id));
-    write_binary(&target, bytes)?;
+
+    // Cache hit: an existing file whose hash matches the expected one.
+    if !expected_sha.is_empty() {
+        if let Ok(existing) = fs::read(&target) {
+            if sha256_hex(&existing) == expected_sha {
+                return Ok(target);
+            }
+        }
+    }
+
+    // Download the binary.
+    let url = resolve_url(id);
+    let resp = reqwest::blocking::Client::builder()
+        .build()
+        .and_then(|c| c.get(&url).send())
+        .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("download failed: {e}")))?;
+    if !resp.status().is_success() {
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            format!("download failed: HTTP {} for {url}", resp.status()),
+        ));
+    }
+    let bytes = resp
+        .bytes()
+        .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("download read failed: {e}")))?;
+
+    // Verify against the baked hash (empty = dev placeholder, skip).
+    if !expected_sha.is_empty() {
+        let got = sha256_hex(&bytes);
+        if got != expected_sha {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("checksum mismatch for '{id}': expected {expected_sha}, got {got}"),
+            ));
+        }
+    }
+
+    write_binary(&target, &bytes)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

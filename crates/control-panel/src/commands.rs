@@ -2,7 +2,7 @@ use crate::claude_config::{
     default_config_path, read_installed, remove_entry, write_entry, InstalledEntry,
 };
 use crate::installer::{
-    default_install_dir, extract_connector, probe_writable, remove_connector_file,
+    default_install_dir, fetch_connector, probe_writable, remove_connector_file,
 };
 use crate::registry::{self, Connector};
 use serde_json::{json, Map, Value};
@@ -39,17 +39,17 @@ pub fn install_connector(
         ));
     }
 
-    let server_path = extract_connector(&id).map_err(|e| {
+    let server_path = fetch_connector(&id).map_err(|e| {
         if e.raw_os_error() == Some(32) {
             format!(
-                "Failed to extract the connector binary: the previous server is still running \
+                "Failed to save the connector binary: the previous server is still running \
                  and has the file locked. Fully quit Claude Desktop (check the system tray) and \
                  try again. ({e})"
             )
         } else {
             format!(
-                "Failed to extract the connector binary: {e}. Your antivirus may be blocking \
-                 this (add an exception)."
+                "Failed to download the connector: {e}. Check your internet connection or proxy, \
+                 then try again."
             )
         }
     })?;
@@ -84,7 +84,7 @@ pub fn test_connection(
     mode: String,
 ) -> Result<String, String> {
     let server_path =
-        extract_connector(&id).map_err(|e| format!("Could not prepare the connector: {e}"))?;
+        fetch_connector(&id).map_err(|e| format!("Could not prepare the connector: {e}"))?;
 
     let mut cmd = std::process::Command::new(&server_path);
     cmd.arg("--test-connection");
