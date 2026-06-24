@@ -199,9 +199,11 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
   border: 1px solid var(--hairline-strong);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 50px rgba(0, 0, 0, 0.45);
 }
-.tut-viewport { overflow: hidden; }
-.tut-track { display: flex; transition: transform 0.5s var(--ease); }
-.tut-slide { flex: 0 0 100%; width: 100%; display: block; aspect-ratio: 1080 / 675; object-fit: cover; }
+/* Aspect lives on the viewport (not the img) so the slide box can't be stretched
+   to the image's intrinsic height by flexbox. */
+.tut-viewport { overflow: hidden; aspect-ratio: 1080 / 675; }
+.tut-track { display: flex; height: 100%; transition: transform 0.5s var(--ease); }
+.tut-slide { flex: 0 0 100%; width: 100%; height: 100%; display: block; object-fit: cover; }
 .tut-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
   width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
