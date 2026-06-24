@@ -157,7 +157,7 @@ const RELEASE_BASE = "https://github.com/huylq98/claude-chat-mcp/releases/latest
 // Feedback form posts to Web3Forms (free, no backend; routes to your email).
 // Get a key at https://web3forms.com and paste it here to enable sending.
 const FEEDBACK_ENDPOINT = "https://api.web3forms.com/submit";
-const FEEDBACK_ACCESS_KEY = "REPLACE_WITH_WEB3FORMS_ACCESS_KEY";
+const FEEDBACK_ACCESS_KEY = "ac3d1e73-dc17-4da6-9371-7a1bbb9bd8d9";
 
 // Control-panel installers. Installer releases use a cp-v* tag (not "latest",
 // which belongs to the .mcpb release), and Tauri bakes the version into the
