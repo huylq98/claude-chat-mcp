@@ -3,10 +3,10 @@
    (coral). Native CSS, no build. */
 
 :root {
-  /* Softer warm charcoal (was near-black #060607) for a less harsh, higher
-     contrast feel while keeping the coral accent. */
-  --bg: #1a1a1e;
-  --bg-2: #232329;
+  /* Deep modern charcoal: darker than a washed grey, but not the harsh
+     near-black #060607. Brighter text keeps contrast high. */
+  --bg: #0d0e12;
+  --bg-2: #15161b;
   --surface: rgba(255, 255, 255, 0.05);
   --surface-2: rgba(255, 255, 255, 0.08);
   --hairline: rgba(255, 255, 255, 0.11);
