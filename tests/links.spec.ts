@@ -29,7 +29,7 @@ test("site installer links match the app version, include .deb, and resolve", as
   const base = `https://github.com/huylq98/claude-chat-mcp/releases/download/${cpTag}`;
   const files = [
     `Claude.Chat.MCP_${cpVersion}_x64-setup.exe`,
-    `Claude.Chat.MCP_${cpVersion}_aarch64.dmg`,
+    `Claude.Chat.MCP_${cpVersion}_universal.dmg`,
     `Claude.Chat.MCP_${cpVersion}_amd64.AppImage`,
     `Claude.Chat.MCP_${cpVersion}_amd64.deb`,
   ];

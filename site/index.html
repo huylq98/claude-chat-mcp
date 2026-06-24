@@ -245,6 +245,24 @@
     <a class="footer-link" href="https://github.com/huylq98/claude-chat-mcp" target="_blank" rel="noopener">GitHub</a>
   </footer>
 
+  <button id="fb-open" class="fb-fab" type="button" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <span data-i18n="fb_open">Feedback</span>
+  </button>
+  <dialog id="fb-dialog" class="fb-dialog" aria-labelledby="fb-title">
+    <form id="fb-form">
+      <h3 id="fb-title" data-i18n="fb_title">Send feedback</h3>
+      <p class="fb-sub" data-i18n="fb_sub">Found a bug or have an idea? Tell us.</p>
+      <textarea id="fb-msg" rows="4" required data-i18n-ph="fb_ph" placeholder="What's working, what isn't, what you'd like…"></textarea>
+      <input id="fb-email" type="email" autocomplete="email" data-i18n-ph="fb_email" placeholder="Your email (optional)" />
+      <div class="fb-actions">
+        <button type="button" id="fb-cancel" class="btn btn-ghost" data-i18n="fb_cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" data-i18n="fb_send">Send</button>
+      </div>
+      <p id="fb-status" class="fb-status" aria-live="polite"></p>
+    </form>
+  </dialog>
+
   <script src="app.js"></script>
 </body>
 </html>

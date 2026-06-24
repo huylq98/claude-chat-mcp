@@ -20,6 +20,16 @@ const STRINGS = {
     cta_download: "Download the app", cta_browse: "Browse connectors",
     cta_platforms: "Free and open source. Windows, macOS, Linux.",
     video_cap: "Add a connector's address, pick a permission, install. Under a minute.",
+    fb_open: "Feedback",
+    fb_title: "Send feedback",
+    fb_sub: "Found a bug or have an idea? Tell us.",
+    fb_ph: "What's working, what isn't, what you'd like.",
+    fb_email: "Your email (optional)",
+    fb_cancel: "Cancel",
+    fb_send: "Send",
+    fb_sending: "Sending…",
+    fb_ok: "Thanks. Your feedback was sent.",
+    fb_err: "Could not send. Please try again later.",
     card_dl_manual: "Download .mcpb",
     h2_app: "Get the app",
     app_h: "One app to manage every connector",
@@ -27,7 +37,7 @@ const STRINGS = {
     app_note: "Free. Works on Windows, macOS, and Linux.",
     app_dl: "Download the app",
     app_dl_for: "Download for",
-    os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (.deb)",
+    os_windows: "Windows", os_macos: "macOS", os_linux: "Linux (.deb)",
     os_linux_appimage: "Linux (AppImage)",
     app_other: "Other formats and older versions",
     step1_h: "Download", step1_p: "Prefer to do it by hand? Use the small Download .mcpb link on any connector to get a single file.",
@@ -50,6 +60,16 @@ const STRINGS = {
     cta_download: "Tải ứng dụng", cta_browse: "Xem trình kết nối",
     cta_platforms: "Miễn phí và mã nguồn mở. Windows, macOS, Linux.",
     video_cap: "Nhập địa chỉ, chọn quyền, cài đặt. Dưới một phút.",
+    fb_open: "Góp ý",
+    fb_title: "Gửi góp ý",
+    fb_sub: "Gặp lỗi hay có ý tưởng? Hãy cho chúng tôi biết.",
+    fb_ph: "Điều gì chạy tốt, điều gì chưa, bạn muốn gì.",
+    fb_email: "Email của bạn (không bắt buộc)",
+    fb_cancel: "Hủy",
+    fb_send: "Gửi",
+    fb_sending: "Đang gửi…",
+    fb_ok: "Cảm ơn. Góp ý của bạn đã được gửi.",
+    fb_err: "Không gửi được. Vui lòng thử lại sau.",
     card_dl_manual: "Tải .mcpb",
     h2_app: "Tải ứng dụng",
     app_h: "Một ứng dụng quản lý mọi trình kết nối",
@@ -57,7 +77,7 @@ const STRINGS = {
     app_note: "Miễn phí. Chạy trên Windows, macOS và Linux.",
     app_dl: "Tải ứng dụng",
     app_dl_for: "Tải cho",
-    os_windows: "Windows", os_macos: "macOS (Apple Silicon)", os_linux: "Linux (.deb)",
+    os_windows: "Windows", os_macos: "macOS", os_linux: "Linux (.deb)",
     os_linux_appimage: "Linux (AppImage)",
     app_other: "Định dạng khác và phiên bản cũ",
     step1_h: "Tải về", step1_p: "Muốn làm thủ công? Dùng liên kết Tải .mcpb nhỏ trên mỗi trình kết nối để lấy một tệp.",
@@ -128,20 +148,22 @@ const esc = (s) =>
 
 const RELEASE_BASE = "https://github.com/huylq98/claude-chat-mcp/releases/latest/download";
 
+// Feedback form posts to Web3Forms (free, no backend; routes to your email).
+// Get a key at https://web3forms.com and paste it here to enable sending.
+const FEEDBACK_ENDPOINT = "https://api.web3forms.com/submit";
+const FEEDBACK_ACCESS_KEY = "REPLACE_WITH_WEB3FORMS_ACCESS_KEY";
+
 // Control-panel installers. Installer releases use a cp-v* tag (not "latest",
 // which belongs to the .mcpb release), and Tauri bakes the version into the
 // filename, so bump CP_TAG + CP_VERSION together when cutting a new installer.
-// Temporarily pinned to the last fully-published installer release while the
-// cp-v0.14.0 (fetch-on-demand) build clears the macOS-Intel runner queue. The
-// 0.13.0 .deb (32MB) downloads reliably; flip both back to 0.14.0 once it
-// publishes. (Keep CP_TAG/CP_VERSION in sync with the live release.)
-const CP_TAG = "cp-v0.13.0";
-const CP_VERSION = "0.13.0";
+// Keep CP_TAG/CP_VERSION in sync with the live installer release.
+const CP_TAG = "cp-v0.14.0";
+const CP_VERSION = "0.14.0";
 const CP_BASE = `https://github.com/huylq98/claude-chat-mcp/releases/download/${CP_TAG}`;
 const CP_RELEASES = "https://github.com/huylq98/claude-chat-mcp/releases";
 const CP_INSTALLERS = {
   windows: `Claude.Chat.MCP_${CP_VERSION}_x64-setup.exe`,
-  macos: `Claude.Chat.MCP_${CP_VERSION}_aarch64.dmg`,
+  macos: `Claude.Chat.MCP_${CP_VERSION}_universal.dmg`,
   // Default Linux download is the small .deb; the AppImage is offered as an
   // extra link below for non-Debian distros.
   linux: `Claude.Chat.MCP_${CP_VERSION}_amd64.deb`,
@@ -375,9 +397,48 @@ function initSearch() {
   }
 }
 
+function initFeedback() {
+  const open = document.getElementById("fb-open");
+  const dlg = document.getElementById("fb-dialog");
+  const form = document.getElementById("fb-form");
+  const statusEl = document.getElementById("fb-status");
+  const cancel = document.getElementById("fb-cancel");
+  if (!open || !dlg || !form) return;
+  open.addEventListener("click", () => { statusEl.textContent = ""; dlg.showModal(); });
+  cancel.addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById("fb-msg").value.trim();
+    if (!msg) return;
+    if (FEEDBACK_ACCESS_KEY.startsWith("REPLACE")) { statusEl.textContent = t("fb_err"); return; }
+    statusEl.textContent = t("fb_sending");
+    try {
+      const res = await fetch(FEEDBACK_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: FEEDBACK_ACCESS_KEY,
+          subject: "Claude Chat MCP site feedback",
+          from_name: "Claude Chat MCP site",
+          message: msg,
+          email: document.getElementById("fb-email").value.trim() || "(not provided)",
+        }),
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      statusEl.textContent = t("fb_ok");
+      form.reset();
+      setTimeout(() => dlg.close(), 1300);
+    } catch (err) {
+      statusEl.textContent = t("fb_err");
+    }
+  });
+}
+
 async function main() {
   initLang();
   initSearch();
+  initFeedback();
   try {
     const res = await fetch("./registry.json", { cache: "no-store" });
     if (!res.ok) throw new Error(`registry.json ${res.status}`);

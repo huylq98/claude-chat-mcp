@@ -306,6 +306,37 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.8rem
 .footer-link:hover { color: var(--accent); }
 code { font-family: var(--font-mono); font-size: 0.85em; color: var(--text-dim); }
 
+/* ── Feedback widget (floating button + dialog) ── */
+.fb-fab {
+  position: fixed; bottom: 20px; right: 20px; z-index: 60;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 16px; border-radius: 999px; cursor: pointer; border: none;
+  font-family: var(--font-body); font-weight: 600; font-size: 0.9rem;
+  color: var(--accent-ink); background: var(--accent);
+  box-shadow: 0 10px 30px rgba(255, 122, 89, 0.35);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.fb-fab:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(255, 122, 89, 0.5); }
+.fb-dialog {
+  border: 1px solid var(--hairline-strong); background: var(--bg-2); color: var(--text);
+  border-radius: var(--radius-md); padding: 0; width: min(440px, 92vw);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.fb-dialog::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); }
+.fb-dialog form { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.fb-dialog h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin: 0; }
+.fb-sub { margin: 0; color: var(--text-dim); font-size: 0.9rem; }
+#fb-msg, #fb-email {
+  width: 100%; font-family: var(--font-body); font-size: 0.95rem; color: var(--text);
+  background: var(--surface); border: 1px solid var(--hairline-strong); border-radius: var(--radius-sm);
+  padding: 11px 13px;
+}
+#fb-msg { resize: vertical; }
+#fb-msg:focus, #fb-email:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 122, 89, 0.18); }
+.fb-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+.fb-status { margin: 0; min-height: 1.2em; font-size: 0.85rem; color: var(--text-dim); }
+@media (max-width: 480px) { .fb-fab span { display: none; } .fb-fab { padding: 12px; } }
+
 /* ---- Responsive ---- */
 @media (max-width: 720px) {
   .nav { padding: 8px 8px 8px 14px; }
