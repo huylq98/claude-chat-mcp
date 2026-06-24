@@ -44,6 +44,16 @@ const STRINGS = {
     authMethod: "Sign in with",
     authToken: "Access token",
     authBasic: "Username and password",
+    reportBug: "Report a bug",
+    reportTitle: "Report a bug",
+    reportSub: "Tell us what happened. Your app version and OS are included automatically.",
+    reportPh: "What went wrong, and what you expected.",
+    reportEmail: "Your email (optional)",
+    reportCancel: "Cancel",
+    reportSend: "Send",
+    reportSending: "Sending…",
+    reportOk: "Thanks. Your report was sent.",
+    reportErr: "Could not send. Check your connection and try again.",
     show: "Show", hide: "Hide",
   },
   vi: {
@@ -85,6 +95,16 @@ const STRINGS = {
     authMethod: "Đăng nhập bằng",
     authToken: "Token truy cập",
     authBasic: "Tên đăng nhập và mật khẩu",
+    reportBug: "Báo lỗi",
+    reportTitle: "Báo lỗi",
+    reportSub: "Cho chúng tôi biết chuyện gì đã xảy ra. Phiên bản ứng dụng và hệ điều hành được gửi kèm tự động.",
+    reportPh: "Lỗi gì đã xảy ra, và bạn mong đợi điều gì.",
+    reportEmail: "Email của bạn (không bắt buộc)",
+    reportCancel: "Hủy",
+    reportSend: "Gửi",
+    reportSending: "Đang gửi…",
+    reportOk: "Cảm ơn. Báo cáo của bạn đã được gửi.",
+    reportErr: "Không gửi được. Kiểm tra kết nối và thử lại.",
     show: "Hiện", hide: "Ẩn",
   },
 };
@@ -96,6 +116,9 @@ function applyLang() {
   document.documentElement.lang = lang;
   $$("[data-i18n]").forEach((el) => {
     el.textContent = t(el.dataset.i18n);
+  });
+  $$("[data-i18n-ph]").forEach((el) => {
+    el.placeholder = t(el.dataset.i18nPh);
   });
   if (searchEl) searchEl.placeholder = t("searchPh");
   // Re-render the filter row and connector cards so dynamic labels follow the
@@ -550,8 +573,54 @@ async function removeConnector(c, node) {
   }
 }
 
+/* ── Report a bug ───────────────────────────────────────────────────── */
+// Posts to Web3Forms (free, no backend; routes to your email). Get a key at
+// https://web3forms.com and paste it below to enable sending.
+const FEEDBACK_ENDPOINT = "https://api.web3forms.com/submit";
+const FEEDBACK_ACCESS_KEY = "REPLACE_WITH_WEB3FORMS_ACCESS_KEY";
+const APP_VERSION = "0.14.0"; // keep in sync with tauri.conf.json
+
+function initReport() {
+  const open = $("#report-open");
+  const dlg = $("#report-dialog");
+  const form = $("#report-form");
+  const statusEl = $("#report-status");
+  const cancel = $("#report-cancel");
+  if (!open || !dlg || !form) return;
+  open.addEventListener("click", () => { setStatus(statusEl, "", ""); dlg.showModal(); });
+  cancel.addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msg = $("#report-msg").value.trim();
+    if (!msg) return;
+    if (FEEDBACK_ACCESS_KEY.startsWith("REPLACE")) { setStatus(statusEl, "err", t("reportErr")); return; }
+    setStatus(statusEl, "info", t("reportSending"));
+    try {
+      const res = await fetch(FEEDBACK_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: FEEDBACK_ACCESS_KEY,
+          subject: "Claude Chat MCP app bug report",
+          from_name: "Claude Chat MCP app",
+          message: `${msg}\n\n---\nApp version: ${APP_VERSION}\n${navigator.userAgent}`,
+          email: $("#report-email").value.trim() || "(not provided)",
+        }),
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      setStatus(statusEl, "ok", t("reportOk"));
+      form.reset();
+      setTimeout(() => dlg.close(), 1300);
+    } catch (err) {
+      setStatus(statusEl, "err", t("reportErr"));
+    }
+  });
+}
+
 /* ── Boot ───────────────────────────────────────────────────────────── */
 async function init() {
+  initReport();
   const loading = document.createElement("p");
   loading.className = "empty-state";
   loading.textContent = t("loadingConnectors");

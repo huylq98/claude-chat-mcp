@@ -21,11 +21,28 @@
           </svg>
           <span data-i18n="appName">Claude Chat MCP</span>
         </div>
-        <div class="lang-toggle" role="group" aria-label="Language">
-          <button type="button" class="lang-btn active" data-lang="en">EN</button>
-          <button type="button" class="lang-btn" data-lang="vi">VI</button>
+        <div class="masthead-actions">
+          <button type="button" id="report-open" class="report-btn" data-i18n="reportBug">Report a bug</button>
+          <div class="lang-toggle" role="group" aria-label="Language">
+            <button type="button" class="lang-btn active" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="vi">VI</button>
+          </div>
         </div>
       </header>
+
+      <dialog id="report-dialog" class="report-dialog" aria-labelledby="report-title">
+        <form id="report-form">
+          <h3 id="report-title" data-i18n="reportTitle">Report a bug</h3>
+          <p class="report-sub" data-i18n="reportSub">Tell us what happened. Your app version and OS are included automatically.</p>
+          <textarea id="report-msg" rows="4" required data-i18n-ph="reportPh"></textarea>
+          <input id="report-email" type="email" data-i18n-ph="reportEmail" />
+          <div class="report-actions">
+            <button type="button" id="report-cancel" class="btn btn-ghost" data-i18n="reportCancel">Cancel</button>
+            <button type="submit" class="btn btn-primary" data-i18n="reportSend">Send</button>
+          </div>
+          <p id="report-status" class="status" aria-live="polite"></p>
+        </form>
+      </dialog>
 
       <section class="intro">
         <h1 data-i18n="title">Connector control panel</h1>

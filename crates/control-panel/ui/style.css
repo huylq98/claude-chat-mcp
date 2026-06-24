@@ -137,6 +137,33 @@ select.field-input option,
   color: var(--accent-ink);
 }
 
+/* ── Report a bug ────────────────────────────────────────────────────── */
+.masthead-actions { display: flex; align-items: center; gap: 10px; }
+.report-btn {
+  padding: 6px 12px; border-radius: var(--radius-sm); cursor: pointer;
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  color: var(--text-dim); background: var(--surface); border: 1px solid var(--hairline);
+  transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.report-btn:hover { color: var(--text); border-color: var(--hairline-strong); }
+.report-dialog {
+  border: 1px solid var(--hairline-strong); background: var(--bg-2); color: var(--text);
+  border-radius: var(--radius-md); padding: 0; width: min(440px, 92vw);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.report-dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+.report-dialog form { padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+.report-dialog h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; margin: 0; }
+.report-sub { margin: 0; color: var(--text-dim); font-size: 12.5px; }
+#report-msg, #report-email {
+  width: 100%; font-family: var(--font-body); font-size: 13px; color: var(--text);
+  background: var(--surface); border: 1px solid var(--hairline-strong); border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+#report-msg { resize: vertical; }
+#report-msg:focus, #report-email:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 122, 89, 0.18); }
+.report-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 2px; }
+
 /* ── Intro ───────────────────────────────────────────────────────────── */
 .intro { margin: 26px 0 18px; }
 
