@@ -229,10 +229,12 @@ select.field-input option,
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 14px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--hairline);
   background: var(--surface);
   border-radius: var(--radius-lg);
@@ -240,6 +242,10 @@ select.field-input option,
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 24px rgba(0, 0, 0, 0.25);
   transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
+
+/* Card head grows so the Configure control sits at the bottom — tiles in a row
+   stay equal height with their toggles aligned. */
+.card-head { flex: 1 1 auto; }
 
 /* Lift collapsed tiles on hover (skip the expanded one). */
 .card:not(.is-open):hover {
