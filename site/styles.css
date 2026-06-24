@@ -39,6 +39,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  color-scheme: dark;
 }
 
 /* Ambient mesh - fixed, never on scroll containers */
@@ -191,25 +192,37 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .hero-dl { box-shadow: 0 10px 30px rgba(255, 122, 89, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
 .hero-dl:hover { transform: translateY(-1px); box-shadow: 0 16px 44px rgba(255, 122, 89, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
 .hero-dl-note { margin: 14px 0 0; font-size: 0.85rem; color: var(--text-faint); }
-/* Hero tutorial video slot (replace the placeholder div with an iframe/video). */
-.hero-video { margin: 32px auto 0; max-width: 640px; }
-.hero-video-ph, .hero-video iframe, .hero-video video {
-  display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radius-md);
+/* Hero demo: a self-contained, looping CSS walkthrough of the install flow. */
+.hero-demo { margin: 32px auto 0; max-width: 560px; }
+.demo-window {
+  border-radius: var(--radius-md); border: 1px solid var(--hairline-strong); background: var(--bg-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 50px rgba(0, 0, 0, 0.45); overflow: hidden;
 }
-.hero-video-ph {
-  display: grid; place-items: center;
-  background:
-    radial-gradient(60% 80% at 50% 42%, rgba(255, 122, 89, 0.20), transparent 70%),
-    linear-gradient(180deg, var(--surface-2), var(--surface));
-  border: 1px solid var(--hairline-strong);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 50px rgba(0, 0, 0, 0.4);
+.demo-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--hairline); }
+.demo-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--hairline-strong); }
+.demo-bar span { margin-left: 8px; font-family: var(--font-display); font-size: 0.8rem; color: var(--text-dim); }
+.demo-stage { position: relative; aspect-ratio: 16 / 10; }
+.demo-frame {
+  position: absolute; inset: 0; padding: 24px; display: flex; flex-direction: column; gap: 16px;
+  opacity: 0; animation: demoCycle 9s var(--ease) infinite;
 }
-.play-glyph {
-  width: 58px; height: 58px; display: grid; place-items: center; padding-left: 4px;
-  border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 1.15rem;
-  box-shadow: 0 10px 30px rgba(255, 122, 89, 0.5);
+.demo-f2 { animation-delay: 3s; }
+.demo-f3 { animation-delay: 6s; }
+@keyframes demoCycle { 0% { opacity: 0 } 4% { opacity: 1 } 29% { opacity: 1 } 34% { opacity: 0 } 100% { opacity: 0 } }
+.demo-row { display: flex; align-items: center; justify-content: space-between; }
+.demo-name { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; }
+.demo-pill { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--hairline); color: var(--text-faint); }
+.demo-pill.demo-on { background: rgba(74, 222, 128, 0.12); border-color: rgba(74, 222, 128, 0.35); color: #4ade80; }
+.demo-input { padding: 11px 13px; border-radius: var(--radius-sm); border: 1px solid var(--hairline-strong); background: var(--surface); font-family: var(--font-mono); font-size: 0.85rem; color: var(--text); }
+.demo-input.demo-empty { color: var(--text-faint); }
+.demo-btn { align-self: flex-start; padding: 10px 18px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--hairline-strong); color: var(--text); font-weight: 600; font-size: 0.85rem; }
+.demo-btn-press { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.demo-btn.demo-done { background: rgba(74, 222, 128, 0.12); border-color: rgba(74, 222, 128, 0.35); color: #4ade80; }
+.hero-demo-cap { display: block; margin-top: 12px; font-size: 0.85rem; color: var(--text-faint); }
+@media (prefers-reduced-motion: reduce) {
+  .demo-frame { animation: none; opacity: 0; }
+  .demo-f3 { opacity: 1; }
 }
-.hero-video-cap { display: block; margin-top: 12px; font-size: 0.85rem; color: var(--text-faint); }
 
 /* ---- Get-the-app card ---- */
 .app-card { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; padding: 28px 32px; border-radius: 18px; }

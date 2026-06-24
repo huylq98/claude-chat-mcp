@@ -43,6 +43,16 @@ body {
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  /* Render native controls (select dropdowns, scrollbars) dark so option lists
+     aren't white-text-on-white. */
+  color-scheme: dark;
+}
+
+/* Native <option> popups don't always honor the dark theme; force it. */
+select.field-input option,
+.role-select option {
+  background-color: var(--bg-2);
+  color: var(--text);
 }
 
 .bg-mesh {

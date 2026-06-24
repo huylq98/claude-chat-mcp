@@ -140,12 +140,28 @@
         <a class="btn btn-ghost" href="#connectors" data-i18n="cta_browse">Browse connectors</a>
       </div>
       <p class="hero-dl-note" data-i18n="cta_platforms">Free and open source. Windows, macOS, Linux.</p>
-      <figure class="hero-video">
-        <!-- Drop the real tutorial in here, e.g.:
-             <iframe src="https://www.youtube.com/embed/VIDEO_ID" title="Setup tutorial" allowfullscreen loading="lazy"></iframe>
-             or <video src="tutorial.mp4" poster="tutorial-poster.jpg" controls preload="none"></video> -->
-        <div class="hero-video-ph" aria-hidden="true"><span class="play-glyph">▶</span></div>
-        <figcaption class="hero-video-cap" data-i18n="video_cap">Watch the 2 minute setup: install the app, then turn on a connector.</figcaption>
+      <figure class="hero-demo" aria-label="Walkthrough: add a connector's address, pick a permission, and install.">
+        <div class="demo-window" aria-hidden="true">
+          <div class="demo-bar"><i></i><i></i><i></i><span>Claude Chat MCP</span></div>
+          <div class="demo-stage">
+            <div class="demo-frame demo-f1">
+              <div class="demo-row"><span class="demo-name">Jira</span><span class="demo-pill">Off</span></div>
+              <div class="demo-input demo-empty">Server address</div>
+              <div class="demo-btn">Install</div>
+            </div>
+            <div class="demo-frame demo-f2">
+              <div class="demo-row"><span class="demo-name">Jira</span><span class="demo-pill">Off</span></div>
+              <div class="demo-input">https://jira.company.com</div>
+              <div class="demo-btn demo-btn-press">Install</div>
+            </div>
+            <div class="demo-frame demo-f3">
+              <div class="demo-row"><span class="demo-name">Jira</span><span class="demo-pill demo-on">On</span></div>
+              <div class="demo-input">https://jira.company.com</div>
+              <div class="demo-btn demo-done">Installed ✓</div>
+            </div>
+          </div>
+        </div>
+        <figcaption class="hero-demo-cap" data-i18n="video_cap">Add a connector's address, pick a permission, install. Under a minute.</figcaption>
       </figure>
     </section>
 
