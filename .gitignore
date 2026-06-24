@@ -19,6 +19,9 @@
 /crates/control-panel/resources/registry.json
 /crates/control-panel/target
 
+# internal working docs (specs/plans) - not for the public repo
+/docs/superpowers
+
 # wrangler files
 .wrangler
 .dev.vars*
