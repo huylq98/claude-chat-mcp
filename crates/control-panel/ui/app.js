@@ -141,12 +141,14 @@ $$(".lang-btn").forEach((btn) => {
 
 /* ── Generic status helper ──────────────────────────────────────────── */
 function setStatus(el, kind, msg) {
+  // Toggle only the state classes so base classes (e.g. card-status) survive.
+  el.classList.remove("visible", "info", "ok", "err");
   if (!msg) {
-    el.className = "status";
     el.textContent = "";
     return;
   }
-  el.className = `status visible ${kind}`;
+  if (kind) el.classList.add(kind);
+  el.classList.add("visible");
   el.textContent = msg;
 }
 

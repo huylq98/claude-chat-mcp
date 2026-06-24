@@ -111,3 +111,51 @@ test("report-a-bug dialog opens", async ({ page }) => {
   await expect(page.locator("#report-dialog")).toBeVisible();
   await expect(page.locator("#report-msg")).toBeVisible();
 });
+
+test("fill + test connection + install turns the connector on", async ({ page }) => {
+  await openApp(page);
+  const card = cardByName(page, "Jira");
+  await card.locator(".expander").click();
+  await card.locator('.field[data-env="JIRA_URL"] input').fill("https://jira.example.com");
+  await card.locator(".btn-test").click();
+  await expect(card.locator(".card-status")).toContainText("Connection OK");
+  await card.locator(".btn-install").click();
+  await expect(card).toHaveAttribute("data-state", "on");
+  await expect(card.locator(".restart-note")).toBeVisible();
+  await expect(card.locator(".btn-install")).toContainText(/Update/);
+});
+
+test("installing with a required field empty shows a validation error", async ({ page }) => {
+  await openApp(page);
+  page.on("dialog", (d) => d.accept());
+  const card = cardByName(page, "Jira");
+  await card.locator(".expander").click();
+  await card.locator(".btn-install").click(); // JIRA_URL left empty
+  await expect(card.locator(".card-status")).toContainText(/required/i);
+  await expect(card.locator('.field[data-env="JIRA_URL"]')).toHaveClass(/field-err/);
+});
+
+test("secret field reveal toggles between hidden and visible", async ({ page }) => {
+  await openApp(page);
+  const card = cardByName(page, "Jira");
+  await card.locator(".expander").click();
+  const token = card.locator('.field[data-env="JIRA_TOKEN"] input');
+  await expect(token).toHaveAttribute("type", "password");
+  await card.locator('.field[data-env="JIRA_TOKEN"] .reveal-btn').click();
+  await expect(token).toHaveAttribute("type", "text");
+});
+
+test("remove turns an installed connector back off", async ({ page }) => {
+  await openApp(page, [{ id: "jira", command: "x", env: { JIRA_MODE: "writer" } }]);
+  page.on("dialog", (d) => d.accept());
+  const card = cardByName(page, "Jira");
+  await card.locator(".expander").click();
+  await card.locator(".btn-remove").click();
+  await expect(card).toHaveAttribute("data-state", "off");
+});
+
+test("language toggle translates the app chrome", async ({ page }) => {
+  await openApp(page);
+  await page.locator('.lang-btn[data-lang="vi"]').click();
+  await expect(page.locator(".intro h1")).toHaveText(/Bảng điều khiển/);
+});

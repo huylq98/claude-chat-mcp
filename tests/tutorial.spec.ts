@@ -37,3 +37,10 @@ test("next advances the slide and updates the caption", async ({ page }) => {
   await expect(cap).not.toHaveText(before);
   await expect(page.locator("#tut-track")).toHaveAttribute("style", /translateX/);
 });
+
+test("clicking a dot jumps directly to that slide", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".tut-dot").nth(2).click();
+  await expect(page.locator("#tut-track")).toHaveAttribute("style", /translateX\(-200%\)/);
+  await expect(page.locator(".tut-dot").nth(2)).toHaveClass(/active/);
+});
