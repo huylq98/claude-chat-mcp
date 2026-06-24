@@ -30,6 +30,9 @@ const STRINGS = {
     fb_sending: "Sending…",
     fb_ok: "Thanks. Your feedback was sent.",
     fb_err: "Could not send. Please try again later.",
+    tut_1: "Browse the connectors you need.",
+    tut_2: "Enter your server address, token, and permission.",
+    tut_3: "Turn it on, then just ask Claude.",
     card_dl_manual: "Download .mcpb",
     h2_app: "Get the app",
     app_h: "One app to manage every connector",
@@ -70,6 +73,9 @@ const STRINGS = {
     fb_sending: "Đang gửi…",
     fb_ok: "Cảm ơn. Góp ý của bạn đã được gửi.",
     fb_err: "Không gửi được. Vui lòng thử lại sau.",
+    tut_1: "Chọn trình kết nối bạn cần.",
+    tut_2: "Nhập địa chỉ máy chủ, token và quyền.",
+    tut_3: "Bật lên, rồi hỏi Claude.",
     card_dl_manual: "Tải .mcpb",
     h2_app: "Tải ứng dụng",
     app_h: "Một ứng dụng quản lý mọi trình kết nối",
@@ -311,6 +317,7 @@ function applyLang(lang) {
     renderGrid();
   }
   renderApp();
+  if (window.__refreshTut) window.__refreshTut();
 }
 
 function initLang() {
@@ -435,10 +442,48 @@ function initFeedback() {
   });
 }
 
+function initTut() {
+  const track = document.getElementById("tut-track");
+  const prev = document.getElementById("tut-prev");
+  const next = document.getElementById("tut-next");
+  const dotsWrap = document.getElementById("tut-dots");
+  const cap = document.getElementById("tut-cap");
+  if (!track || !track.children.length) return;
+  const n = track.children.length;
+  let idx = 0;
+  let timer = null;
+
+  dotsWrap.innerHTML = Array.from({ length: n }, (_, i) =>
+    `<button class="tut-dot" type="button" role="tab" data-i="${i}" aria-label="Step ${i + 1}"></button>`
+  ).join("");
+  const dots = [...dotsWrap.querySelectorAll(".tut-dot")];
+
+  function show(i) {
+    idx = (i + n) % n;
+    track.style.transform = `translateX(-${idx * 100}%)`;
+    dots.forEach((d, k) => {
+      d.classList.toggle("active", k === idx);
+      d.setAttribute("aria-selected", String(k === idx));
+    });
+    if (cap) cap.textContent = t(`tut_${idx + 1}`);
+  }
+  function stopAuto() { if (timer) { clearInterval(timer); timer = null; } }
+  function go(i) { show(i); stopAuto(); }
+
+  prev.addEventListener("click", () => go(idx - 1));
+  next.addEventListener("click", () => go(idx + 1));
+  dots.forEach((d) => d.addEventListener("click", () => go(+d.dataset.i)));
+
+  timer = setInterval(() => show(idx + 1), 5000);
+  window.__refreshTut = () => show(idx); // re-translate caption on language switch
+  show(0);
+}
+
 async function main() {
   initLang();
   initSearch();
   initFeedback();
+  initTut();
   try {
     const res = await fetch("./registry.json", { cache: "no-store" });
     if (!res.ok) throw new Error(`registry.json ${res.status}`);

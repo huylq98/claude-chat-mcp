@@ -192,36 +192,30 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .hero-dl { box-shadow: 0 10px 30px rgba(255, 122, 89, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
 .hero-dl:hover { transform: translateY(-1px); box-shadow: 0 16px 44px rgba(255, 122, 89, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
 .hero-dl-note { margin: 14px 0 0; font-size: 0.85rem; color: var(--text-faint); }
-/* Hero demo: a self-contained, looping CSS walkthrough of the install flow. */
-.hero-demo { margin: 32px auto 0; max-width: 560px; }
-.demo-window {
-  border-radius: var(--radius-md); border: 1px solid var(--hairline-strong); background: var(--bg-2);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 50px rgba(0, 0, 0, 0.45); overflow: hidden;
+/* Hero tutorial: a navigable carousel of real app screenshots (prev/next + dots). */
+.hero-demo { margin: 32px auto 0; max-width: 600px; }
+.tut {
+  position: relative; border-radius: var(--radius-md); overflow: hidden;
+  border: 1px solid var(--hairline-strong);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 18px 50px rgba(0, 0, 0, 0.45);
 }
-.demo-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--hairline); }
-.demo-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--hairline-strong); }
-.demo-bar span { margin-left: 8px; font-family: var(--font-display); font-size: 0.8rem; color: var(--text-dim); }
-.demo-stage { position: relative; aspect-ratio: 16 / 10; }
-.demo-frame {
-  position: absolute; inset: 0; padding: 24px; display: flex; flex-direction: column; gap: 16px;
-  opacity: 0; animation: demoCycle 9s var(--ease) infinite;
+.tut-viewport { overflow: hidden; }
+.tut-track { display: flex; transition: transform 0.5s var(--ease); }
+.tut-slide { flex: 0 0 100%; width: 100%; display: block; aspect-ratio: 1080 / 675; object-fit: cover; }
+.tut-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; font-size: 1.3rem; line-height: 1;
+  color: var(--text); background: rgba(13, 14, 18, 0.72); border: 1px solid var(--hairline-strong);
+  backdrop-filter: blur(6px); transition: background 0.2s var(--ease), color 0.2s var(--ease);
 }
-.demo-f2 { animation-delay: 3s; }
-.demo-f3 { animation-delay: 6s; }
-@keyframes demoCycle { 0% { opacity: 0 } 3% { opacity: 1 } 33% { opacity: 1 } 38% { opacity: 0 } 100% { opacity: 0 } }
-.demo-eyebrow { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
-.demo-row { display: flex; align-items: center; justify-content: space-between; }
-.demo-name { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; }
-.demo-pill { font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--hairline); color: var(--text-faint); }
-.demo-pill.demo-on { background: rgba(74, 222, 128, 0.12); border-color: rgba(74, 222, 128, 0.35); color: #4ade80; }
-.demo-input { padding: 11px 13px; border-radius: var(--radius-sm); border: 1px solid var(--hairline-strong); background: var(--surface); font-family: var(--font-mono); font-size: 0.85rem; color: var(--text); }
-.demo-input.demo-empty { color: var(--text-faint); }
-.demo-btn { align-self: flex-start; padding: 10px 18px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--hairline-strong); color: var(--text); font-weight: 600; font-size: 0.85rem; }
-.demo-btn-press { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
-.demo-btn.demo-done { background: rgba(74, 222, 128, 0.12); border-color: rgba(74, 222, 128, 0.35); color: #4ade80; }
-.hero-demo-cap { display: block; margin-top: 12px; font-size: 0.85rem; color: var(--text-faint); }
-/* The demo cross-fades opacity only (no movement), so it keeps playing even
-   under reduced-motion — otherwise it froze on one frame and looked dead. */
+.tut-nav:hover { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.tut-prev { left: 10px; }
+.tut-next { right: 10px; }
+.tut-dots { display: flex; gap: 7px; justify-content: center; margin-top: 14px; }
+.tut-dot { width: 8px; height: 8px; padding: 0; border-radius: 50%; border: none; cursor: pointer; background: var(--hairline-strong); transition: background 0.2s var(--ease), transform 0.2s var(--ease); }
+.tut-dot.active { background: var(--accent); transform: scale(1.3); }
+.hero-demo-cap { display: block; margin-top: 12px; font-size: 0.9rem; color: var(--text-dim); }
 
 /* ---- Get-the-app card ---- */
 .app-card { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; padding: 28px 32px; border-radius: 18px; }

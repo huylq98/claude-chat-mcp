@@ -140,31 +140,20 @@
         <a class="btn btn-ghost" href="#connectors" data-i18n="cta_browse">Browse connectors</a>
       </div>
       <p class="hero-dl-note" data-i18n="cta_platforms">Free and open source. Windows, macOS, Linux.</p>
-      <figure class="hero-demo" aria-label="Walkthrough: add a connector's address, pick a permission, and install.">
-        <div class="demo-window" aria-hidden="true">
-          <div class="demo-bar"><i></i><i></i><i></i><span>Claude Chat MCP</span></div>
-          <div class="demo-stage">
-            <div class="demo-frame demo-f1">
-              <span class="demo-eyebrow">Atlassian</span>
-              <div class="demo-row"><span class="demo-name">Jira</span><span class="demo-pill">Off</span></div>
-              <div class="demo-input demo-empty">Server address</div>
-              <div class="demo-btn">Install</div>
-            </div>
-            <div class="demo-frame demo-f2">
-              <span class="demo-eyebrow">Atlassian</span>
-              <div class="demo-row"><span class="demo-name">Jira</span><span class="demo-pill">Off</span></div>
-              <div class="demo-input">https://jira.company.com</div>
-              <div class="demo-btn demo-btn-press">Install</div>
-            </div>
-            <div class="demo-frame demo-f3">
-              <span class="demo-eyebrow">Atlassian</span>
-              <div class="demo-row"><span class="demo-name">Jira</span><span class="demo-pill demo-on">On</span></div>
-              <div class="demo-input">https://jira.company.com</div>
-              <div class="demo-btn demo-done">Installed ✓</div>
+      <figure class="hero-demo">
+        <div class="tut" id="tut">
+          <div class="tut-viewport">
+            <div class="tut-track" id="tut-track">
+              <img class="tut-slide" src="tutorial/step1.png" width="1080" height="675" alt="The control panel showing every connector in a grid" />
+              <img class="tut-slide" src="tutorial/step2.png" width="1080" height="675" loading="lazy" alt="Configuring a connector: server address, access token, and permission role" />
+              <img class="tut-slide" src="tutorial/step3.png" width="1080" height="675" loading="lazy" alt="Connectors turned on and ready to use in Claude" />
             </div>
           </div>
+          <button class="tut-nav tut-prev" id="tut-prev" type="button" aria-label="Previous step">‹</button>
+          <button class="tut-nav tut-next" id="tut-next" type="button" aria-label="Next step">›</button>
         </div>
-        <figcaption class="hero-demo-cap" data-i18n="video_cap">Add a connector's address, pick a permission, install. Under a minute.</figcaption>
+        <div class="tut-dots" id="tut-dots" role="tablist" aria-label="Tutorial steps"></div>
+        <figcaption class="hero-demo-cap" id="tut-cap">Browse the connectors you need.</figcaption>
       </figure>
     </section>
 
