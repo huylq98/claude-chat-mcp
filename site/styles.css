@@ -115,13 +115,6 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 
 /* ---- Hero (search-first, centered) ---- */
 .hero { padding: clamp(48px, 9vw, 96px) 0 clamp(40px, 6vw, 72px); max-width: 760px; margin: 0 auto; text-align: center; }
-.eyebrow {
-  display: inline-block;
-  font-size: 0.8rem; letter-spacing: 0.04em; font-weight: 500;
-  color: var(--text);
-  background: var(--surface-2); border: 1px solid var(--hairline-strong);
-  padding: 6px 14px; border-radius: 999px; margin: 0 0 22px;
-}
 .hero h1 {
   font-family: var(--font-display);
   font-weight: 600;

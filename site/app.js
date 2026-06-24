@@ -11,7 +11,6 @@ function srAnnounce(msg) { if (srStatus) srStatus.textContent = msg; }
 const STRINGS = {
   en: {
     nav_connectors: "Connectors", nav_install: "Install",
-    eyebrow: "Free · works with Claude Desktop",
     hero_title: "Connect Claude to the tools your company runs.",
     hero_lede: "Let Claude read your company's Jira, Confluence, and databases and do real work. Everything runs on your own computer.",
     cta_install: "Get the app",
@@ -54,7 +53,6 @@ const STRINGS = {
   },
   vi: {
     nav_connectors: "Trình kết nối", nav_install: "Cài đặt",
-    eyebrow: "Miễn phí · dùng với Claude Desktop",
     hero_title: "Kết nối Claude tới công cụ nội bộ công ty bạn dùng.",
     hero_lede: "Cho phép Claude đọc Jira, Confluence và cơ sở dữ liệu của công ty bạn để làm việc thật. Mọi thứ chạy trên máy của bạn.",
     cta_install: "Tải ứng dụng",

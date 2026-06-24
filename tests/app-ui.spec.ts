@@ -112,6 +112,42 @@ test("report-a-bug dialog opens", async ({ page }) => {
   await expect(page.locator("#report-msg")).toBeVisible();
 });
 
+test("report-a-bug posts a well-formed Web3Forms request (real key) and shows success", async ({ page }) => {
+  await openApp(page);
+  let payload: any = null;
+  await page.route("https://api.web3forms.com/submit", async (route) => {
+    payload = route.request().postDataJSON();
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, message: "Email sent" }),
+    });
+  });
+  await page.locator("#report-open").click();
+  await page.locator("#report-msg").fill("E2E: connector failed to install");
+  await page.locator("#report-form button[type=submit]").click();
+  await expect(page.locator("#report-status")).toContainText(/sent|Thanks/i);
+  // The request the app actually sent must carry the real access key + context.
+  expect(payload.access_key).toBe("ac3d1e73-dc17-4da6-9371-7a1bbb9bd8d9");
+  expect(payload.message).toContain("connector failed to install");
+  expect(payload.message).toMatch(/App version/);
+});
+
+test("a Web3Forms failure response surfaces an error (not a false success)", async ({ page }) => {
+  await openApp(page);
+  await page.route("https://api.web3forms.com/submit", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: false, message: "Invalid access key" }),
+    });
+  });
+  await page.locator("#report-open").click();
+  await page.locator("#report-msg").fill("E2E failure-path check");
+  await page.locator("#report-form button[type=submit]").click();
+  await expect(page.locator("#report-status")).toContainText(/Could not send|Check your connection/i);
+});
+
 test("fill + test connection + install turns the connector on", async ({ page }) => {
   await openApp(page);
   const card = cardByName(page, "Jira");
