@@ -287,10 +287,23 @@ function buildCard(c) {
   const body = $(".card-body", node);
   expander.setAttribute("aria-expanded", "false");
   expander.addEventListener("click", () => {
-    const open = !body.hidden;
-    body.hidden = open;
-    expander.classList.toggle("open", !open);
-    expander.setAttribute("aria-expanded", String(!open));
+    const willOpen = body.hidden;
+    if (willOpen) {
+      // Accordion: close any other open card so the dashboard never becomes an
+      // endless column of expanded forms.
+      grid.querySelectorAll(".card.is-open").forEach((other) => {
+        if (other === node) return;
+        other.classList.remove("is-open");
+        const ob = $(".card-body", other);
+        if (ob) ob.hidden = true;
+        const oe = $(".expander", other);
+        if (oe) { oe.classList.remove("open"); oe.setAttribute("aria-expanded", "false"); }
+      });
+    }
+    body.hidden = !willOpen;
+    expander.classList.toggle("open", willOpen);
+    expander.setAttribute("aria-expanded", String(willOpen));
+    node.classList.toggle("is-open", willOpen);
   });
 
   // Editing any field invalidates a prior successful test.

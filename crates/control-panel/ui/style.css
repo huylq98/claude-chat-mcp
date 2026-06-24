@@ -197,11 +197,12 @@ select.field-input option,
 /* A class rule would otherwise beat the [hidden] UA style, so make it explicit. */
 .field[hidden] { display: none; }
 
-/* ── Connector grid ──────────────────────────────────────────────────── */
+/* ── Connector dashboard grid ────────────────────────────────────────── */
 .connector-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+  align-items: start;
 }
 
 .card {
@@ -211,6 +212,10 @@ select.field-input option,
   overflow: hidden;
   transition: border-color 0.2s var(--ease);
 }
+
+/* Only one card opens at a time; the open one spans the full width so its form
+   has room and the grid never turns into an endless single column. */
+.card.is-open { grid-column: 1 / -1; }
 
 .card[data-state="on"] {
   border-color: rgba(255, 122, 89, 0.35);
