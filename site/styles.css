@@ -132,6 +132,9 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 
 /* Big centered search */
 .search { position: relative; max-width: 560px; margin: 0 auto; display: flex; align-items: center; }
+/* In the catalog, the search filters the showcase, so it sits left-aligned above
+   the grid (not centered in a hero). */
+.catalog-search { margin: 0 0 26px; }
 .search-ic { position: absolute; left: 20px; color: var(--text-faint); display: flex; pointer-events: none; transition: color 0.3s var(--ease); }
 .search-input {
   width: 100%; font-family: var(--font-body); font-size: 1.12rem; color: var(--text);
