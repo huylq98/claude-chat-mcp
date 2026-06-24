@@ -201,12 +201,11 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 }
 /* Aspect lives on the viewport (not the img) so the slide box can't be stretched
    to the image's intrinsic height by flexbox. */
-.tut-viewport { overflow: hidden; aspect-ratio: 1080 / 675; }
-/* Soft fade at the bottom so a partially-shown card row reads as "more below"
-   rather than a hard cut. */
+.tut-viewport { overflow: hidden; aspect-ratio: 1080 / 929; }
+/* Light fade at the very bottom as insurance against a 1-2px row sliver. */
 .tut::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 54px;
-  background: linear-gradient(to bottom, transparent, rgba(13, 14, 18, 0.9));
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 28px;
+  background: linear-gradient(to bottom, transparent, rgba(13, 14, 18, 0.65));
   pointer-events: none; z-index: 1;
 }
 .tut-track { display: flex; height: 100%; transition: transform 0.5s var(--ease); }

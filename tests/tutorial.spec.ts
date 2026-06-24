@@ -10,12 +10,12 @@ test("carousel renders at the right aspect and loads every slide", async ({ page
   const tut = page.locator(".tut");
   await expect(tut).toBeVisible();
 
-  // Aspect ~1080/675 = 1.6 (the bug rendered it ~0.9, far too tall).
+  // Aspect ~1080/929 = 1.16 (the stretch bug rendered it ~0.9 — much taller).
   const box = await tut.boundingBox();
   expect(box).not.toBeNull();
   const ratio = box!.width / box!.height;
-  expect(ratio).toBeGreaterThan(1.45);
-  expect(ratio).toBeLessThan(1.75);
+  expect(ratio).toBeGreaterThan(1.05);
+  expect(ratio).toBeLessThan(1.3);
 
   // Three slides, all images decoded (not broken 404s).
   const slides = page.locator(".tut-slide");

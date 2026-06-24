@@ -22,8 +22,12 @@ await new Promise((r) => setTimeout(r, 1600));
 
 const browser = await chromium.launch();
 
+// Height chosen to land in a grid row-gap (no half-cards) AND clear the tallest
+// expanded "configure" card, so no slide is cut at the bottom.
+const CLIP_H = 929;
+
 async function shot(installed, action, path) {
-  const page = await browser.newPage({ viewport: { width: 1080, height: 760 } });
+  const page = await browser.newPage({ viewport: { width: 1080, height: 1000 } });
   await page.addInitScript(
     (args) => {
       const [c, inst] = args;
@@ -44,7 +48,7 @@ async function shot(installed, action, path) {
   await page.waitForSelector(".card");
   await page.waitForTimeout(800); // let webfonts settle
   if (action) await action(page);
-  await page.screenshot({ path, clip: { x: 0, y: 0, width: 1080, height: 675 } });
+  await page.screenshot({ path, clip: { x: 0, y: 0, width: 1080, height: CLIP_H } });
   await page.close();
 }
 
