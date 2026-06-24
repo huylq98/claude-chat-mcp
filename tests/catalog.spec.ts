@@ -109,3 +109,19 @@ test("rendered page contains no em-dash or en-dash", async ({ page }) => {
   const text = await page.locator("body").innerText();
   expect(text).not.toMatch(/[–—]/);
 });
+
+test("hero download button targets an OS-specific installer", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#hero-dl")).toHaveAttribute(
+    "href",
+    /releases\/download\/cp-v[\d.]+\/.*\.(exe|dmg|deb|AppImage)$/
+  );
+});
+
+test("feedback dialog opens and Cancel closes it", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#fb-open").click();
+  await expect(page.locator("#fb-dialog")).toBeVisible();
+  await page.locator("#fb-cancel").click();
+  await expect(page.locator("#fb-dialog")).toBeHidden();
+});

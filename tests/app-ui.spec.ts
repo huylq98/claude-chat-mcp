@@ -159,3 +159,57 @@ test("language toggle translates the app chrome", async ({ page }) => {
   await page.locator('.lang-btn[data-lang="vi"]').click();
   await expect(page.locator(".intro h1")).toHaveText(/Bảng điều khiển/);
 });
+
+test("advanced section is collapsed by default and expands on click", async ({ page }) => {
+  await openApp(page);
+  const card = cardByName(page, "Jira"); // Jira has advanced (proxy/CA/SSL) fields
+  await card.locator(".expander").click();
+  const adv = card.locator("details.advanced");
+  await expect(adv).toHaveCount(1);
+  await expect(adv).toHaveJSProperty("open", false);
+  await adv.locator("summary").click();
+  await expect(adv).toHaveJSProperty("open", true);
+});
+
+test("permission role can be switched to writer", async ({ page }) => {
+  await openApp(page);
+  const card = cardByName(page, "Jira");
+  await card.locator(".expander").click();
+  const role = card.locator(".role-select");
+  await role.selectOption("writer");
+  await expect(role).toHaveValue("writer");
+});
+
+test("installing without a successful test asks for confirmation; dismissing cancels", async ({ page }) => {
+  await openApp(page);
+  const card = cardByName(page, "Jira");
+  await card.locator(".expander").click();
+  await card.locator('.field[data-env="JIRA_URL"] input').fill("https://jira.example.com");
+  let dialogMsg = "";
+  page.once("dialog", (d) => { dialogMsg = d.message(); d.dismiss(); });
+  await card.locator(".btn-install").click();
+  expect(dialogMsg).toMatch(/Test connection/i);
+  await expect(card).toHaveAttribute("data-state", "off"); // dismissed → not installed
+});
+
+test("an install failure surfaces the error and leaves the connector off", async ({ page }) => {
+  await page.addInitScript(([conns]) => {
+    (window as any).__TAURI__ = { core: { invoke: async (cmd: string) => {
+      if (cmd === "list_connectors") return conns;
+      if (cmd === "list_installed") return [];
+      if (cmd === "test_connection") return "Connection OK";
+      if (cmd === "install_connector") throw "Disk full (simulated)";
+      return null;
+    } } };
+  }, [CONNECTORS] as const);
+  await page.goto(APP);
+  await page.waitForSelector(".card");
+  const card = cardByName(page, "Jira");
+  await card.locator(".expander").click();
+  await card.locator('.field[data-env="JIRA_URL"] input').fill("https://jira.example.com");
+  await card.locator(".btn-test").click();
+  await expect(card.locator(".status")).toContainText("Connection OK");
+  await card.locator(".btn-install").click();
+  await expect(card.locator(".status")).toContainText(/Disk full|simulated/i);
+  await expect(card).toHaveAttribute("data-state", "off");
+});
