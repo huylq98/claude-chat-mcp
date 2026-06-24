@@ -3,15 +3,17 @@
    (coral). Native CSS, no build. */
 
 :root {
-  --bg: #060607;
-  --bg-2: #0c0d10;
-  --surface: rgba(255, 255, 255, 0.03);
-  --surface-2: rgba(255, 255, 255, 0.05);
-  --hairline: rgba(255, 255, 255, 0.09);
-  --hairline-strong: rgba(255, 255, 255, 0.14);
-  --text: #f4f4f5;
-  --text-dim: #a1a1aa;
-  --text-faint: #8b8b96;
+  /* Softer warm charcoal (was near-black #060607) for a less harsh, higher
+     contrast feel while keeping the coral accent. */
+  --bg: #1a1a1e;
+  --bg-2: #232329;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --hairline: rgba(255, 255, 255, 0.11);
+  --hairline-strong: rgba(255, 255, 255, 0.18);
+  --text: #f6f6f7;
+  --text-dim: #bcbcc6;
+  --text-faint: #9a9aa6;
   --accent: #ff7a59;          /* warm coral, single accent */
   --accent-ink: #1a0d08;
   --radius-lg: 22px;
@@ -189,6 +191,25 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .hero-dl { box-shadow: 0 10px 30px rgba(255, 122, 89, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
 .hero-dl:hover { transform: translateY(-1px); box-shadow: 0 16px 44px rgba(255, 122, 89, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
 .hero-dl-note { margin: 14px 0 0; font-size: 0.85rem; color: var(--text-faint); }
+/* Hero tutorial video slot (replace the placeholder div with an iframe/video). */
+.hero-video { margin: 32px auto 0; max-width: 640px; }
+.hero-video-ph, .hero-video iframe, .hero-video video {
+  display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radius-md);
+}
+.hero-video-ph {
+  display: grid; place-items: center;
+  background:
+    radial-gradient(60% 80% at 50% 42%, rgba(255, 122, 89, 0.20), transparent 70%),
+    linear-gradient(180deg, var(--surface-2), var(--surface));
+  border: 1px solid var(--hairline-strong);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 50px rgba(0, 0, 0, 0.4);
+}
+.play-glyph {
+  width: 58px; height: 58px; display: grid; place-items: center; padding-left: 4px;
+  border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 1.15rem;
+  box-shadow: 0 10px 30px rgba(255, 122, 89, 0.5);
+}
+.hero-video-cap { display: block; margin-top: 12px; font-size: 0.85rem; color: var(--text-faint); }
 
 /* ---- Get-the-app card ---- */
 .app-card { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; padding: 28px 32px; border-radius: 18px; }

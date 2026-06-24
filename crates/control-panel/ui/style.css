@@ -2,15 +2,17 @@
    Dark developer-tool aesthetic, coral accent on near-black. */
 
 :root {
-  --bg: #060607;
-  --bg-2: #0c0d10;
-  --surface: rgba(255, 255, 255, 0.03);
-  --surface-2: rgba(255, 255, 255, 0.05);
-  --hairline: rgba(255, 255, 255, 0.09);
-  --hairline-strong: rgba(255, 255, 255, 0.14);
-  --text: #f4f4f5;
-  --text-dim: #a1a1aa;
-  --text-faint: #8b8b96;
+  /* Softer warm charcoal (was near-black #060607) for a less harsh, higher
+     contrast feel while keeping the coral accent. */
+  --bg: #1a1a1e;
+  --bg-2: #232329;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --hairline: rgba(255, 255, 255, 0.11);
+  --hairline-strong: rgba(255, 255, 255, 0.18);
+  --text: #f6f6f7;
+  --text-dim: #bcbcc6;
+  --text-faint: #9a9aa6;
   --accent: #ff7a59;
   --accent-ink: #1a0d08;
   --good: #4ade80;
