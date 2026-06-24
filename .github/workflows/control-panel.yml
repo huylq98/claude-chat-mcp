@@ -28,9 +28,7 @@ jobs:
           - os: windows-latest
             plat: win
           - os: macos-latest
-            plat: mac-arm
-          - os: macos-13
-            plat: mac-intel
+            plat: mac
           - os: ubuntu-latest
             plat: linux
     runs-on: ${{ matrix.os }}
@@ -38,19 +36,55 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      # Build BOTH macOS arches on the Apple Silicon runner (macos-13 Intel
+      # runners are scarce/unavailable); x86_64 is cross-compiled.
+      - name: Add macOS targets
+        if: matrix.plat == 'mac'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
       - name: Build connector binaries
-        run: cargo build --release --bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle --bin gitlab --bin postgres --bin github --bin jenkins --bin redmine --bin grafana --bin elasticsearch --bin mattermost --bin mongodb --bin sentry
-      - name: Collect this platform's binaries (raw names)
         shell: bash
         run: |
-          mkdir -p conn
-          for id in $CONNECTORS; do
-            if [ "${{ matrix.plat }}" = "win" ]; then cp "target/release/$id.exe" "conn/$id.exe"; else cp "target/release/$id" "conn/$id"; fi
-          done
-      - uses: actions/upload-artifact@v4
+          BINS="--bin confluence --bin jira --bin bitbucket --bin airtable --bin mysql --bin mariadb --bin clickhouse --bin oracle --bin gitlab --bin postgres --bin github --bin jenkins --bin redmine --bin grafana --bin elasticsearch --bin mattermost --bin mongodb --bin sentry"
+          if [ "${{ matrix.plat }}" = "mac" ]; then
+            cargo build --release --target aarch64-apple-darwin $BINS
+            cargo build --release --target x86_64-apple-darwin $BINS
+          else
+            cargo build --release $BINS
+          fi
+      - name: Collect binaries (raw names)
+        shell: bash
+        run: |
+          if [ "${{ matrix.plat }}" = "mac" ]; then
+            mkdir -p conn-mac-arm conn-mac-intel
+            for id in $CONNECTORS; do
+              cp "target/aarch64-apple-darwin/release/$id" "conn-mac-arm/$id"
+              cp "target/x86_64-apple-darwin/release/$id"  "conn-mac-intel/$id"
+            done
+          elif [ "${{ matrix.plat }}" = "win" ]; then
+            mkdir -p conn
+            for id in $CONNECTORS; do cp "target/release/$id.exe" "conn/$id.exe"; done
+          else
+            mkdir -p conn
+            for id in $CONNECTORS; do cp "target/release/$id" "conn/$id"; done
+          fi
+      - name: Upload (win / linux)
+        if: matrix.plat != 'mac'
+        uses: actions/upload-artifact@v4
         with:
           name: conn-${{ matrix.plat }}
           path: conn/
+      - name: Upload mac (arm)
+        if: matrix.plat == 'mac'
+        uses: actions/upload-artifact@v4
+        with:
+          name: conn-mac-arm
+          path: conn-mac-arm/
+      - name: Upload mac (intel)
+        if: matrix.plat == 'mac'
+        uses: actions/upload-artifact@v4
+        with:
+          name: conn-mac-intel
+          path: conn-mac-intel/
 
   manifest:
     needs: build
@@ -108,9 +142,7 @@ jobs:
           - os: windows-latest
             plat: win
           - os: macos-latest
-            plat: mac-arm
-          - os: macos-13
-            plat: mac-intel
+            plat: mac
           - os: ubuntu-latest
             plat: linux
     runs-on: ${{ matrix.os }}
@@ -118,6 +150,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+      - name: Add macOS targets (universal dmg)
+        if: matrix.plat == 'mac'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
       - name: Linux Tauri system deps
         if: matrix.plat == 'linux'
         run: |
@@ -136,7 +171,13 @@ jobs:
         run: cargo install tauri-cli --version "^2.0" --locked
       - name: Build app + installer
         working-directory: crates/control-panel
-        run: cargo tauri build
+        shell: bash
+        run: |
+          if [ "${{ matrix.plat }}" = "mac" ]; then
+            cargo tauri build --target universal-apple-darwin
+          else
+            cargo tauri build
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: control-panel-${{ matrix.plat }}
@@ -144,9 +185,9 @@ jobs:
           path: |
             crates/control-panel/target/release/bundle/**/*.msi
             crates/control-panel/target/release/bundle/**/*-setup.exe
-            crates/control-panel/target/release/bundle/**/*.dmg
             crates/control-panel/target/release/bundle/**/*.deb
             crates/control-panel/target/release/bundle/**/*.AppImage
+            crates/control-panel/target/universal-apple-darwin/release/bundle/**/*.dmg
       - name: Publish to release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
@@ -157,6 +198,6 @@ jobs:
           files: |
             crates/control-panel/target/release/bundle/**/*.msi
             crates/control-panel/target/release/bundle/**/*-setup.exe
-            crates/control-panel/target/release/bundle/**/*.dmg
             crates/control-panel/target/release/bundle/**/*.deb
             crates/control-panel/target/release/bundle/**/*.AppImage
+            crates/control-panel/target/universal-apple-darwin/release/bundle/**/*.dmg
