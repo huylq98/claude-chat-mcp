@@ -57,7 +57,7 @@ jobs:
       - name: Seed root registry.json (gitignored; generated locally) from the committed site copy
         run: cp site/registry.json registry.json
       - name: Run site tests (excludes the live-release link guard)
-        run: npx playwright test tests/catalog.spec.ts tests/i18n.spec.ts tests/install.spec.ts tests/search.spec.ts tests/tutorial.spec.ts
+        run: npx playwright test tests/catalog.spec.ts tests/i18n.spec.ts tests/install.spec.ts tests/search.spec.ts tests/tutorial.spec.ts tests/app-ui.spec.ts
 
   link-integrity:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'release'

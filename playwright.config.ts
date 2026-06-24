@@ -15,10 +15,20 @@ export default defineConfig({
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   ],
-  webServer: {
-    command: "node scripts/static-server.mjs site 4321",
-    port: 4321,
-    reuseExistingServer: true,
-    timeout: 30_000,
-  },
+  webServer: [
+    {
+      command: "node scripts/static-server.mjs site 4321",
+      port: 4321,
+      reuseExistingServer: true,
+      timeout: 30_000,
+    },
+    {
+      // Serves the desktop app's frontend so the app-ui E2E can drive it in a
+      // headless browser with a mocked Tauri bridge (tests/app-ui.spec.ts).
+      command: "node scripts/static-server.mjs crates/control-panel/ui 4322",
+      port: 4322,
+      reuseExistingServer: true,
+      timeout: 30_000,
+    },
+  ],
 });

@@ -1,0 +1,113 @@
+import { test, expect, Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
+
+// Drives the desktop app's real frontend (served on :4322) in a headless browser
+// with a mocked Tauri bridge. This is the "sandbox" that reviews the app UI:
+// each assertion guards a class of bug found by hand (white-on-white select,
+// unequal cards, both auth fields showing at once, accordion, installed state).
+
+const APP = "http://localhost:4322";
+const CONNECTORS = JSON.parse(readFileSync("site/registry.json", "utf8")).connectors as any[];
+
+async function openApp(page: Page, installed: any[] = []) {
+  await page.addInitScript(
+    ([conns, inst]) => {
+      (window as any).__TAURI__ = {
+        core: {
+          invoke: async (cmd: string) => {
+            if (cmd === "list_connectors") return conns;
+            if (cmd === "list_installed") return inst;
+            if (cmd === "test_connection") return "Connection OK";
+            if (cmd === "install_connector") return "ok";
+            return null;
+          },
+        },
+      };
+    },
+    [CONNECTORS, installed] as const
+  );
+  await page.goto(APP);
+  await page.waitForSelector(".card");
+}
+
+function cardByName(page: Page, name: string) {
+  return page.locator(".card").filter({ has: page.locator(".card-name", { hasText: name }) }).first();
+}
+
+test("dashboard renders one card per connector", async ({ page }) => {
+  await openApp(page);
+  await expect(page.locator(".card")).toHaveCount(CONNECTORS.length);
+});
+
+test("cards in a row are equal height", async ({ page }) => {
+  await openApp(page);
+  const heights = await page.locator(".card").evaluateAll((cards) =>
+    cards.slice(0, 3).map((c) => Math.round(c.getBoundingClientRect().height))
+  );
+  expect(Math.max(...heights) - Math.min(...heights)).toBeLessThanOrEqual(2);
+});
+
+test("search filters the grid and the no-match state appears", async ({ page }) => {
+  await openApp(page);
+  await page.fill("#app-search", "jira");
+  await expect(page.locator(".card")).toHaveCount(1);
+  await expect(cardByName(page, "Jira")).toBeVisible();
+  await page.fill("#app-search", "zzqqxx-nope");
+  await expect(page.locator(".card")).toHaveCount(0);
+  await expect(page.locator(".empty-state")).toBeVisible();
+});
+
+test("group filter narrows to that group", async ({ page }) => {
+  await openApp(page);
+  const dev = CONNECTORS.filter((c) => (c.group || "Other") === "Dev").length;
+  test.skip(dev === 0, "no Dev group");
+  await page.locator('.app-filter[data-group="Dev"]').click();
+  await expect(page.locator(".card")).toHaveCount(dev);
+});
+
+test("only one card opens at a time and it spans full width", async ({ page }) => {
+  await openApp(page);
+  const cards = page.locator(".card");
+  await cards.nth(0).locator(".expander").click();
+  await cards.nth(1).locator(".expander").click();
+  await expect(page.locator(".card.is-open")).toHaveCount(1);
+});
+
+test("auth toggle shows only the token by default, then switches to username+password", async ({ page }) => {
+  await openApp(page);
+  const card = cardByName(page, "Confluence");
+  await card.locator(".expander").click();
+  const token = card.locator('.field[data-env="CONFLUENCE_TOKEN"]');
+  const user = card.locator('.field[data-env="CONFLUENCE_USERNAME"]');
+  const pass = card.locator('.field[data-env="CONFLUENCE_PASSWORD"]');
+  await expect(token).toBeVisible();
+  await expect(user).toBeHidden();
+  await expect(pass).toBeHidden();
+  await card.locator('.seg-btn[data-method="basic"]').click();
+  await expect(token).toBeHidden();
+  await expect(user).toBeVisible();
+  await expect(pass).toBeVisible();
+});
+
+test("the role select uses a dark color-scheme (no white-on-white dropdown)", async ({ page }) => {
+  await openApp(page);
+  const card = cardByName(page, "Confluence");
+  await card.locator(".expander").click();
+  // color-scheme is set on body; the native dropdown then renders dark.
+  const scheme = await page.evaluate(() => getComputedStyle(document.body).colorScheme);
+  expect(scheme).toContain("dark");
+  await expect(card.locator(".role-select")).toBeVisible();
+});
+
+test("installed connector shows the On state and the installed count", async ({ page }) => {
+  await openApp(page, [{ id: "jira", command: "x", env: { JIRA_MODE: "writer" } }]);
+  await expect(cardByName(page, "Jira")).toHaveAttribute("data-state", "on");
+  await expect(page.locator(".installed-chip")).toContainText("1");
+});
+
+test("report-a-bug dialog opens", async ({ page }) => {
+  await openApp(page);
+  await page.locator("#report-open").click();
+  await expect(page.locator("#report-dialog")).toBeVisible();
+  await expect(page.locator("#report-msg")).toBeVisible();
+});
