@@ -423,7 +423,7 @@ function initFeedback() {
     try {
       const res = await fetch(FEEDBACK_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           access_key: FEEDBACK_ACCESS_KEY,
           subject: "Claude Chat MCP site feedback",
@@ -432,7 +432,9 @@ function initFeedback() {
           email: document.getElementById("fb-email").value.trim() || "(not provided)",
         }),
       });
-      if (!res.ok) throw new Error("HTTP " + res.status);
+      // Web3Forms returns HTTP 200 with {success:false} on failure, so check the body.
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.message || "HTTP " + res.status);
       statusEl.textContent = t("fb_ok");
       form.reset();
       setTimeout(() => dlg.close(), 1300);
