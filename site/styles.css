@@ -220,10 +220,8 @@ main { width: min(var(--maxw), 100%); margin: 0 auto; padding: 0 20px; }
 .demo-btn-press { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .demo-btn.demo-done { background: rgba(74, 222, 128, 0.12); border-color: rgba(74, 222, 128, 0.35); color: #4ade80; }
 .hero-demo-cap { display: block; margin-top: 12px; font-size: 0.85rem; color: var(--text-faint); }
-@media (prefers-reduced-motion: reduce) {
-  .demo-frame { animation: none; opacity: 0; }
-  .demo-f1 { opacity: 1; }
-}
+/* The demo cross-fades opacity only (no movement), so it keeps playing even
+   under reduced-motion — otherwise it froze on one frame and looked dead. */
 
 /* ---- Get-the-app card ---- */
 .app-card { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; padding: 28px 32px; border-radius: 18px; }
