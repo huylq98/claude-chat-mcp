@@ -192,6 +192,24 @@ test("installing without a successful test asks for confirmation; dismissing can
   await expect(card).toHaveAttribute("data-state", "off"); // dismissed → not installed
 });
 
+test("a failed test connection surfaces the error", async ({ page }) => {
+  await page.addInitScript(([conns]) => {
+    (window as any).__TAURI__ = { core: { invoke: async (cmd: string) => {
+      if (cmd === "list_connectors") return conns;
+      if (cmd === "list_installed") return [];
+      if (cmd === "test_connection") throw "401 Unauthorized (simulated)";
+      return null;
+    } } };
+  }, [CONNECTORS] as const);
+  await page.goto(APP);
+  await page.waitForSelector(".card");
+  const card = cardByName(page, "Jira");
+  await card.locator(".expander").click();
+  await card.locator('.field[data-env="JIRA_URL"] input').fill("https://jira.example.com");
+  await card.locator(".btn-test").click();
+  await expect(card.locator(".status")).toContainText(/401|Unauthorized|simulated/i);
+});
+
 test("an install failure surfaces the error and leaves the connector off", async ({ page }) => {
   await page.addInitScript(([conns]) => {
     (window as any).__TAURI__ = { core: { invoke: async (cmd: string) => {

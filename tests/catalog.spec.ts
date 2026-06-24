@@ -125,3 +125,11 @@ test("feedback dialog opens and Cancel closes it", async ({ page }) => {
   await page.locator("#fb-cancel").click();
   await expect(page.locator("#fb-dialog")).toBeHidden();
 });
+
+test("clicking the backdrop closes the feedback dialog", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#fb-open").click();
+  await expect(page.locator("#fb-dialog")).toBeVisible();
+  await page.mouse.click(5, 5); // outside the centered dialog box = backdrop
+  await expect(page.locator("#fb-dialog")).toBeHidden();
+});
