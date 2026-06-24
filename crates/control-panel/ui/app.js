@@ -37,6 +37,13 @@ const STRINGS = {
     loadingConnectors: "Loading connectors...",
     emptyState: "No connectors are bundled with this build.",
     loadError: "Could not load connectors:",
+    searchPh: "Search connectors",
+    groupAll: "All",
+    installedNote: "{n} on",
+    noMatch: "No connectors match.",
+    authMethod: "Sign in with",
+    authToken: "Access token",
+    authBasic: "Username and password",
     show: "Show", hide: "Hide",
   },
   vi: {
@@ -71,6 +78,13 @@ const STRINGS = {
     loadingConnectors: "Đang tải trình kết nối...",
     emptyState: "Bản dựng này không có trình kết nối nào.",
     loadError: "Không tải được trình kết nối:",
+    searchPh: "Tìm trình kết nối",
+    groupAll: "Tất cả",
+    installedNote: "{n} đang bật",
+    noMatch: "Không có trình kết nối phù hợp.",
+    authMethod: "Đăng nhập bằng",
+    authToken: "Token truy cập",
+    authBasic: "Tên đăng nhập và mật khẩu",
     show: "Hiện", hide: "Ẩn",
   },
 };
@@ -83,7 +97,10 @@ function applyLang() {
   $$("[data-i18n]").forEach((el) => {
     el.textContent = t(el.dataset.i18n);
   });
-  // Re-render connector cards so dynamic labels follow the language too.
+  if (searchEl) searchEl.placeholder = t("searchPh");
+  // Re-render the filter row and connector cards so dynamic labels follow the
+  // language too.
+  buildFilters();
   render();
 }
 
@@ -126,6 +143,47 @@ async function loadData() {
 /* ── Render ─────────────────────────────────────────────────────────── */
 const grid = $("#connectors");
 const tpl = $("#card-tpl");
+const searchEl = $("#app-search");
+const filtersEl = $("#app-filters");
+let currentGroup = "All";
+let query = "";
+
+searchEl.addEventListener("input", () => { query = searchEl.value; render(); });
+
+function buildFilters() {
+  if (!connectors.length) { filtersEl.innerHTML = ""; return; }
+  const groups = ["All", ...new Set(connectors.map((c) => c.group || "Other"))];
+  filtersEl.innerHTML = groups
+    .map((g) => {
+      const label = g === "All" ? t("groupAll") : g;
+      const on = g === currentGroup;
+      return `<button type="button" class="app-filter${on ? " active" : ""}" aria-pressed="${on}" data-group="${g}">${label}</button>`;
+    })
+    .join("");
+  const onCount = Object.keys(installedById).length;
+  if (onCount > 0) {
+    const chip = document.createElement("span");
+    chip.className = "installed-chip";
+    chip.textContent = t("installedNote").replace("{n}", String(onCount));
+    filtersEl.appendChild(chip);
+  }
+  filtersEl.querySelectorAll(".app-filter").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      currentGroup = btn.dataset.group;
+      buildFilters();
+      render();
+    });
+  });
+}
+
+function visibleConnectors() {
+  const q = query.trim().toLowerCase();
+  return connectors.filter((c) => {
+    const inGroup = currentGroup === "All" || (c.group || "Other") === currentGroup;
+    const hay = [c.name, c.id, c.description, c.group].join(" ").toLowerCase();
+    return inGroup && (!q || hay.includes(q));
+  });
+}
 
 function render() {
   grid.innerHTML = "";
@@ -136,7 +194,15 @@ function render() {
     grid.appendChild(p);
     return;
   }
-  for (const c of connectors) grid.appendChild(buildCard(c));
+  const shown = visibleConnectors();
+  if (!shown.length) {
+    const p = document.createElement("p");
+    p.className = "empty-state";
+    p.textContent = t("noMatch");
+    grid.appendChild(p);
+    return;
+  }
+  for (const c of shown) grid.appendChild(buildCard(c));
 }
 
 function buildCard(c) {
@@ -162,6 +228,7 @@ function buildCard(c) {
   // are not confused by IT plumbing next to their token.
   const form = $(".fields", node);
   for (const f of (c.auth_fields || [])) form.appendChild(buildField(f, installed));
+  setupAuthToggle(form, installed, node);
   const adv = c.advanced_fields || [];
   if (adv.length) {
     const details = document.createElement("details");
@@ -235,6 +302,47 @@ function buildCard(c) {
   removeBtn.addEventListener("click", () => removeConnector(c, node));
 
   return node;
+}
+
+// When a connector accepts EITHER a token OR username+password, show a method
+// toggle and reveal only the chosen set, so users aren't faced with both at once.
+// Detected generically by env suffix (_TOKEN / _USERNAME / _PASSWORD).
+function setupAuthToggle(form, installed, node) {
+  const tokenField = form.querySelector('.field[data-env$="_TOKEN"]');
+  const userField = form.querySelector('.field[data-env$="_USERNAME"]');
+  const passField = form.querySelector('.field[data-env$="_PASSWORD"]');
+  if (!tokenField || !userField || !passField) return;
+
+  // Default to token; switch to basic only if an install already used a username.
+  let method = "token";
+  if (installed && installed.env[userField.dataset.env]) method = "basic";
+
+  const seg = document.createElement("div");
+  seg.className = "auth-toggle";
+  seg.innerHTML =
+    `<span class="auth-label">${t("authMethod")}</span>` +
+    `<div class="seg" role="group">` +
+    `<button type="button" class="seg-btn" data-method="token">${t("authToken")}</button>` +
+    `<button type="button" class="seg-btn" data-method="basic">${t("authBasic")}</button>` +
+    `</div>`;
+  tokenField.before(seg);
+
+  function apply(m, fromUser) {
+    method = m;
+    tokenField.hidden = m !== "token";
+    userField.hidden = m !== "basic";
+    passField.hidden = m !== "basic";
+    seg.querySelectorAll(".seg-btn").forEach((b) => {
+      const on = b.dataset.method === m;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
+    if (fromUser) node.dataset.tested = ""; // changing method invalidates a prior test
+  }
+  seg.querySelectorAll(".seg-btn").forEach((b) =>
+    b.addEventListener("click", () => apply(b.dataset.method, true))
+  );
+  apply(method, false);
 }
 
 function buildField(f, installed) {
@@ -320,6 +428,10 @@ function collectValues(node) {
   let firstErr = null;
   $$(".field", node).forEach((w) => w.classList.remove("field-err"));
   $$(".field-input, .field-check", node).forEach((input) => {
+    // Skip fields hidden by the auth-method toggle so the unused set (e.g. a
+    // token when using username+password) is never submitted.
+    const fieldWrap = input.closest(".field");
+    if (fieldWrap && fieldWrap.hidden) return;
     input.removeAttribute("aria-invalid");
     const env = input.dataset.env;
     const kind = input.dataset.kind;
@@ -390,6 +502,7 @@ async function installConnector(c, node) {
     $(".btn-remove", node).hidden = false;
     setStatus(status, "ok", t("installed"));
     $(".restart-note", node).hidden = false;
+    buildFilters();
   } catch (e) {
     setStatus(status, "err", errMsg(e));
   } finally {
@@ -416,6 +529,7 @@ async function removeConnector(c, node) {
     removeBtn.hidden = true;
     setStatus(status, "ok", t("removed"));
     $(".restart-note", node).hidden = false;
+    buildFilters();
   } catch (e) {
     setStatus(status, "err", errMsg(e));
   } finally {
